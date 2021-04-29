@@ -2,7 +2,8 @@ package docxlib
 
 import "strconv"
 
-func (f *Docx) addLinkRelation(link string) string {
+// when adding an hyperlink we need to store a reference in the relationship field
+func (f *DocxLib) addLinkRelation(link string) string {
 	rel := &Relationship{
 		ID:         "rId" + strconv.Itoa(f.rId),
 		Type:       REL_HYPERLINK,
@@ -17,7 +18,7 @@ func (f *Docx) addLinkRelation(link string) string {
 	return rel.ID
 }
 
-// AddLink add hyperlink to paragraph
+// AddLink adds an hyperlink to paragraph
 func (p *Paragraph) AddLink(text string, link string) *Hyperlink {
 	rId := p.file.addLinkRelation(link)
 	hyperlink := &Hyperlink{

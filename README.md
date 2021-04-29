@@ -1,10 +1,10 @@
 # Docx library
 
-Yet another library to manipulate .docx (Microsoft Word) files in Go.
+Yet another library to read and write .docx (Microsoft Word) files in Go.
 
 ## Introduction
 
-As part of my work for [Basement Crowd](https://www.basementcrowd.com) y [FromCounsel](https://www.fromcounsel.com), we were in need of a basic library to manipulate (both read and write)
+As part of my work for [Basement Crowd](https://www.basementcrowd.com) y [FromCounsel](https://www.fromcounsel.com), we were in need of a basic library to manipulate (both read and write) Microsoft Word documents.
 
 The difference with other projects is the following:
 

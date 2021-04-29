@@ -6,7 +6,10 @@ import (
 	"fmt"
 )
 
-func (f *Docx) pack(zipWriter *zip.Writer) (err error) {
+// This receives a zip file writer (word documents are a zip with multiple xml inside)
+// and writes the relevant files. Some of them come from the empty_constants file,
+// others from the actual in-memory structure
+func (f *DocxLib) pack(zipWriter *zip.Writer) (err error) {
 	files := map[string]string{}
 
 	files["_rels/.rels"] = TEMP_REL

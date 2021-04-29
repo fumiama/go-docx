@@ -1,5 +1,6 @@
 package docxlib
 
+// This contains internal functions needed to unpack (read) a zip file
 import (
 	"archive/zip"
 	"encoding/xml"
@@ -7,7 +8,11 @@ import (
 	"io/ioutil"
 )
 
-func unpack(zipReader *zip.Reader) (docx *Docx, err error) {
+// This receives a zip file (word documents are a zip with multiple xml inside)
+// and parses the files that are relevant for us:
+// 1.-Document
+// 2.-Relationships
+func unpack(zipReader *zip.Reader) (docx *DocxLib, err error) {
 	var doc *Document
 	var relations *Relationships
 	for _, f := range zipReader.File {
@@ -24,13 +29,14 @@ func unpack(zipReader *zip.Reader) (docx *Docx, err error) {
 			}
 		}
 	}
-	docx = &Docx{
+	docx = &DocxLib{
 		Document:    *doc,
 		DocRelation: *relations,
 	}
 	return docx, nil
 }
 
+// Processes one of the relevant files, the one with the actual document
 func processDoc(file *zip.File) (*Document, error) {
 	filebytes, err := readZipFile(file)
 	if err != nil {
@@ -42,8 +48,6 @@ func processDoc(file *zip.File) (*Document, error) {
 		XMLR:    XMLNS_R,
 		XMLName: xml.Name{Space: XMLNS_W, Local: "document"}}
 	err = xml.Unmarshal(filebytes, &doc)
-	//r := bytes.NewReader(filebytes)
-	//err = decode(r)
 	if err != nil {
 		fmt.Println("Error unmarshalling doc")
 		fmt.Println(string(filebytes))
@@ -52,6 +56,7 @@ func processDoc(file *zip.File) (*Document, error) {
 	return &doc, nil
 }
 
+// Processes one of the relevant files, the one with the relationships
 func processRelations(file *zip.File) (*Relationships, error) {
 	filebytes, err := readZipFile(file)
 	if err != nil {
@@ -67,6 +72,7 @@ func processRelations(file *zip.File) (*Relationships, error) {
 	return &rels, nil
 }
 
+// From a zip file structure, we return a byte array
 func readZipFile(zf *zip.File) ([]byte, error) {
 	f, err := zf.Open()
 	if err != nil {
