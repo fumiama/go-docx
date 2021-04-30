@@ -15,12 +15,6 @@ func (f *DocxLib) Paragraphs() []*Paragraph {
 	return f.Document.Body.Paragraphs
 }
 
-func (p *Paragraph) Runs() (ret []*Run) {
-	data := p.Data
-	for _, d := range data {
-		if d.Run != nil {
-			ret = append(ret, d.Run)
-		}
-	}
-	return
+func (p *Paragraph) Children() (ret []ParagraphChild) {
+	return p.Data
 }

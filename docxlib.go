@@ -2,6 +2,7 @@ package docxlib
 
 import (
 	"archive/zip"
+	"errors"
 	"io"
 )
 
@@ -36,4 +37,16 @@ func (f *DocxLib) Write(writer io.Writer) (err error) {
 	defer zipWriter.Close()
 
 	return f.pack(zipWriter)
+}
+
+// References gets the url for a reference
+func (f *DocxLib) References(id string) (href string, err error) {
+	for _, a := range f.DocRelation.Relationships {
+		if a.ID == id {
+			href = a.Target
+			return
+		}
+	}
+	err = errors.New("id not found")
+	return
 }

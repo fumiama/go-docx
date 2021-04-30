@@ -48,8 +48,21 @@ func main() {
 		panic(err)
 	}
 	for _, para := range doc.Paragraphs() {
-		for _, run := range para.Runs() {
-			fmt.Printf("\tWe've found a new run with the text ->%s\n", run.Text.Text)
+		for _, child := range para.Children() {
+			if child.Run != nil {
+				fmt.Printf("\tWe've found a new run with the text ->%s\n", child.Run.Text.Text)
+			}
+			if child.Link != nil {
+				id := child.Link.ID
+				text := child.Link.Run.InstrText
+				link, err := doc.References(id)
+				if err != nil {
+					fmt.Printf("\tWe found a link with id %s and text %s without target\n", id, text)
+				} else {
+					fmt.Printf("\tWe've found a new hyperlink with ref %s and the text %s\n", link, text)
+				}
+
+			}
 		}
 	}
 	fmt.Println("End of main")

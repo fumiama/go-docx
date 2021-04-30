@@ -63,7 +63,7 @@ func processRelations(file *zip.File) (*Relationships, error) {
 		fmt.Println("Error reading from internal zip file")
 		return nil, err
 	}
-	rels := Relationships{Xmlns: "none"}
+	rels := Relationships{Xmlns: XMLNS_R}
 	err = xml.Unmarshal(filebytes, &rels)
 	if err != nil {
 		fmt.Println("Error unmarshalling relationships")

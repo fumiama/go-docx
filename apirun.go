@@ -17,7 +17,7 @@ func (r *Run) Size(size int) *Run {
 	return r
 }
 
-// AddText add text to paragraph
+// AddText adds text to paragraph
 func (p *Paragraph) AddText(text string) *Run {
 	t := &Text{
 		Text: text,

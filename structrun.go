@@ -11,7 +11,7 @@ const (
 type Run struct {
 	XMLName       xml.Name       `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main r"`
 	RunProperties *RunProperties `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main rPr,omitempty"`
-	InstrText     string         `xml:"w:instrText,omitempty"`
+	InstrText     string         `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main instrText,omitempty"`
 	Text          *Text
 }
 
