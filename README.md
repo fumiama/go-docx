@@ -39,6 +39,7 @@ go get github.com/gonfva/docxlib
 See [main](main/main.go) for an example
 
 ```
+$ go build -o docxlib ./main
 $ ./docxlib
 Preparing new document to write at /tmp/new-file.docx
 Document writen.
@@ -47,13 +48,14 @@ Now trying to read it
 	We've found a new run with the text ->test font size
 	We've found a new run with the text ->test color
 	We've found a new run with the text ->test font size and color
+	We've found a new hyperlink with ref http://google.com and the text google
 End of main
 ```
 
 ### Build
 
 ```
-$ go build -o docxlib ./main
+$ go build ./...
 ```
 
 ## License
