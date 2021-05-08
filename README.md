@@ -4,7 +4,7 @@ Yet another library to read and write .docx (Microsoft Word) files in Go.
 
 ## Introduction
 
-As part of my work for [Basement Crowd](https://www.basementcrowd.com) y [FromCounsel](https://www.fromcounsel.com), we were in need of a basic library to manipulate (both read and write) Microsoft Word documents.
+As part of my work for [Basement Crowd](https://www.basementcrowd.com) and [FromCounsel](https://www.fromcounsel.com), we were in need of a basic library to manipulate (both read and write) Microsoft Word documents.
 
 The difference with other projects is the following:
 
@@ -16,13 +16,13 @@ There are also a couple of other projects [kingzbauer/docx](https://github.com/k
 
 [gingfrederik/docx](https://github.com/gingfrederik/docx) was a heavy influence (the original structures and the main method come from that project).
 
-However, the structures didn't handle reading and extending them was particularly difficult due to Go xml parser being limited and [6 year old bug](https://github.com/golang/go/issues/9519).
+However, those original structures didn't handle reading and extending them was particularly difficult due to Go xml parser being a bit limited including a [6 year old bug](https://github.com/golang/go/issues/9519).
 
 Additionally, my requirements go beyond the original structure and a hard fork seemed more sensible.
 
-The plan is to evolve the library, so the API is likely to change according to my company's needs. But please do feel free to send patches, reports and PRs or fork.
+The plan is to evolve the library, so the API is likely to change according to my company's needs. But please do feel free to send patches, reports and PRs (or fork).
 
-In the mean time, shared as an example.
+In the mean time, shared as an example in case somebody finds it useful.
 
 ## Getting Started
 
