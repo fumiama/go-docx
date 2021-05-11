@@ -31,6 +31,9 @@ func TestStructure(t *testing.T) {
 			if child.Link == nil && child.Properties == nil && child.Run == nil {
 				t.Errorf("There are children with all fields nil")
 			}
+			if child.Run != nil && child.Run.Text == nil {
+				t.Errorf("We have a run with no text")
+			}
 		}
 	}
 }

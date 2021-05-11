@@ -1,6 +1,9 @@
 package docxlib
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"io"
+)
 
 const (
 	HYPERLINK_STYLE = "a1"
@@ -61,4 +64,37 @@ type Color struct {
 type Size struct {
 	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main sz"`
 	Val     int      `xml:"w:val,attr"`
+}
+
+func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var elem Run
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+
+		switch tt := t.(type) {
+		case xml.CharData:
+			var value string
+			d.DecodeElement(&value, &start)
+			elem.Text = &Text{Text: value}
+		case xml.StartElement:
+			if tt.Name.Local == "rPr" {
+				var value RunProperties
+				d.DecodeElement(&value, &start)
+				elem.RunProperties = &value
+			} else if tt.Name.Local == "instrText" {
+				var value string
+				d.DecodeElement(&value, &start)
+				elem.InstrText = value
+			} else {
+				continue
+			}
+		}
+
+	}
+	*r = elem
+	return nil
+
 }
