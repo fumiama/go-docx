@@ -51,7 +51,22 @@ Now trying to read it
 	We've found a new hyperlink with ref http://google.com and the text google
 End of main
 ```
-
+You can also increase the log level and just dump a specific file. See [getstructure/main](getstructure/main.go)
+```
+$ go build -o docxlib ./getstructure/ && ./docxlib -logtostderr=true -v=0
+I0511 12:37:40.898493   18466 unpack.go:69] Relations: [...]
+I0511 12:37:40.898787   18466 unpack.go:47] Doc: [...]
+I0511 12:37:40.899330   18466 unpack.go:58] Paragraph [0xc000026d40 0xc000027d00 0xc000172340]
+I0511 12:37:40.899369   18466 main.go:31] There is a new paragraph [...]
+	We've found a new run with the text ->test
+	We've found a new run with the text ->test font size
+	We've found a new run with the text ->test color
+I0511 12:37:40.899389   18466 main.go:31] There is a new paragraph [...]
+	We've found a new run with the text ->test font size and color
+I0511 12:37:40.899396   18466 main.go:31] There is a new paragraph [...]
+	We've found a new hyperlink with ref http://google.com and the text google
+End of main
+```
 ### Build
 
 ```

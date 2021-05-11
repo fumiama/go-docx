@@ -3,7 +3,8 @@ package docxlib
 import (
 	"archive/zip"
 	"encoding/xml"
-	"fmt"
+
+	"github.com/golang/glog"
 )
 
 // This receives a zip file writer (word documents are a zip with multiple xml inside)
@@ -45,7 +46,7 @@ func (f *DocxLib) pack(zipWriter *zip.Writer) (err error) {
 func marshal(data interface{}) (out string, err error) {
 	body, err := xml.Marshal(data)
 	if err != nil {
-		fmt.Println(err)
+		glog.Errorln("Error marshalling", err)
 		return
 	}
 

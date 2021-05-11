@@ -9,7 +9,7 @@ const (
 // A Run is part of a paragraph that has its own style. It could be
 // a piece of text in bold, or a link
 type Run struct {
-	XMLName       xml.Name       `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main r"`
+	XMLName       xml.Name       `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main r,omitempty"`
 	RunProperties *RunProperties `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main rPr,omitempty"`
 	InstrText     string         `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main instrText,omitempty"`
 	Text          *Text
@@ -24,22 +24,29 @@ type Text struct {
 
 // The hyperlink element contains links
 type Hyperlink struct {
-	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main hyperlink"`
+	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main hyperlink,omitempty"`
 	ID      string   `xml:"http://schemas.openxmlformats.org/officeDocument/2006/relationships id,attr"`
 	Run     Run
 }
 
 // RunProperties encapsulates visual properties of a run
 type RunProperties struct {
-	XMLName  xml.Name  `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main rPr"`
+	XMLName  xml.Name  `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main rPr,omitempty"`
 	Color    *Color    `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main color,omitempty"`
 	Size     *Size     `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main sz,omitempty"`
 	RunStyle *RunStyle `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main rStyle,omitempty"`
+	Style    *Style    `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main pStyle,omitempty"`
 }
 
 // RunStyle contains styling for a run
 type RunStyle struct {
-	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main rStyle"`
+	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main rStyle,omitempty"`
+	Val     string   `xml:"w:val,attr"`
+}
+
+// Style contains styling for a paragraph
+type Style struct {
+	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main pStyle,omitempty"`
 	Val     string   `xml:"w:val,attr"`
 }
 

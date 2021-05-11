@@ -4,8 +4,9 @@ package docxlib
 import (
 	"archive/zip"
 	"encoding/xml"
-	"fmt"
 	"io/ioutil"
+
+	"github.com/golang/glog"
 )
 
 // This receives a zip file (word documents are a zip with multiple xml inside)
@@ -40,19 +41,21 @@ func unpack(zipReader *zip.Reader) (docx *DocxLib, err error) {
 func processDoc(file *zip.File) (*Document, error) {
 	filebytes, err := readZipFile(file)
 	if err != nil {
-		fmt.Println("Error reading from internal zip file")
+		glog.Errorln("Error reading from internal zip file")
 		return nil, err
 	}
+	glog.V(0).Infoln("Doc:", string(filebytes))
+
 	doc := Document{
 		XMLW:    XMLNS_W,
 		XMLR:    XMLNS_R,
 		XMLName: xml.Name{Space: XMLNS_W, Local: "document"}}
 	err = xml.Unmarshal(filebytes, &doc)
 	if err != nil {
-		fmt.Println("Error unmarshalling doc")
-		fmt.Println(string(filebytes))
+		glog.Errorln("Error unmarshalling doc", string(filebytes))
 		return nil, err
 	}
+	glog.V(0).Infoln("Paragraph", doc.Body.Paragraphs)
 	return &doc, nil
 }
 
@@ -60,13 +63,15 @@ func processDoc(file *zip.File) (*Document, error) {
 func processRelations(file *zip.File) (*Relationships, error) {
 	filebytes, err := readZipFile(file)
 	if err != nil {
-		fmt.Println("Error reading from internal zip file")
+		glog.Errorln("Error reading from internal zip file")
 		return nil, err
 	}
+	glog.V(0).Infoln("Relations:", string(filebytes))
+
 	rels := Relationships{Xmlns: XMLNS_R}
 	err = xml.Unmarshal(filebytes, &rels)
 	if err != nil {
-		fmt.Println("Error unmarshalling relationships")
+		glog.Errorln("Error unmarshalling relationships")
 		return nil, err
 	}
 	return &rels, nil
