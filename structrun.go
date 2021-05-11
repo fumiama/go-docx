@@ -75,10 +75,6 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		}
 
 		switch tt := t.(type) {
-		case xml.CharData:
-			var value string
-			d.DecodeElement(&value, &start)
-			elem.Text = &Text{Text: value}
 		case xml.StartElement:
 			if tt.Name.Local == "rPr" {
 				var value RunProperties
@@ -88,6 +84,10 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				var value string
 				d.DecodeElement(&value, &start)
 				elem.InstrText = value
+			} else if tt.Name.Local == "t" {
+				var value Text
+				d.DecodeElement(&value, &start)
+				elem.Text = &value
 			} else {
 				continue
 			}
@@ -97,4 +97,72 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	*r = elem
 	return nil
 
+}
+func (r *Text) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var elem Text
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+
+		switch tt := t.(type) {
+		case xml.CharData:
+			cd := tt.Copy()
+			elem.Text = string(cd)
+		}
+
+	}
+
+	*r = elem
+	return nil
+}
+func (r *Hyperlink) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var elem Hyperlink
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+
+		switch tt := t.(type) {
+		case xml.StartElement:
+			if tt.Name.Local == "r" {
+				d.DecodeElement(&elem.Run, &start)
+			} else {
+				continue
+			}
+		}
+
+	}
+	*r = elem
+	return nil
+
+}
+func (r *RunStyle) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var elem RunStyle
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+
+		switch tt := t.(type) {
+		case xml.StartElement:
+			elem.Val = getAtt(tt.Attr, "val")
+		}
+
+	}
+	*r = elem
+	return nil
+
+}
+
+func getAtt(atts []xml.Attr, name string) string {
+	for _, at := range atts {
+		if at.Name.Local == name {
+			return at.Value
+		}
+	}
+	return ""
 }

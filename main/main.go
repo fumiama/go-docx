@@ -1,16 +1,21 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
 	"github.com/gonfva/docxlib"
 )
 
-const FILE_PATH = "/tmp/new-file.docx"
+var fileLocation *string
 
+func init() {
+	fileLocation = flag.String("file", "/tmp/new-file.docx", "file location")
+	flag.Parse()
+}
 func main() {
-	fmt.Printf("Preparing new document to write at %s\n", FILE_PATH)
+	fmt.Printf("Preparing new document to write at %s\n", *fileLocation)
 
 	w := docxlib.New()
 	// add new paragraph
@@ -26,7 +31,7 @@ func main() {
 	nextPara := w.AddParagraph()
 	nextPara.AddLink("google", `http://google.com`)
 
-	f, err := os.Create(FILE_PATH)
+	f, err := os.Create(*fileLocation)
 	if err != nil {
 		panic(err)
 	}
@@ -34,7 +39,7 @@ func main() {
 	w.Write(f)
 	fmt.Println("Document writen. \nNow trying to read it")
 	// Now let's try to read the file
-	readFile, err := os.Open(FILE_PATH)
+	readFile, err := os.Open(*fileLocation)
 	if err != nil {
 		panic(err)
 	}

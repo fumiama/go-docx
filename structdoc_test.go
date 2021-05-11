@@ -29,10 +29,16 @@ func TestStructure(t *testing.T) {
 		}
 		for _, child := range p.Children() {
 			if child.Link == nil && child.Properties == nil && child.Run == nil {
-				t.Errorf("There are children with all fields nil")
+				t.Errorf("There are Paragraph children with all fields nil")
 			}
 			if child.Run != nil && child.Run.Text == nil {
 				t.Errorf("We have a run with no text")
+			}
+			if child.Run != nil && child.Run.Text != nil && child.Run.Text.Text == "" {
+				t.Errorf("We have a text with no text")
+			}
+			if child.Link != nil && child.Link.ID == "" {
+				t.Errorf("We have a link without ID")
 			}
 		}
 	}
