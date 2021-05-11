@@ -9,12 +9,16 @@ import (
 	"github.com/gonfva/docxlib"
 )
 
-const FILE_PATH = "/tmp/new-file.docx"
+var fileLocation *string
+
+func init() {
+	fileLocation = flag.String("file", "/tmp/new-file.docx", "file location")
+	flag.Parse()
+}
 
 func main() {
-	flag.Parse()
 	//Now let's try to read the file
-	readFile, err := os.Open(FILE_PATH)
+	readFile, err := os.Open(*fileLocation)
 	if err != nil {
 		panic(err)
 	}
