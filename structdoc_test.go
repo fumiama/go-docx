@@ -19,13 +19,18 @@ func TestStructure(t *testing.T) {
 			decoded_doc)
 	}
 	if len(doc.Body.Paragraphs) != NUM_PARAGRAPHS {
-		t.Errorf("We expected %d paragraph, we got %d",
+		t.Errorf("We expected %d paragraphs, we got %d",
 			NUM_PARAGRAPHS, len(doc.Body.Paragraphs))
 	}
 	for _, p := range doc.Body.Paragraphs {
 		if len(p.Children()) == 0 {
 			t.Errorf("We were not able to parse paragraph %v",
 				p)
+		}
+		for _, child := range p.Children() {
+			if child.Link == nil && child.Properties == nil && child.Run == nil {
+				t.Errorf("There are children with all fields nil")
+			}
 		}
 	}
 }
