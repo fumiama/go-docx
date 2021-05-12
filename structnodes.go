@@ -3,6 +3,8 @@ package docxlib
 import (
 	"encoding/xml"
 	"io"
+
+	"github.com/golang/glog"
 )
 
 type ParagraphChild struct {
@@ -31,12 +33,23 @@ func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			if tt.Name.Local == "hyperlink" {
 				var value Hyperlink
 				d.DecodeElement(&value, &start)
-				value.ID = getAtt(tt.Attr, "id")
+				id := getAtt(tt.Attr, "id")
+				anchor := getAtt(tt.Attr, "anchor")
+				if id != "" {
+					value.ID = id
+				}
+				if anchor != "" {
+					value.ID = anchor
+				}
 				elem = ParagraphChild{Link: &value}
 			} else if tt.Name.Local == "r" {
 				var value Run
 				d.DecodeElement(&value, &start)
 				elem = ParagraphChild{Run: &value}
+				if value.InstrText == "" && value.Text == nil {
+					glog.V(0).Infof("Empty run, we ignore")
+					continue
+				}
 			} else if tt.Name.Local == "rPr" {
 				var value RunProperties
 				d.DecodeElement(&value, &start)

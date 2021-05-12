@@ -95,6 +95,7 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 	}
 	*r = elem
+
 	return nil
 
 }

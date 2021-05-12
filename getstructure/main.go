@@ -34,7 +34,7 @@ func main() {
 	for _, para := range doc.Paragraphs() {
 		glog.Infoln("There is a new paragraph", para)
 		for _, child := range para.Children() {
-			if child.Run != nil {
+			if child.Run != nil && child.Run.Text != nil {
 				fmt.Printf("\tWe've found a new run with the text ->%s\n", child.Run.Text.Text)
 			}
 			if child.Link != nil {
