@@ -1,6 +1,6 @@
 # Docx library
 
-Yet another library to read and write .docx (Microsoft Word) files in Go.
+Yet another library to read and write .docx (a.k.a. Microsoft Word documents or ECMA-376 Office Open XML) files in Go.
 
 ## Introduction
 
