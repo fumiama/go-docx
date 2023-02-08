@@ -2,6 +2,8 @@
 
 Yet another library to read and write .docx (a.k.a. Microsoft Word documents or ECMA-376 Office Open XML) files in Go.
 
+This is a variant optimized and expanded by fumiama. The original repo is [gonfva/docxlib](https://github.com/gonfva/docxlib).
+
 ## Introduction
 
 As part of my work for [Basement Crowd](https://www.basementcrowd.com) and [FromCounsel](https://www.fromcounsel.com), we were in need of a basic library to manipulate (both read and write) Microsoft Word documents.
@@ -31,7 +33,7 @@ In the mean time, shared as an example in case somebody finds it useful.
 Go modules supported
 
 ```sh
-go get github.com/gonfva/docxlib
+go get github.com/fumiama/docxlib
 ```
 
 ### Usage
@@ -39,8 +41,7 @@ go get github.com/gonfva/docxlib
 See [main](main/main.go) for an example
 
 ```
-$ go build -o docxlib ./main
-$ ./docxlib
+$ go run ./cmd/main
 Preparing new document to write at /tmp/new-file.docx
 Document writen.
 Now trying to read it
@@ -53,7 +54,7 @@ End of main
 ```
 You can also increase the log level (-logtostderr=true -v=0) and just dump a specific file(-file /tmp/new-file.docx). See [getstructure/main](getstructure/main.go)
 ```
-$ go build -o docxlib ./getstructure/ && ./docxlib -logtostderr=true -v=0 -file /tmp/new-file.docx
+$ go build -o docxlib ./cmd/getstructure/ && ./docxlib -logtostderr=true -v=0 -file /tmp/new-file.docx
 I0511 12:37:40.898493   18466 unpack.go:69] Relations: [...]
 I0511 12:37:40.898787   18466 unpack.go:47] Doc: [...]
 I0511 12:37:40.899330   18466 unpack.go:58] Paragraph [0xc000026d40 0xc000027d00 0xc000172340]

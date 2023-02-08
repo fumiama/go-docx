@@ -6,33 +6,40 @@ import (
 	"io"
 )
 
-// DocxLib is the structure that allow to access the internal represntation
+var (
+	// ErrRefIDNotFound cannot find such reference
+	ErrRefIDNotFound = errors.New("ref id not found")
+)
+
+// Docx is the structure that allow to access the internal represntation
 // in memory of the doc (either read or about to be written)
-type DocxLib struct {
+type Docx struct {
 	Document    Document
 	DocRelation Relationships
 
-	rId int
+	rId uintptr
 }
 
 // New generates a new empty docx file that we can manipulate and
 // later on, save
-func New() *DocxLib {
-	return emptyFile()
+func New() *Docx {
+	return newEmptyFile()
 }
 
 // Parse generates a new docx file in memory from a reader
 // You can it invoke from a file
-//		readFile, err := os.Open(FILE_PATH)
-//		if err != nil {
-//			panic(err)
-//		}
-//		fileinfo, err := readFile.Stat()
-//		if err != nil {
-//			panic(err)
-//		}
-//		size := fileinfo.Size()
-//		doc, err := docxlib.Parse(readFile, int64(size))
+//
+//	readFile, err := os.Open(FILE_PATH)
+//	if err != nil {
+//		panic(err)
+//	}
+//	fileinfo, err := readFile.Stat()
+//	if err != nil {
+//		panic(err)
+//	}
+//	size := fileinfo.Size()
+//	doc, err := docxlib.Parse(readFile, int64(size))
+//
 // but also you can invoke from a webform (BEWARE of trusting users data!!!)
 //
 //	func uploadFile(w http.ResponseWriter, r *http.Request) {
@@ -48,7 +55,7 @@ func New() *DocxLib {
 //		defer file.Close()
 //		docxlib.Parse(file, handler.Size)
 //	}
-func Parse(reader io.ReaderAt, size int64) (doc *DocxLib, err error) {
+func Parse(reader io.ReaderAt, size int64) (doc *Docx, err error) {
 	zipReader, err := zip.NewReader(reader, size)
 	if err != nil {
 		return nil, err
@@ -58,21 +65,21 @@ func Parse(reader io.ReaderAt, size int64) (doc *DocxLib, err error) {
 }
 
 // Write allows to save a docx to a writer
-func (f *DocxLib) Write(writer io.Writer) (err error) {
+func (f *Docx) Write(writer io.Writer) (err error) {
 	zipWriter := zip.NewWriter(writer)
 	defer zipWriter.Close()
 
 	return f.pack(zipWriter)
 }
 
-// References gets the url for a reference
-func (f *DocxLib) References(id string) (href string, err error) {
+// Refer gets the url for a reference
+func (f *Docx) Refer(id string) (href string, err error) {
 	for _, a := range f.DocRelation.Relationships {
 		if a.ID == id {
 			href = a.Target
 			return
 		}
 	}
-	err = errors.New("id not found")
+	err = ErrRefIDNotFound
 	return
 }

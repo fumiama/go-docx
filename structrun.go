@@ -76,19 +76,20 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 		switch tt := t.(type) {
 		case xml.StartElement:
-			if tt.Name.Local == "rPr" {
+			switch tt.Name.Local {
+			case "rPr":
 				var value RunProperties
 				d.DecodeElement(&value, &start)
 				elem.RunProperties = &value
-			} else if tt.Name.Local == "instrText" {
+			case "instrText":
 				var value string
 				d.DecodeElement(&value, &start)
 				elem.InstrText = value
-			} else if tt.Name.Local == "t" {
+			case "t":
 				var value Text
 				d.DecodeElement(&value, &start)
 				elem.Text = &value
-			} else {
+			default:
 				continue
 			}
 		}
@@ -109,8 +110,7 @@ func (r *Text) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 		switch tt := t.(type) {
 		case xml.CharData:
-			cd := tt.Copy()
-			elem.Text = string(cd)
+			elem.Text = string(tt) // implicitly copy
 		}
 
 	}

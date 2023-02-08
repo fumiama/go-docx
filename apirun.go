@@ -14,6 +14,7 @@ func (r *Run) Size(size int) *Run {
 	r.RunProperties.Size = &Size{
 		Val: size * 2,
 	}
+
 	return r
 }
 

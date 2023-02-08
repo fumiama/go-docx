@@ -1,17 +1,18 @@
 package docxlib
 
-import "strconv"
+import (
+	"strconv"
+	"sync/atomic"
+)
 
 // when adding an hyperlink we need to store a reference in the relationship field
-func (f *DocxLib) addLinkRelation(link string) string {
+func (f *Docx) addLinkRelation(link string) string {
 	rel := &Relationship{
-		ID:         "rId" + strconv.Itoa(f.rId),
+		ID:         "rId" + strconv.Itoa(int(atomic.AddUintptr(&f.rId, 1))),
 		Type:       REL_HYPERLINK,
 		Target:     link,
 		TargetMode: REL_TARGETMODE,
 	}
-
-	f.rId += 1
 
 	f.DocRelation.Relationships = append(f.DocRelation.Relationships, rel)
 

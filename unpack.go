@@ -4,7 +4,7 @@ package docxlib
 import (
 	"archive/zip"
 	"encoding/xml"
-	"io/ioutil"
+	"io"
 
 	"github.com/golang/glog"
 )
@@ -13,68 +13,63 @@ import (
 // and parses the files that are relevant for us:
 // 1.-Document
 // 2.-Relationships
-func unpack(zipReader *zip.Reader) (docx *DocxLib, err error) {
-	var doc *Document
-	var relations *Relationships
+func unpack(zipReader *zip.Reader) (docx *Docx, err error) {
+	docx = new(Docx)
 	for _, f := range zipReader.File {
 		if f.Name == "word/_rels/document.xml.rels" {
-			relations, err = processRelations(f)
+			err = processRelations(f, &docx.DocRelation)
 			if err != nil {
-				return nil, err
+				return
 			}
 		}
 		if f.Name == "word/document.xml" {
-			doc, err = processDoc(f)
+			err = processDoc(f, &docx.Document)
 			if err != nil {
-				return nil, err
+				return
 			}
 		}
 	}
-	docx = &DocxLib{
-		Document:    *doc,
-		DocRelation: *relations,
-	}
-	return docx, nil
+	return
 }
 
 // Processes one of the relevant files, the one with the actual document
-func processDoc(file *zip.File) (*Document, error) {
+func processDoc(file *zip.File, doc *Document) error {
 	filebytes, err := readZipFile(file)
 	if err != nil {
 		glog.Errorln("Error reading from internal zip file")
-		return nil, err
+		return err
 	}
 	glog.V(0).Infoln("Doc:", string(filebytes))
 
-	doc := Document{
-		XMLW:    XMLNS_W,
-		XMLR:    XMLNS_R,
-		XMLName: xml.Name{Space: XMLNS_W, Local: "document"}}
-	err = xml.Unmarshal(filebytes, &doc)
+	doc.XMLW = XMLNS_W
+	doc.XMLR = XMLNS_R
+	doc.XMLName.Space = XMLNS_W
+	doc.XMLName.Local = "document"
+	err = xml.Unmarshal(filebytes, doc)
 	if err != nil {
 		glog.Errorln("Error unmarshalling doc", string(filebytes))
-		return nil, err
+		return err
 	}
 	glog.V(0).Infoln("Paragraph", doc.Body.Paragraphs)
-	return &doc, nil
+	return nil
 }
 
 // Processes one of the relevant files, the one with the relationships
-func processRelations(file *zip.File) (*Relationships, error) {
+func processRelations(file *zip.File, rels *Relationships) error {
 	filebytes, err := readZipFile(file)
 	if err != nil {
 		glog.Errorln("Error reading from internal zip file")
-		return nil, err
+		return err
 	}
 	glog.V(0).Infoln("Relations:", string(filebytes))
 
-	rels := Relationships{Xmlns: XMLNS_R}
-	err = xml.Unmarshal(filebytes, &rels)
+	rels.Xmlns = XMLNS_R
+	err = xml.Unmarshal(filebytes, rels)
 	if err != nil {
 		glog.Errorln("Error unmarshalling relationships")
-		return nil, err
+		return err
 	}
-	return &rels, nil
+	return nil
 }
 
 // From a zip file structure, we return a byte array
@@ -84,5 +79,5 @@ func readZipFile(zf *zip.File) ([]byte, error) {
 		return nil, err
 	}
 	defer f.Close()
-	return ioutil.ReadAll(f)
+	return io.ReadAll(f)
 }

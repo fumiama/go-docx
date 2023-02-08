@@ -3,6 +3,7 @@ package docxlib
 import (
 	"archive/zip"
 	"encoding/xml"
+	"strings"
 
 	"github.com/golang/glog"
 )
@@ -10,7 +11,7 @@ import (
 // This receives a zip file writer (word documents are a zip with multiple xml inside)
 // and writes the relevant files. Some of them come from the empty_constants file,
 // others from the actual in-memory structure
-func (f *DocxLib) pack(zipWriter *zip.Writer) (err error) {
+func (f *Docx) pack(zipWriter *zip.Writer) (err error) {
 	files := map[string]string{}
 
 	files["_rels/.rels"] = TEMP_REL
@@ -34,7 +35,7 @@ func (f *DocxLib) pack(zipWriter *zip.Writer) (err error) {
 			return err
 		}
 
-		_, err = w.Write([]byte(data))
+		_, err = w.Write(StringToBytes(data))
 		if err != nil {
 			return err
 		}
@@ -44,12 +45,13 @@ func (f *DocxLib) pack(zipWriter *zip.Writer) (err error) {
 }
 
 func marshal(data interface{}) (out string, err error) {
-	body, err := xml.Marshal(data)
+	sb := strings.Builder{}
+	sb.WriteString(xml.Header)
+	err = xml.NewEncoder(&sb).Encode(data)
 	if err != nil {
 		glog.Errorln("Error marshalling", err)
 		return
 	}
-
-	out = xml.Header + string(body)
+	out = sb.String()
 	return
 }

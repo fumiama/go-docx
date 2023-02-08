@@ -1,4 +1,4 @@
-module github.com/gonfva/docxlib
+module github.com/fumiama/docxlib
 
 go 1.16
 

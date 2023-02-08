@@ -17,11 +17,11 @@ type Paragraph struct {
 	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main p"`
 	Data    []ParagraphChild
 
-	file *DocxLib
+	file *Docx
 }
 
 func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	children := make([]ParagraphChild, 0)
+	children := make([]ParagraphChild, 0, 64)
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -30,7 +30,8 @@ func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		switch tt := t.(type) {
 		case xml.StartElement:
 			var elem ParagraphChild
-			if tt.Name.Local == "hyperlink" {
+			switch tt.Name.Local {
+			case "hyperlink":
 				var value Hyperlink
 				d.DecodeElement(&value, &start)
 				id := getAtt(tt.Attr, "id")
@@ -41,20 +42,20 @@ func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				if anchor != "" {
 					value.ID = anchor
 				}
-				elem = ParagraphChild{Link: &value}
-			} else if tt.Name.Local == "r" {
+				elem.Link = &value
+			case "r":
 				var value Run
 				d.DecodeElement(&value, &start)
-				elem = ParagraphChild{Run: &value}
+				elem.Run = &value
 				if value.InstrText == "" && value.Text == nil {
 					glog.V(0).Infof("Empty run, we ignore")
 					continue
 				}
-			} else if tt.Name.Local == "rPr" {
+			case "rPr":
 				var value RunProperties
 				d.DecodeElement(&value, &start)
-				elem = ParagraphChild{Properties: &value}
-			} else {
+				elem.Properties = &value
+			default:
 				continue
 			}
 			children = append(children, elem)
