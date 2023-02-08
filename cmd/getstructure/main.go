@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/fumiama/docxlib"
-	"github.com/golang/glog"
 )
 
 var fileLocation *string
@@ -31,11 +30,16 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	for _, para := range doc.Paragraphs() {
-		glog.Infoln("There is a new paragraph", para)
-		for _, child := range para.Children() {
-			if child.Run != nil && child.Run.Text != nil {
-				fmt.Printf("\tWe've found a new run with the text ->%s\n", child.Run.Text.Text)
+	for _, para := range doc.Document.Body.Paragraphs {
+		fmt.Println("New paragraph")
+		for _, child := range para.Children {
+			if child.Run != nil {
+				if child.Run.Text != nil {
+					fmt.Printf("\tWe've found a new run with the text ->%s\n", child.Run.Text.Text)
+				}
+				if child.Run.Drawing != nil {
+					fmt.Printf("\tWe've found a new run with the drawing ->%s\n", child.Run.Drawing.Inline.DistT) // TODO: replace to refid
+				}
 			}
 			if child.Link != nil {
 				id := child.Link.ID
@@ -49,6 +53,7 @@ func main() {
 
 			}
 		}
+		fmt.Print("End of paragraph\n\n")
 	}
 	fmt.Println("End of main")
 }

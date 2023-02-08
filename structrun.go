@@ -9,27 +9,43 @@ const (
 	HYPERLINK_STYLE = "a1"
 )
 
-// A Run is part of a paragraph that has its own style. It could be
+// Run is part of a paragraph that has its own style. It could be
 // a piece of text in bold, or a link
 type Run struct {
 	XMLName       xml.Name       `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main r,omitempty"`
 	RunProperties *RunProperties `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main rPr,omitempty"`
 	InstrText     string         `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main instrText,omitempty"`
 	Text          *Text
+	Drawing       *Drawing
 }
 
-// The Text object contains the actual text
+// Text object contains the actual text
 type Text struct {
 	XMLName  xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main t"`
 	XMLSpace string   `xml:"xml:space,attr,omitempty"`
 	Text     string   `xml:",chardata"`
 }
 
-// The hyperlink element contains links
+// Hyperlink element contains links
 type Hyperlink struct {
 	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main hyperlink,omitempty"`
 	ID      string   `xml:"http://schemas.openxmlformats.org/officeDocument/2006/relationships id,attr"`
 	Run     Run
+}
+
+// Drawing element contains photos
+type Drawing struct {
+	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main drawing,omitempty"`
+	Inline  *WPInline
+}
+
+// WPInline wp:inline
+type WPInline struct {
+	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing inline,omitempty"`
+	DistT   string   `xml:"wp:distT,attr"`
+	DistB   string   `xml:"wp:distB,attr"`
+	DistL   string   `xml:"wp:distL,attr"`
+	DistR   string   `xml:"wp:distR,attr"`
 }
 
 // RunProperties encapsulates visual properties of a run
@@ -67,7 +83,6 @@ type Size struct {
 }
 
 func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	var elem Run
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -80,28 +95,30 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			case "rPr":
 				var value RunProperties
 				d.DecodeElement(&value, &start)
-				elem.RunProperties = &value
+				r.RunProperties = &value
 			case "instrText":
 				var value string
 				d.DecodeElement(&value, &start)
-				elem.InstrText = value
+				r.InstrText = value
 			case "t":
 				var value Text
 				d.DecodeElement(&value, &start)
-				elem.Text = &value
+				r.Text = &value
+			case "drawing":
+				var value Drawing
+				d.DecodeElement(&value, &start)
+				r.Drawing = &value
 			default:
 				continue
 			}
 		}
 
 	}
-	*r = elem
 
 	return nil
 
 }
 func (r *Text) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	var elem Text
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -110,16 +127,14 @@ func (r *Text) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 		switch tt := t.(type) {
 		case xml.CharData:
-			elem.Text = string(tt) // implicitly copy
+			r.Text = string(tt) // implicitly copy
 		}
 
 	}
 
-	*r = elem
 	return nil
 }
 func (r *Hyperlink) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	var elem Hyperlink
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -129,19 +144,17 @@ func (r *Hyperlink) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		switch tt := t.(type) {
 		case xml.StartElement:
 			if tt.Name.Local == "r" {
-				d.DecodeElement(&elem.Run, &start)
+				d.DecodeElement(&r.Run, &start)
 			} else {
 				continue
 			}
 		}
 
 	}
-	*r = elem
 	return nil
 
 }
-func (r *RunStyle) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	var elem RunStyle
+func (r *Drawing) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -150,11 +163,57 @@ func (r *RunStyle) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 		switch tt := t.(type) {
 		case xml.StartElement:
-			elem.Val = getAtt(tt.Attr, "val")
+			switch tt.Name.Local {
+			case "inline":
+				r.Inline = new(WPInline)
+				r.Inline.DistT = getAtt(tt.Attr, "distT")
+				r.Inline.DistB = getAtt(tt.Attr, "distB")
+				r.Inline.DistL = getAtt(tt.Attr, "distL")
+				r.Inline.DistR = getAtt(tt.Attr, "distR")
+				d.DecodeElement(r.Inline, &start)
+			default:
+				continue
+			}
 		}
 
 	}
-	*r = elem
+	return nil
+
+}
+func (r *WPInline) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+
+		switch tt := t.(type) {
+		case xml.StartElement:
+			switch tt.Name.Local {
+			case "inline":
+
+			default:
+				continue
+			}
+		}
+
+	}
+	return nil
+
+}
+func (r *RunStyle) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+
+		switch tt := t.(type) {
+		case xml.StartElement:
+			r.Val = getAtt(tt.Attr, "val")
+		}
+
+	}
 	return nil
 
 }

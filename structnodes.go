@@ -3,8 +3,6 @@ package docxlib
 import (
 	"encoding/xml"
 	"io"
-
-	"github.com/golang/glog"
 )
 
 type ParagraphChild struct {
@@ -14,8 +12,8 @@ type ParagraphChild struct {
 }
 
 type Paragraph struct {
-	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main p"`
-	Data    []ParagraphChild
+	XMLName  xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main p"`
+	Children []ParagraphChild
 
 	file *Docx
 }
@@ -47,8 +45,7 @@ func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				var value Run
 				d.DecodeElement(&value, &start)
 				elem.Run = &value
-				if value.InstrText == "" && value.Text == nil {
-					glog.V(0).Infof("Empty run, we ignore")
+				if value.InstrText == "" && value.Text == nil && value.Drawing == nil {
 					continue
 				}
 			case "rPr":
@@ -62,7 +59,7 @@ func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		}
 
 	}
-	*p = Paragraph{Data: children}
+	p.Children = children
 	return nil
 
 }

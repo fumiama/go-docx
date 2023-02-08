@@ -52,10 +52,15 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	for _, para := range doc.Paragraphs() {
-		for _, child := range para.Children() {
+	for _, para := range doc.Document.Body.Paragraphs {
+		for _, child := range para.Children {
 			if child.Run != nil {
-				fmt.Printf("\tWe've found a new run with the text ->%s\n", child.Run.Text.Text)
+				if child.Run.Text != nil {
+					fmt.Printf("\tWe've found a new run with the text ->%s\n", child.Run.Text.Text)
+				}
+				if child.Run.Drawing != nil {
+					fmt.Printf("\tWe've found a new run with the drawing ->%s\n", child.Run.Drawing.Inline.DistT) // TODO: replace to refid
+				}
 			}
 			if child.Link != nil {
 				id := child.Link.ID

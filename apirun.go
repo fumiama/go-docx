@@ -29,7 +29,7 @@ func (p *Paragraph) AddText(text string) *Run {
 		RunProperties: &RunProperties{},
 	}
 
-	p.Data = append(p.Data, ParagraphChild{Run: run})
+	p.Children = append(p.Children, ParagraphChild{Run: run})
 
 	return run
 }

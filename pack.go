@@ -4,8 +4,6 @@ import (
 	"archive/zip"
 	"encoding/xml"
 	"strings"
-
-	"github.com/golang/glog"
 )
 
 // This receives a zip file writer (word documents are a zip with multiple xml inside)
@@ -49,7 +47,6 @@ func marshal(data interface{}) (out string, err error) {
 	sb.WriteString(xml.Header)
 	err = xml.NewEncoder(&sb).Encode(data)
 	if err != nil {
-		glog.Errorln("Error marshalling", err)
 		return
 	}
 	out = sb.String()
