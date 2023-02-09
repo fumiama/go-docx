@@ -575,10 +575,13 @@ func TestMarshalDrawingStructure(t *testing.T) {
 	nextPara := w.AddParagraph()
 	nextPara.AddLink("google", `http://google.com`)
 
-	doc, err := marshal(w.Document)
+	f, err := os.Create("test.xml")
 	if err != nil {
 		t.Fatal(err)
 	}
-	os.WriteFile("test.xml", doc, 0644)
+	_, err = marshaller{data: w.Document}.WriteTo(f)
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Fail()
 }
