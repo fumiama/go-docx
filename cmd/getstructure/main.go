@@ -11,7 +11,7 @@ import (
 var fileLocation *string
 
 func init() {
-	fileLocation = flag.String("file", "/tmp/new-file.docx", "file location")
+	fileLocation = flag.String("file", "new-file.docx", "file location")
 	flag.Parse()
 }
 
@@ -21,6 +21,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer readFile.Close()
 	fileinfo, err := readFile.Stat()
 	if err != nil {
 		panic(err)

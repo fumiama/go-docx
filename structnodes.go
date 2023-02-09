@@ -12,8 +12,8 @@ type ParagraphChild struct {
 }
 
 type Paragraph struct {
-	XMLName  xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main p"`
-	Children []ParagraphChild
+	XMLName  xml.Name         `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main p"`
+	Children []ParagraphChild // Children will generate an unnecessary tag <Children> ... </Children> but we have no other choice
 
 	file *Docx
 }

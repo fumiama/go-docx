@@ -11,7 +11,7 @@ import (
 var fileLocation *string
 
 func init() {
-	fileLocation = flag.String("file", "/tmp/new-file.docx", "file location")
+	fileLocation = flag.String("file", "new-file.docx", "file location")
 	flag.Parse()
 }
 func main() {
@@ -35,8 +35,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	defer f.Close()
-	w.Write(f)
+	err = w.Write(f)
+	if err != nil {
+		panic(err)
+	}
+	err = f.Close()
+	if err != nil {
+		panic(err)
+	}
 	fmt.Println("Document writen. \nNow trying to read it")
 	// Now let's try to read the file
 	readFile, err := os.Open(*fileLocation)

@@ -1,2 +1,4 @@
 docxlib
 .vscode/
+*.docx
+/*.xml
