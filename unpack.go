@@ -5,7 +5,6 @@ import (
 	"archive/zip"
 	"bytes"
 	"encoding/xml"
-	"io"
 )
 
 // This receives a zip file (word documents are a zip with multiple xml inside)
@@ -16,63 +15,51 @@ func unpack(zipReader *zip.Reader) (docx *Docx, err error) {
 	docx = new(Docx)
 	for _, f := range zipReader.File {
 		if f.Name == "word/_rels/document.xml.rels" {
-			err = processRelations(f, &docx.DocRelation)
+			err = docx.parseDocRelation(f)
 			if err != nil {
 				return
 			}
 		}
 		if f.Name == "word/document.xml" {
-			err = processDoc(f, &docx.Document)
+			err = docx.parseDocument(f)
 			if err != nil {
 				return
 			}
 		}
 	}
-	//TODO: find last rId
 	docx.buf = bytes.NewBuffer(make([]byte, 0, 1024*1024*4))
 	return
 }
 
-// Processes one of the relevant files, the one with the actual document
-func processDoc(file *zip.File, doc *Document) error {
-	filebytes, err := readZipFile(file)
+// parseDocument processes one of the relevant files, the one with the actual document
+func (f *Docx) parseDocument(file *zip.File) error {
+	zf, err := file.Open()
 	if err != nil {
 		return err
 	}
+	defer zf.Close()
 
-	doc.XMLW = XMLNS_W
-	doc.XMLR = XMLNS_R
-	doc.XMLWP = XMLNS_WP
-	doc.XMLName.Space = XMLNS_W
-	doc.XMLName.Local = "document"
-	err = xml.Unmarshal(filebytes, doc)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// Processes one of the relevant files, the one with the relationships
-func processRelations(file *zip.File, rels *Relationships) error {
-	filebytes, err := readZipFile(file)
-	if err != nil {
-		return err
-	}
-
-	rels.Xmlns = XMLNS_R
-	err = xml.Unmarshal(filebytes, rels)
+	f.Document.XMLW = XMLNS_W
+	f.Document.XMLR = XMLNS_R
+	f.Document.XMLWP = XMLNS_WP
+	f.Document.XMLName.Space = XMLNS_W
+	f.Document.XMLName.Local = "document"
+	err = xml.NewDecoder(zf).Decode(&f.Document)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-// From a zip file structure, we return a byte array
-func readZipFile(zf *zip.File) ([]byte, error) {
-	f, err := zf.Open()
+// parseDocRelation processes one of the relevant files, the one with the relationships
+func (f *Docx) parseDocRelation(file *zip.File) error {
+	zf, err := file.Open()
 	if err != nil {
-		return nil, err
+		return err
 	}
-	defer f.Close()
-	return io.ReadAll(f)
+	defer zf.Close()
+
+	f.DocRelation.Xmlns = XMLNS_R
+	//TODO: find last rId
+	return xml.NewDecoder(zf).Decode(&f.DocRelation)
 }
