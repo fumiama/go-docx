@@ -8,8 +8,9 @@ func newEmptyFile() *Docx {
 			XMLName: xml.Name{
 				Space: "w",
 			},
-			XMLW: XMLNS_W,
-			XMLR: XMLNS_R,
+			XMLW:  XMLNS_W,
+			XMLR:  XMLNS_R,
+			XMLWP: XMLNS_WP,
 			Body: &Body{
 				XMLName: xml.Name{
 					Space: "w",

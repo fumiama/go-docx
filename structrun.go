@@ -42,10 +42,10 @@ type Drawing struct {
 // WPInline wp:inline
 type WPInline struct {
 	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing inline,omitempty"`
-	DistT   string   `xml:"wp:distT,attr"`
-	DistB   string   `xml:"wp:distB,attr"`
-	DistL   string   `xml:"wp:distL,attr"`
-	DistR   string   `xml:"wp:distR,attr"`
+	DistT   string   `xml:"distT,attr"`
+	DistB   string   `xml:"distB,attr"`
+	DistL   string   `xml:"distL,attr"`
+	DistR   string   `xml:"distR,attr"`
 }
 
 // RunProperties encapsulates visual properties of a run

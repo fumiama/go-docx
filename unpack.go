@@ -39,6 +39,7 @@ func processDoc(file *zip.File, doc *Document) error {
 
 	doc.XMLW = XMLNS_W
 	doc.XMLR = XMLNS_R
+	doc.XMLWP = XMLNS_WP
 	doc.XMLName.Space = XMLNS_W
 	doc.XMLName.Local = "document"
 	err = xml.Unmarshal(filebytes, doc)

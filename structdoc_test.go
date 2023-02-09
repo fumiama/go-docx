@@ -12,6 +12,7 @@ func TestPlainStructure(t *testing.T) {
 	doc := Document{
 		XMLW:    XMLNS_W,
 		XMLR:    XMLNS_R,
+		XMLWP:   XMLNS_WP,
 		XMLName: xml.Name{Space: XMLNS_W, Local: "document"}}
 	testCases := []struct {
 		content       string
@@ -515,6 +516,7 @@ func TestDrawingStructure(t *testing.T) {
 	doc := Document{
 		XMLW:    XMLNS_W,
 		XMLR:    XMLNS_R,
+		XMLWP:   XMLNS_WP,
 		XMLName: xml.Name{Space: XMLNS_W, Local: "document"}}
 	err := xml.Unmarshal(StringToBytes(drawing_doc), &doc)
 	if err != nil {
