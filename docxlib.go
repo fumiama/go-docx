@@ -2,6 +2,7 @@ package docxlib
 
 import (
 	"archive/zip"
+	"bytes"
 	"errors"
 	"io"
 )
@@ -18,6 +19,11 @@ type Docx struct {
 	DocRelation Relationships
 
 	rId uintptr
+
+	buf        *bytes.Buffer
+	isbufempty bool
+	io.Reader
+	io.WriterTo
 }
 
 // New generates a new empty docx file that we can manipulate and
@@ -65,11 +71,27 @@ func Parse(reader io.ReaderAt, size int64) (doc *Docx, err error) {
 }
 
 // Write allows to save a docx to a writer
-func (f *Docx) Write(writer io.Writer) (err error) {
+func (f *Docx) WriteTo(writer io.Writer) (_ int64, err error) {
 	zipWriter := zip.NewWriter(writer)
 	defer zipWriter.Close()
 
-	return f.pack(zipWriter)
+	return 0, f.pack(zipWriter)
+}
+
+// Read allows to save a docx to buf
+func (f *Docx) Read(p []byte) (n int, err error) {
+	if !f.isbufempty {
+		n, err = f.buf.Read(p)
+		if err == io.EOF {
+			f.buf.Reset()
+			f.isbufempty = true
+			return
+		}
+	}
+	zipWriter := zip.NewWriter(f.buf)
+	defer zipWriter.Close()
+	f.isbufempty = false
+	return f.buf.Read(p)
 }
 
 // Refer gets the url for a reference

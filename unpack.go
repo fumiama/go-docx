@@ -3,6 +3,7 @@ package docxlib
 // This contains internal functions needed to unpack (read) a zip file
 import (
 	"archive/zip"
+	"bytes"
 	"encoding/xml"
 	"io"
 )
@@ -27,6 +28,8 @@ func unpack(zipReader *zip.Reader) (docx *Docx, err error) {
 			}
 		}
 	}
+	//TODO: find last rId
+	docx.buf = bytes.NewBuffer(make([]byte, 0, 1024*1024*4))
 	return
 }
 

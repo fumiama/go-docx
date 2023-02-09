@@ -1,6 +1,9 @@
 package docxlib
 
-import "encoding/xml"
+import (
+	"bytes"
+	"encoding/xml"
+)
 
 func newEmptyFile() *Docx {
 	return &Docx{
@@ -39,5 +42,6 @@ func newEmptyFile() *Docx {
 			},
 		},
 		rId: 3,
+		buf: bytes.NewBuffer(make([]byte, 0, 1024*1024*4)),
 	}
 }

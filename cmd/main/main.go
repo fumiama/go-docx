@@ -35,7 +35,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	err = w.Write(f)
+	_, err = w.WriteTo(f)
 	if err != nil {
 		panic(err)
 	}
