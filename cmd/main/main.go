@@ -59,6 +59,7 @@ func main() {
 		panic(err)
 	}
 	for _, para := range doc.Document.Body.Paragraphs {
+		fmt.Println("New paragraph")
 		for _, child := range para.Children {
 			if child.Run != nil {
 				if child.Run.Text != nil {
@@ -80,6 +81,7 @@ func main() {
 
 			}
 		}
+		fmt.Print("End of paragraph\n\n")
 	}
 	fmt.Println("End of main")
 }

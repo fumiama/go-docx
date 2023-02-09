@@ -19,10 +19,26 @@ type Paragraph struct {
 }
 
 func (p *Paragraph) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	for _, c := range p.Children {
-		e.EncodeElement(c, start)
+	err := e.EncodeToken(start)
+	if err != nil {
+		return err
 	}
-	return nil
+	for _, c := range p.Children {
+		switch {
+		case c.Link != nil:
+			err = e.Encode(c.Link)
+		case c.Run != nil:
+			err = e.Encode(c.Run)
+		case c.Properties != nil:
+			err = e.Encode(c.Properties)
+		default:
+			continue
+		}
+		if err != nil {
+			return err
+		}
+	}
+	return e.EncodeToken(start.End())
 }
 
 func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {

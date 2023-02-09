@@ -571,6 +571,8 @@ func TestMarshalDrawingStructure(t *testing.T) {
 
 	para2 := w.AddParagraph()
 	para2.AddText("test font size and color").Size(22).Color("ff0000")
+	para2.AddText("test font size and color").Size(22).Color("ff0000")
+	para2.AddText("test font size and color").Size(22).Color("ff0000")
 
 	nextPara := w.AddParagraph()
 	nextPara.AddLink("google", `http://google.com`)
