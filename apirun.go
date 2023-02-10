@@ -10,9 +10,9 @@ func (r *Run) Color(color string) *Run {
 }
 
 // Size allows to set run size
-func (r *Run) Size(size int) *Run {
+func (r *Run) Size(size string) *Run {
 	r.RunProperties.Size = &Size{
-		Val: size * 2,
+		Val: size,
 	}
 
 	return r

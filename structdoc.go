@@ -8,6 +8,15 @@ const (
 	XMLNS_WP = `http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing`
 )
 
+func getAtt(atts []xml.Attr, name string) string {
+	for _, at := range atts {
+		if at.Name.Local == name {
+			return at.Value
+		}
+	}
+	return ""
+}
+
 type Body struct {
 	XMLName    xml.Name     `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main body"`
 	Paragraphs []*Paragraph `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main p"`

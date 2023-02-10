@@ -1,16 +1,16 @@
 package docxlib
 
-// This contains internal functions needed to unpack (read) a zip file
 import (
 	"archive/zip"
 	"bytes"
 	"encoding/xml"
 )
 
-// This receives a zip file (word documents are a zip with multiple xml inside)
+// unpack receives a zip file (word documents are a zip with multiple xml inside)
 // and parses the files that are relevant for us:
-// 1.-Document
-// 2.-Relationships
+//
+//  1. Document
+//  2. Relationships
 func unpack(zipReader *zip.Reader) (docx *Docx, err error) {
 	docx = new(Docx)
 	for _, f := range zipReader.File {

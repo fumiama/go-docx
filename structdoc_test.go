@@ -2,6 +2,7 @@ package docxlib
 
 import (
 	"encoding/xml"
+	"io"
 	"os"
 	"testing"
 )
@@ -570,9 +571,9 @@ func TestMarshalDrawingStructure(t *testing.T) {
 	para1.AddText("直接粘贴 inline")
 
 	para2 := w.AddParagraph()
-	para2.AddText("test font size and color").Size(22).Color("ff0000")
-	para2.AddText("test font size and color").Size(22).Color("ff0000")
-	para2.AddText("test font size and color").Size(22).Color("ff0000")
+	para2.AddText("test font size and color").Size("44").Color("ff0000")
+	para2.AddText("test font size and color").Size("44").Color("ff0000")
+	para2.AddText("test font size and color").Size("44").Color("ff0000")
 
 	nextPara := w.AddParagraph()
 	nextPara.AddLink("google", `http://google.com`)
@@ -581,7 +582,26 @@ func TestMarshalDrawingStructure(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer f.Close()
 	_, err = marshaller{data: w.Document}.WriteTo(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = f.Seek(0, io.SeekStart)
+	if err != nil {
+		t.Fatal(err)
+	}
+	w = New()
+	err = xml.NewDecoder(f).Decode(&w.Document)
+	if err != nil {
+		t.Fatal(err)
+	}
+	f1, err := os.Create("test1.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f1.Close()
+	_, err = marshaller{data: w.Document}.WriteTo(f1)
 	if err != nil {
 		t.Fatal(err)
 	}

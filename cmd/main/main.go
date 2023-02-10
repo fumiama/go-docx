@@ -23,10 +23,10 @@ func main() {
 	// add text
 	para1.AddText("test")
 
-	para1.AddText("test font size").Size(22)
+	para1.AddText("test font size").Size("44")
 	para1.AddText("test color").Color("808080")
 	para2 := w.AddParagraph()
-	para2.AddText("test font size and color").Size(22).Color("ff0000")
+	para2.AddText("test font size and color").Size("44").Color("ff0000")
 
 	nextPara := w.AddParagraph()
 	nextPara.AddLink("google", `http://google.com`)
@@ -82,6 +82,18 @@ func main() {
 			}
 		}
 		fmt.Print("End of paragraph\n\n")
+	}
+	f, err = os.Create("tmp.docx")
+	if err != nil {
+		panic(err)
+	}
+	_, err = doc.WriteTo(f)
+	if err != nil {
+		panic(err)
+	}
+	err = f.Close()
+	if err != nil {
+		panic(err)
 	}
 	fmt.Println("End of main")
 }
