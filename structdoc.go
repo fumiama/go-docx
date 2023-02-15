@@ -1,6 +1,9 @@
 package docxlib
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"io"
+)
 
 const (
 	XMLNS_W    = `http://schemas.openxmlformats.org/wordprocessingml/2006/main`
@@ -19,15 +22,44 @@ func getAtt(atts []xml.Attr, name string) string {
 }
 
 type Body struct {
-	XMLName    xml.Name     `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main body"`
-	Paragraphs []*Paragraph `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main p"`
+	XMLName    xml.Name     `xml:"w:body"`
+	Paragraphs []*Paragraph `xml:"w:p,omitempty"`
 }
 
 type Document struct {
 	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main document"`
-	XMLW    string   `xml:"xmlns:w,attr"`
-	XMLR    string   `xml:"xmlns:r,attr"`
-	XMLWP   string   `xml:"xmlns:wp,attr"`
-	XMLWP14 string   `xml:"xmlns:wp14,attr"`
+	XMLW    string   `xml:"xmlns:w,attr"`              // cannot be unmarshalled in
+	XMLR    string   `xml:"xmlns:r,attr,omitempty"`    // cannot be unmarshalled in
+	XMLWP   string   `xml:"xmlns:wp,attr,omitempty"`   // cannot be unmarshalled in
+	XMLWP14 string   `xml:"xmlns:wp14,attr,omitempty"` // cannot be unmarshalled in
 	Body    *Body
+}
+
+func (doc *Document) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	if doc.Body == nil {
+		doc.Body = &Body{
+			Paragraphs: make([]*Paragraph, 0, 64),
+		}
+	}
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+
+		switch tt := t.(type) {
+		case xml.StartElement:
+			switch tt.Name.Local {
+			case "p":
+				var value Paragraph
+				d.DecodeElement(&value, &start)
+				doc.Body.Paragraphs = append(doc.Body.Paragraphs, &value)
+			default:
+				continue
+			}
+		}
+
+	}
+	return nil
+
 }

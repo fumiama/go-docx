@@ -7,8 +7,8 @@ import (
 
 // Hyperlink element contains links
 type Hyperlink struct {
-	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main hyperlink,omitempty"`
-	ID      string   `xml:"http://schemas.openxmlformats.org/officeDocument/2006/relationships id,attr"`
+	XMLName xml.Name `xml:"w:hyperlink,omitempty"`
+	ID      string   `xml:"r:id,attr"`
 	Run     Run
 }
 

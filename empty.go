@@ -23,7 +23,7 @@ func newEmptyFile() *Docx {
 			},
 		},
 		DocRelation: Relationships{
-			Xmlns: XMLNS,
+			Xmlns: XMLNS_REL,
 			Relationships: []*Relationship{
 				{
 					ID:     "rId1",
