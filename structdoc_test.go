@@ -113,7 +113,7 @@ const drawing_doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                     <w:noProof/>
                 </w:rPr>
                 <w:drawing>
-                    <wp:inline distT="T-mock-inline-p1-c0" distB="B-mock-inline-p1-c0" distL="L-mock-inline-p1-c0" distR="R-mock-inline-p1-c0" wp14:anchorId="3D4E5BAA" wp14:editId="3F7CEF85">
+                    <wp:inline distT="T-mock-inline-p1-c0" distB="B-mock-inline-p1-c0" distL="L-mock-inline-p1-c0" distR="R-mock-inline-p1-c0" wp14:anchorId="mock-anchor-p1-c0" wp14:editId="mock-edit-p1-c0">
                         <wp:extent cx="5274310" cy="3369310"/>
                         <wp:effectExtent l="0" t="0" r="0" b="0"/>
                         <wp:docPr id="1" name="图片 1"/>
@@ -177,7 +177,7 @@ const drawing_doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                     <w:noProof/>
                 </w:rPr>
                 <w:drawing>
-                    <wp:inline distT="T-mock-inline-p3-c0" distB="B-mock-inline-p3-c0" distL="L-mock-inline-p3-c0" distR="R-mock-inline-p3-c0" wp14:anchorId="03DD2422" wp14:editId="523B0CEC">
+                    <wp:inline distT="T-mock-inline-p3-c0" distB="B-mock-inline-p3-c0" distL="L-mock-inline-p3-c0" distR="R-mock-inline-p3-c0" wp14:anchorId="mock-anchor-p3-c0" wp14:editId="mock-edit-p3-c0">
                         <wp:extent cx="2339163" cy="1494293"/>
                         <wp:effectExtent l="0" t="0" r="0" b="4445"/>
                         <wp:docPr id="2" name="图片 2"/>
@@ -223,7 +223,7 @@ const drawing_doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                     <w:noProof/>
                 </w:rPr>
                 <w:drawing>
-                    <wp:inline distT="T-mock-inline-p3-c1" distB="B-mock-inline-p3-c1" distL="L-mock-inline-p3-c1" distR="R-mock-inline-p3-c1" wp14:anchorId="6CAAB9D4" wp14:editId="6CA7D9C6">
+                    <wp:inline distT="T-mock-inline-p3-c1" distB="B-mock-inline-p3-c1" distL="L-mock-inline-p3-c1" distR="R-mock-inline-p3-c1" wp14:anchorId="mock-anchor-p3-c1" wp14:editId="mock-edit-p3-c1">
                         <wp:extent cx="2339163" cy="1494293"/>
                         <wp:effectExtent l="0" t="0" r="0" b="4445"/>
                         <wp:docPr id="4" name="图片 4"/>
@@ -290,7 +290,7 @@ const drawing_doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                 <mc:AlternateContent>
                     <mc:Choice Requires="wpg">
                         <w:drawing>
-                            <wp:inline distT="T-mock-inline-p5-c0" distB="B-mock-inline-p5-c0" distL="L-mock-inline-p5-c0" distR="R-mock-inline-p5-c0" wp14:anchorId="5843EF5F" wp14:editId="6D5EB296">
+                            <wp:inline distT="T-mock-inline-p5-c0" distB="B-mock-inline-p5-c0" distL="L-mock-inline-p5-c0" distR="R-mock-inline-p5-c0" wp14:anchorId="mock-anchor-p5-c0" wp14:editId="mock-edit-p5-c0">
                                 <wp:extent cx="4677868" cy="1494155"/>
                                 <wp:effectExtent l="0" t="0" r="0" b="4445"/>
                                 <wp:docPr id="7" name="组合 7"/>
@@ -449,7 +449,7 @@ const drawing_doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                     <w:noProof/>
                 </w:rPr>
                 <w:drawing>
-                    <wp:anchor distT="0" distB="0" distL="114300" distR="114300" simplePos="0" relativeHeight="251658240" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1" wp14:anchorId="3218CDF8" wp14:editId="091B2914">
+                    <wp:anchor distT="0" distB="0" distL="114300" distR="114300" simplePos="0" relativeHeight="251658240" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1" wp14:anchorId="mock-anchor-px-cx" wp14:editId="mock-edit-px-cx">
                         <wp:simplePos x="0" y="0"/>
                         <wp:positionH relativeFrom="column">
                             <wp:posOffset>2935605</wp:posOffset>
@@ -546,6 +546,8 @@ func TestUnmarshalDrawingStructure(t *testing.T) {
 				t.Log("fild drawing at aragraph", i, ", child", j)
 				if child.Run.Drawing.Inline != nil {
 					tail := "-mock-inline-p" + string(rune('0'+i)) + "-c" + string(rune('0'+j))
+					anchor := "mock-anchor-p" + string(rune('0'+i)) + "-c" + string(rune('0'+j))
+					edit := "mock-edit-p" + string(rune('0'+i)) + "-c" + string(rune('0'+j))
 					if "T"+tail != child.Run.Drawing.Inline.DistT {
 						t.Fatal("expect", "T"+tail, "but got", child.Run.Drawing.Inline.DistT)
 					}
@@ -557,6 +559,12 @@ func TestUnmarshalDrawingStructure(t *testing.T) {
 					}
 					if "R"+tail != child.Run.Drawing.Inline.DistR {
 						t.Fatal("expect", "R"+tail, "but got", child.Run.Drawing.Inline.DistR)
+					}
+					if anchor != child.Run.Drawing.Inline.AnchorID {
+						t.Fatal("expect", anchor, "but got", child.Run.Drawing.Inline.AnchorID)
+					}
+					if edit != child.Run.Drawing.Inline.EditID {
+						t.Fatal("expect", edit, "but got", child.Run.Drawing.Inline.EditID)
 					}
 				}
 			}
