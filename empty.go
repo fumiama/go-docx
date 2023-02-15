@@ -11,9 +11,10 @@ func newEmptyFile() *Docx {
 			XMLName: xml.Name{
 				Space: "w",
 			},
-			XMLW:  XMLNS_W,
-			XMLR:  XMLNS_R,
-			XMLWP: XMLNS_WP,
+			XMLW:    XMLNS_W,
+			XMLR:    XMLNS_R,
+			XMLWP:   XMLNS_WP,
+			XMLWP14: XMLNS_WP14,
 			Body: &Body{
 				XMLName: xml.Name{
 					Space: "w",

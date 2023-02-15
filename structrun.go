@@ -5,10 +5,6 @@ import (
 	"io"
 )
 
-const (
-	HYPERLINK_STYLE = "a1"
-)
-
 // Run is part of a paragraph that has its own style. It could be
 // a piece of text in bold, or a link
 type Run struct {

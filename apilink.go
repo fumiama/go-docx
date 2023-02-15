@@ -5,6 +5,10 @@ import (
 	"sync/atomic"
 )
 
+const (
+	HYPERLINK_STYLE = "a1"
+)
+
 // when adding an hyperlink we need to store a reference in the relationship field
 func (f *Docx) addLinkRelation(link string) string {
 	rel := &Relationship{

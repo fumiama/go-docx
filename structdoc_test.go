@@ -519,6 +519,7 @@ func TestUnmarshalDrawingStructure(t *testing.T) {
 		XMLW:    XMLNS_W,
 		XMLR:    XMLNS_R,
 		XMLWP:   XMLNS_WP,
+		XMLWP14: XMLNS_WP14,
 		XMLName: xml.Name{Space: XMLNS_W, Local: "document"}}
 	err := xml.Unmarshal(StringToBytes(drawing_doc), &doc)
 	if err != nil {
