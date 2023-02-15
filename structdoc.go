@@ -33,6 +33,8 @@ type Document struct {
 	XMLWP   string   `xml:"xmlns:wp,attr,omitempty"`   // cannot be unmarshalled in
 	XMLWP14 string   `xml:"xmlns:wp14,attr,omitempty"` // cannot be unmarshalled in
 	Body    *Body
+
+	file *Docx
 }
 
 func (doc *Document) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
@@ -50,11 +52,16 @@ func (doc *Document) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 		switch tt := t.(type) {
 		case xml.StartElement:
 			switch tt.Name.Local {
+			case "body":
 			case "p":
 				var value Paragraph
 				d.DecodeElement(&value, &start)
-				doc.Body.Paragraphs = append(doc.Body.Paragraphs, &value)
+				if len(value.Children) > 0 {
+					value.file = doc.file
+					doc.Body.Paragraphs = append(doc.Body.Paragraphs, &value)
+				}
 			default:
+				d.Skip()
 				continue
 			}
 		}

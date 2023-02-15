@@ -6,7 +6,7 @@ import (
 )
 
 func newEmptyFile() *Docx {
-	return &Docx{
+	docx := &Docx{
 		Document: Document{
 			XMLName: xml.Name{
 				Space: "w",
@@ -45,4 +45,6 @@ func newEmptyFile() *Docx {
 		rId: 3,
 		buf: bytes.NewBuffer(make([]byte, 0, 1024*1024*4)),
 	}
+	docx.Document.file = docx
+	return docx
 }

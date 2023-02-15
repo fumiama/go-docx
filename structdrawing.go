@@ -53,6 +53,7 @@ type WPInline struct {
 	Extent       *WPExtent
 	EffectExtent *WPEffectExtent
 	DocPr        *WPDocPr
+	Graphic      *AGraphic
 }
 
 func (r *WPInline) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
@@ -66,18 +67,25 @@ func (r *WPInline) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		case xml.StartElement:
 			switch tt.Name.Local {
 			case "extent":
+				r.Extent = new(WPExtent)
 				r.Extent.CX = getAtt(tt.Attr, "cx")
 				r.Extent.CY = getAtt(tt.Attr, "cy")
 			case "effectExtent":
+				r.EffectExtent = new(WPEffectExtent)
 				r.EffectExtent.L = getAtt(tt.Attr, "l")
 				r.EffectExtent.T = getAtt(tt.Attr, "t")
 				r.EffectExtent.R = getAtt(tt.Attr, "r")
 				r.EffectExtent.B = getAtt(tt.Attr, "b")
 			case "docPr":
+				r.DocPr = new(WPDocPr)
 				r.DocPr.ID = getAtt(tt.Attr, "id")
 				r.DocPr.Name = getAtt(tt.Attr, "name")
 				r.DocPr.Macro = getAtt(tt.Attr, "macro")
 				r.DocPr.Hidden = getAtt(tt.Attr, "hidden")
+			case "graphic":
+				var value AGraphic
+				d.DecodeElement(&value, &start)
+				r.Graphic = &value
 			default:
 				continue
 			}
@@ -119,8 +127,64 @@ type AGraphic struct {
 	GraphicData *AGraphicData
 }
 
+func (a *AGraphic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+
+		switch tt := t.(type) {
+		case xml.StartElement:
+			switch tt.Name.Local {
+			case "graphicData":
+				var value AGraphicData
+				d.DecodeElement(&value, &start)
+				value.URI = getAtt(tt.Attr, "uri")
+				a.GraphicData = &value
+			default:
+				continue
+			}
+		}
+
+	}
+	return nil
+}
+
 // AGraphicData represents the data of a graphic in a Word document.
 type AGraphicData struct {
 	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/main graphicData,omitempty"`
 	URI     string   `xml:"uri,attr"`
+	Pic     PICPic
+}
+
+// PICPic represents a picture in a Word document.
+type PICPic struct {
+	XMLName                xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/picture pic,omitempty"`
+	NonVisualPicProperties PICNonVisualPicProperties
+	BlipFill               PICBlipFill
+}
+
+// PICNonVisualPicProperties represents the non-visual properties of a picture in a Word document.
+type PICNonVisualPicProperties struct {
+	XMLName                    xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/picture nvPicPr,omitempty"`
+	NonVisualDrawingProperties PICNonVisualDrawingProperties
+}
+
+// PICNonVisualDrawingProperties represents the non-visual drawing properties of a picture in a Word document.
+type PICNonVisualDrawingProperties struct {
+	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/picture cNvPr,omitempty"`
+	ID      string   `xml:"id,attr"`
+}
+
+// PICBlipFill represents the blip fill of a picture in a Word document.
+type PICBlipFill struct {
+	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/picture blipFill,omitempty"`
+	Blip    ABlip
+}
+
+// ABlip represents the blip of a picture in a Word document.
+type ABlip struct {
+	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/main blip,omitempty"`
+	Embed   string   `xml:"r:embed,attr"`
 }
