@@ -155,20 +155,92 @@ func (a *AGraphic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 type AGraphicData struct {
 	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/main graphicData,omitempty"`
 	URI     string   `xml:"uri,attr"`
-	Pic     PICPic
+	Pic     *PICPic
+}
+
+func (a *AGraphicData) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+
+		switch tt := t.(type) {
+		case xml.StartElement:
+			switch tt.Name.Local {
+			case "pic":
+				var value PICPic
+				d.DecodeElement(&value, &start)
+				a.Pic = &value
+			default:
+				continue
+			}
+		}
+
+	}
+	return nil
 }
 
 // PICPic represents a picture in a Word document.
 type PICPic struct {
 	XMLName                xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/picture pic,omitempty"`
-	NonVisualPicProperties PICNonVisualPicProperties
-	BlipFill               PICBlipFill
+	NonVisualPicProperties *PICNonVisualPicProperties
+	BlipFill               *PICBlipFill
+	// <pic:spPr> is unecessary
+}
+
+func (p *PICPic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+
+		switch tt := t.(type) {
+		case xml.StartElement:
+			switch tt.Name.Local {
+			case "nvPicPr":
+				var value PICNonVisualPicProperties
+				d.DecodeElement(&value, &start)
+				p.NonVisualPicProperties = &value
+			case "blipFill":
+				var value PICBlipFill
+				d.DecodeElement(&value, &start)
+				p.BlipFill = &value
+			default:
+				continue
+			}
+		}
+
+	}
+	return nil
 }
 
 // PICNonVisualPicProperties represents the non-visual properties of a picture in a Word document.
 type PICNonVisualPicProperties struct {
 	XMLName                    xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/picture nvPicPr,omitempty"`
 	NonVisualDrawingProperties PICNonVisualDrawingProperties
+}
+
+func (p *PICNonVisualPicProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+
+		switch tt := t.(type) {
+		case xml.StartElement:
+			switch tt.Name.Local {
+			case "cNvPr":
+				p.NonVisualDrawingProperties.ID = getAtt(tt.Attr, "id")
+			default:
+				continue
+			}
+		}
+
+	}
+	return nil
 }
 
 // PICNonVisualDrawingProperties represents the non-visual drawing properties of a picture in a Word document.
@@ -181,6 +253,27 @@ type PICNonVisualDrawingProperties struct {
 type PICBlipFill struct {
 	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/picture blipFill,omitempty"`
 	Blip    ABlip
+}
+
+func (p *PICBlipFill) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+
+		switch tt := t.(type) {
+		case xml.StartElement:
+			switch tt.Name.Local {
+			case "blip":
+				p.Blip.Embed = getAtt(tt.Attr, "embed")
+			default:
+				continue
+			}
+		}
+
+	}
+	return nil
 }
 
 // ABlip represents the blip of a picture in a Word document.

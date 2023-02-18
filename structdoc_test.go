@@ -568,7 +568,11 @@ func TestUnmarshalDrawingStructure(t *testing.T) {
 					}
 					if child.Run.Drawing.Inline.Graphic != nil && child.Run.Drawing.Inline.Graphic.GraphicData != nil {
 						t.Log(child.Run.Drawing.Inline.Graphic.GraphicData.URI)
+						if child.Run.Drawing.Inline.Graphic.GraphicData.Pic != nil {
+							t.Log(child.Run.Drawing.Inline.Graphic.GraphicData.Pic.NonVisualPicProperties.NonVisualDrawingProperties.ID, child.Run.Drawing.Inline.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
+						}
 					}
+
 				}
 			}
 		}
