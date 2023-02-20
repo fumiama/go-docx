@@ -1,15 +1,20 @@
 package docxlib
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"sync"
+)
 
 const (
 	XMLNS_REL     = `http://schemas.openxmlformats.org/package/2006/relationships`
 	REL_HYPERLINK = `http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink`
+	REL_IMAGE     = `http://schemas.openxmlformats.org/officeDocument/2006/relationships/image`
 
 	REL_TARGETMODE = "External"
 )
 
 type Relationships struct {
+	mu            sync.RWMutex
 	XMLName       xml.Name        `xml:"Relationships"`
 	Xmlns         string          `xml:"xmlns,attr"`
 	Relationships []*Relationship `xml:"Relationship"`

@@ -31,6 +31,17 @@ func main() {
 	nextPara := w.AddParagraph()
 	nextPara.AddLink("google", `http://google.com`)
 
+	para3 := w.AddParagraph()
+	// add text
+	para3.AddText("直接粘贴 inline")
+
+	para4 := w.AddParagraph()
+	para4.AddInlineDrawingFrom("testdata/fumiama.JPG")
+	para4.AddInlineDrawingFrom("testdata/fumiama2x.webp")
+
+	para5 := w.AddParagraph()
+	para5.AddInlineDrawingFrom("testdata/fumiamayoko.png")
+
 	f, err := os.Create(*fileLocation)
 	if err != nil {
 		panic(err)
@@ -66,13 +77,13 @@ func main() {
 					fmt.Printf("\tWe've found a new run with the text ->%s\n", child.Run.Text.Text)
 				}
 				if child.Run.Drawing != nil {
-					fmt.Printf("\tWe've found a new run with the drawing ->%s\n", child.Run.Drawing.Inline.DistT) // TODO: replace to refid
+					fmt.Printf("\tWe've found a new run with the drawing ->%d\n", child.Run.Drawing.Inline.DistT) // TODO: replace to refid
 				}
 			}
 			if child.Link != nil {
 				id := child.Link.ID
 				text := child.Link.Run.InstrText
-				link, err := doc.Refer(id)
+				link, err := doc.ReferHref(id)
 				if err != nil {
 					fmt.Printf("\tWe found a link with id %s and text %s without target\n", id, text)
 				} else {
@@ -83,7 +94,7 @@ func main() {
 		}
 		fmt.Print("End of paragraph\n\n")
 	}
-	f, err = os.Create("tmp.docx")
+	f, err = os.Create("unmarshal_" + *fileLocation)
 	if err != nil {
 		panic(err)
 	}

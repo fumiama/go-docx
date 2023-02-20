@@ -18,7 +18,11 @@ type Docx struct {
 	Document    Document
 	DocRelation Relationships
 
-	rId uintptr
+	media        []Media
+	mediaNameIdx map[string]int
+
+	rId     uintptr
+	imageId uintptr
 
 	buf        *bytes.Buffer
 	isbufempty bool
@@ -92,16 +96,4 @@ func (f *Docx) Read(p []byte) (n int, err error) {
 	defer zipWriter.Close()
 	f.isbufempty = false
 	return f.buf.Read(p)
-}
-
-// Refer gets the url for a reference
-func (f *Docx) Refer(id string) (href string, err error) {
-	for _, a := range f.DocRelation.Relationships {
-		if a.ID == id {
-			href = a.Target
-			return
-		}
-	}
-	err = ErrRefIDNotFound
-	return
 }

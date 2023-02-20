@@ -3,6 +3,7 @@ package docxlib
 import (
 	"encoding/xml"
 	"io"
+	"strings"
 )
 
 type ParagraphChild struct {
@@ -16,6 +17,33 @@ type Paragraph struct {
 	Children []ParagraphChild // Children will generate an unnecessary tag <Children> ... </Children> and we skip it by a self-defined xml.Marshaler
 
 	file *Docx
+}
+
+func (p *Paragraph) String() string {
+	sb := strings.Builder{}
+	for _, c := range p.Children {
+		switch {
+		case c.Link != nil:
+			id := c.Link.ID
+			text := c.Link.Run.InstrText
+			link, err := p.file.ReferHref(id)
+			sb.WriteString(text)
+			sb.WriteByte('(')
+			if err != nil {
+				sb.WriteString(id)
+			} else {
+				sb.WriteString(link)
+			}
+			sb.WriteByte(')')
+		case c.Run != nil:
+			sb.WriteString("run") //TODO: implement
+		case c.Properties != nil:
+			sb.WriteString("prop") //TODO: implement
+		default:
+			continue
+		}
+	}
+	return sb.String()
 }
 
 func (p *Paragraph) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
@@ -47,6 +75,9 @@ func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		t, err := d.Token()
 		if err == io.EOF {
 			break
+		}
+		if err != nil {
+			return err
 		}
 		switch tt := t.(type) {
 		case xml.StartElement:

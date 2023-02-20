@@ -18,6 +18,9 @@ func (r *Hyperlink) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		if err == io.EOF {
 			break
 		}
+		if err != nil {
+			return err
+		}
 
 		switch tt := t.(type) {
 		case xml.StartElement:

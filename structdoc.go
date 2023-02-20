@@ -10,6 +10,8 @@ const (
 	XMLNS_R    = `http://schemas.openxmlformats.org/officeDocument/2006/relationships`
 	XMLNS_WP   = `http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing`
 	XMLNS_WP14 = `http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing`
+
+	XMLNS_PICTURE = `http://schemas.openxmlformats.org/drawingml/2006/picture`
 )
 
 func getAtt(atts []xml.Attr, name string) string {
@@ -47,6 +49,9 @@ func (doc *Document) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 		t, err := d.Token()
 		if err == io.EOF {
 			break
+		}
+		if err != nil {
+			return err
 		}
 
 		switch tt := t.(type) {

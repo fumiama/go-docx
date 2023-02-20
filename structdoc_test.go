@@ -2,6 +2,7 @@ package docxlib
 
 import (
 	"encoding/xml"
+	"hash/crc64"
 	"io"
 	"os"
 	"testing"
@@ -113,7 +114,7 @@ const drawing_doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                     <w:noProof/>
                 </w:rPr>
                 <w:drawing>
-                    <wp:inline distT="T-mock-inline-p1-c0" distB="B-mock-inline-p1-c0" distL="L-mock-inline-p1-c0" distR="R-mock-inline-p1-c0" wp14:anchorId="mock-anchor-p1-c0" wp14:editId="mock-edit-p1-c0">
+                    <wp:inline distT="0" distB="0" distL="0" distR="0" wp14:anchorId="mock-anchor-p1-c0" wp14:editId="mock-edit-p1-c0">
                         <wp:extent cx="5274310" cy="3369310"/>
                         <wp:effectExtent l="0" t="0" r="0" b="0"/>
                         <wp:docPr id="1" name="图片 1"/>
@@ -177,7 +178,7 @@ const drawing_doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                     <w:noProof/>
                 </w:rPr>
                 <w:drawing>
-                    <wp:inline distT="T-mock-inline-p3-c0" distB="B-mock-inline-p3-c0" distL="L-mock-inline-p3-c0" distR="R-mock-inline-p3-c0" wp14:anchorId="mock-anchor-p3-c0" wp14:editId="mock-edit-p3-c0">
+                    <wp:inline distT="0" distB="0" distL="0" distR="0" wp14:anchorId="mock-anchor-p3-c0" wp14:editId="mock-edit-p3-c0">
                         <wp:extent cx="2339163" cy="1494293"/>
                         <wp:effectExtent l="0" t="0" r="0" b="4445"/>
                         <wp:docPr id="2" name="图片 2"/>
@@ -223,7 +224,7 @@ const drawing_doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                     <w:noProof/>
                 </w:rPr>
                 <w:drawing>
-                    <wp:inline distT="T-mock-inline-p3-c1" distB="B-mock-inline-p3-c1" distL="L-mock-inline-p3-c1" distR="R-mock-inline-p3-c1" wp14:anchorId="mock-anchor-p3-c1" wp14:editId="mock-edit-p3-c1">
+                    <wp:inline distT="0" distB="0" distL="0" distR="0" wp14:anchorId="mock-anchor-p3-c1" wp14:editId="mock-edit-p3-c1">
                         <wp:extent cx="2339163" cy="1494293"/>
                         <wp:effectExtent l="0" t="0" r="0" b="4445"/>
                         <wp:docPr id="4" name="图片 4"/>
@@ -290,7 +291,7 @@ const drawing_doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                 <mc:AlternateContent>
                     <mc:Choice Requires="wpg">
                         <w:drawing>
-                            <wp:inline distT="T-mock-inline-p5-c0" distB="B-mock-inline-p5-c0" distL="L-mock-inline-p5-c0" distR="R-mock-inline-p5-c0" wp14:anchorId="mock-anchor-p5-c0" wp14:editId="mock-edit-p5-c0">
+                            <wp:inline distT="0" distB="0" distL="0" distR="0" wp14:anchorId="mock-anchor-p5-c0" wp14:editId="mock-edit-p5-c0">
                                 <wp:extent cx="4677868" cy="1494155"/>
                                 <wp:effectExtent l="0" t="0" r="0" b="4445"/>
                                 <wp:docPr id="7" name="组合 7"/>
@@ -545,21 +546,8 @@ func TestUnmarshalDrawingStructure(t *testing.T) {
 			if child.Run != nil && child.Run.Drawing != nil {
 				t.Log("fild drawing at aragraph", i, ", child", j)
 				if child.Run.Drawing.Inline != nil {
-					tail := "-mock-inline-p" + string(rune('0'+i)) + "-c" + string(rune('0'+j))
 					anchor := "mock-anchor-p" + string(rune('0'+i)) + "-c" + string(rune('0'+j))
 					edit := "mock-edit-p" + string(rune('0'+i)) + "-c" + string(rune('0'+j))
-					if "T"+tail != child.Run.Drawing.Inline.DistT {
-						t.Fatal("expect", "T"+tail, "but got", child.Run.Drawing.Inline.DistT)
-					}
-					if "B"+tail != child.Run.Drawing.Inline.DistB {
-						t.Fatal("expect", "B"+tail, "but got", child.Run.Drawing.Inline.DistB)
-					}
-					if "L"+tail != child.Run.Drawing.Inline.DistL {
-						t.Fatal("expect", "L"+tail, "but got", child.Run.Drawing.Inline.DistL)
-					}
-					if "R"+tail != child.Run.Drawing.Inline.DistR {
-						t.Fatal("expect", "R"+tail, "but got", child.Run.Drawing.Inline.DistR)
-					}
 					if anchor != child.Run.Drawing.Inline.AnchorID {
 						t.Fatal("expect", anchor, "but got", child.Run.Drawing.Inline.AnchorID)
 					}
@@ -577,7 +565,6 @@ func TestUnmarshalDrawingStructure(t *testing.T) {
 			}
 		}
 	}
-	t.Fail()
 }
 
 func TestMarshalDrawingStructure(t *testing.T) {
@@ -588,14 +575,13 @@ func TestMarshalDrawingStructure(t *testing.T) {
 	para1.AddText("直接粘贴 inline")
 
 	para2 := w.AddParagraph()
-	para2.AddText("test font size and color").Size("44").Color("ff0000")
-	para2.AddText("test font size and color").Size("44").Color("ff0000")
-	para2.AddText("test font size and color").Size("44").Color("ff0000")
+	para2.AddInlineDrawingFrom("testdata/fumiama.JPG")
+	para2.AddInlineDrawingFrom("testdata/fumiama2x.webp")
 
-	nextPara := w.AddParagraph()
-	nextPara.AddLink("google", `http://google.com`)
+	para3 := w.AddParagraph()
+	para3.AddInlineDrawingFrom("testdata/fumiamayoko.png")
 
-	f, err := os.Create("test.xml")
+	f, err := os.Create("TestMarshalDrawingStructure_Marshal.xml")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -613,7 +599,7 @@ func TestMarshalDrawingStructure(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f1, err := os.Create("test1.xml")
+	f1, err := os.Create("TestMarshalDrawingStructure_Unmarshal.xml")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -622,5 +608,30 @@ func TestMarshalDrawingStructure(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Fail()
+	_, err = f.Seek(0, io.SeekStart)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = f1.Seek(0, io.SeekStart)
+	if err != nil {
+		t.Fatal(err)
+	}
+	h := crc64.New(crc64.MakeTable(crc64.ECMA))
+	_, err = io.Copy(h, f)
+	if err != nil {
+		t.Fatal(err)
+	}
+	md51 := h.Sum64()
+	h.Reset()
+	_, err = io.Copy(h, f1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	md52 := h.Sum64()
+	if md51 != md52 {
+		t.Fail()
+	} /* else {
+		_ = os.Remove("TestMarshalDrawingStructure_Marshal.xml")
+		_ = os.Remove("TestMarshalDrawingStructure_Unmarshal.xml")
+	}*/
 }

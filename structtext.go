@@ -7,7 +7,7 @@ import (
 
 // Text object contains the actual text
 type Text struct {
-	XMLName  xml.Name `xml:"w:t"`
+	XMLName  xml.Name `xml:"w:t,omitempty"`
 	XMLSpace string   `xml:"xml:space,attr,omitempty"`
 	Text     string   `xml:",chardata"`
 }
@@ -17,6 +17,9 @@ func (r *Text) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		t, err := d.Token()
 		if err == io.EOF {
 			break
+		}
+		if err != nil {
+			return err
 		}
 
 		switch tt := t.(type) {

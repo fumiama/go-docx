@@ -39,13 +39,13 @@ func main() {
 					fmt.Printf("\tWe've found a new run with the text ->%s\n", child.Run.Text.Text)
 				}
 				if child.Run.Drawing != nil {
-					fmt.Printf("\tWe've found a new run with the drawing ->%s\n", child.Run.Drawing.Inline.DistT) // TODO: replace to refid
+					fmt.Printf("\tWe've found a new run with the drawing ->%d\n", child.Run.Drawing.Inline.DistT) // TODO: replace to refid
 				}
 			}
 			if child.Link != nil {
 				id := child.Link.ID
 				text := child.Link.Run.InstrText
-				link, err := doc.Refer(id)
+				link, err := doc.ReferHref(id)
 				if err != nil {
 					fmt.Printf("\tWe found a link with id %s and text %s without target\n", id, text)
 				} else {

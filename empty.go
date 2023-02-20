@@ -42,8 +42,10 @@ func newEmptyFile() *Docx {
 				},
 			},
 		},
-		rId: 3,
-		buf: bytes.NewBuffer(make([]byte, 0, 1024*1024*4)),
+		media:        make([]Media, 0, 64),
+		mediaNameIdx: make(map[string]int, 64),
+		rId:          3,
+		buf:          bytes.NewBuffer(make([]byte, 0, 1024*1024*4)),
 	}
 	docx.Document.file = docx
 	return docx

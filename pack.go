@@ -2,6 +2,7 @@ package docxlib
 
 import (
 	"archive/zip"
+	"bytes"
 	"encoding/xml"
 	"io"
 	"os"
@@ -27,8 +28,12 @@ func (f *Docx) pack(zipWriter *zip.Writer) (err error) {
 			return
 		}
 	}
-	files["word/_rels/document.xml.rels"] = marshaller{data: f.DocRelation}
+	files["word/_rels/document.xml.rels"] = marshaller{data: &f.DocRelation}
 	files["word/document.xml"] = marshaller{data: f.Document}
+
+	for _, m := range f.media {
+		files[m.String()] = bytes.NewReader(m.Data)
+	}
 
 	for path, r := range files {
 		w, err := zipWriter.Create(path)

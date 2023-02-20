@@ -21,6 +21,9 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		if err == io.EOF {
 			break
 		}
+		if err != nil {
+			return err
+		}
 
 		switch tt := t.(type) {
 		case xml.StartElement:
@@ -66,6 +69,9 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 		t, err := d.Token()
 		if err == io.EOF {
 			break
+		}
+		if err != nil {
+			return err
 		}
 
 		switch tt := t.(type) {
