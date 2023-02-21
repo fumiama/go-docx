@@ -47,9 +47,11 @@ func (p *Paragraph) AddInlineDrawing(pic []byte) (*Run, error) {
 				},
 			},
 			Graphic: &AGraphic{
+				XMLA: XMLNS_DRAWINGML_MAIN,
 				GraphicData: &AGraphicData{
 					URI: XMLNS_PICTURE,
 					Pic: &PICPic{
+						XMLPIC: XMLNS_DRAWINGML_PICTURE,
 						NonVisualPicProperties: &PICNonVisualPicProperties{
 							NonVisualDrawingProperties: PICNonVisualDrawingProperties{
 								ID: id,

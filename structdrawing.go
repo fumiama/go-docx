@@ -11,6 +11,11 @@ const (
 	A4_EMU_MAX_WIDTH = 5274310
 )
 
+const (
+	XMLNS_DRAWINGML_MAIN    = `http://schemas.openxmlformats.org/drawingml/2006/main`
+	XMLNS_DRAWINGML_PICTURE = `http://schemas.openxmlformats.org/drawingml/2006/picture`
+)
+
 // Drawing element contains photos
 type Drawing struct {
 	XMLName xml.Name `xml:"w:drawing,omitempty"`
@@ -132,6 +137,7 @@ func (r *WPInline) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			case "graphic":
 				var value AGraphic
 				d.DecodeElement(&value, &start)
+				value.XMLA = getAtt(tt.Attr, "a")
 				r.Graphic = &value
 			default:
 				continue
@@ -214,7 +220,8 @@ type AGraphicFrameLocks struct {
 
 // AGraphic represents a graphic in a Word document.
 type AGraphic struct {
-	XMLName     xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/main graphic,omitempty"`
+	XMLName     xml.Name `xml:"a:graphic,omitempty"`
+	XMLA        string   `xml:"xmlns:a,attr,omitempty"`
 	GraphicData *AGraphicData
 }
 
@@ -247,7 +254,7 @@ func (a *AGraphic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 // AGraphicData represents the data of a graphic in a Word document.
 type AGraphicData struct {
-	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/main graphicData,omitempty"`
+	XMLName xml.Name `xml:"a:graphicData,omitempty"`
 	URI     string   `xml:"uri,attr"`
 	Pic     *PICPic
 }
@@ -268,6 +275,7 @@ func (a *AGraphicData) UnmarshalXML(d *xml.Decoder, start xml.StartElement) erro
 			case "pic":
 				var value PICPic
 				d.DecodeElement(&value, &start)
+				value.XMLPIC = getAtt(tt.Attr, "pic")
 				a.Pic = &value
 			default:
 				continue
@@ -280,7 +288,8 @@ func (a *AGraphicData) UnmarshalXML(d *xml.Decoder, start xml.StartElement) erro
 
 // PICPic represents a picture in a Word document.
 type PICPic struct {
-	XMLName                xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/picture pic,omitempty"`
+	XMLName                xml.Name `xml:"pic:pic,omitempty"`
+	XMLPIC                 string   `xml:"xmlns:pic,attr,omitempty"`
 	NonVisualPicProperties *PICNonVisualPicProperties
 	BlipFill               *PICBlipFill
 	SpPr                   *PICSpPr
@@ -322,7 +331,7 @@ func (p *PICPic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 // PICNonVisualPicProperties represents the non-visual properties of a picture in a Word document.
 type PICNonVisualPicProperties struct {
-	XMLName                    xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/picture nvPicPr,omitempty"`
+	XMLName                    xml.Name `xml:"pic:nvPicPr,omitempty"`
 	NonVisualDrawingProperties PICNonVisualDrawingProperties
 }
 
@@ -352,13 +361,13 @@ func (p *PICNonVisualPicProperties) UnmarshalXML(d *xml.Decoder, start xml.Start
 
 // PICNonVisualDrawingProperties represents the non-visual drawing properties of a picture in a Word document.
 type PICNonVisualDrawingProperties struct {
-	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/picture cNvPr,omitempty"`
+	XMLName xml.Name `xml:"pic:cNvPr,omitempty"`
 	ID      string   `xml:"id,attr"`
 }
 
 // PICBlipFill represents the blip fill of a picture in a Word document.
 type PICBlipFill struct {
-	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/picture blipFill,omitempty"`
+	XMLName xml.Name `xml:"pic:blipFill,omitempty"`
 	Blip    ABlip
 	Stretch AStretch
 }
@@ -392,26 +401,26 @@ func (p *PICBlipFill) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 
 // ABlip represents the blip of a picture in a Word document.
 type ABlip struct {
-	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/main blip,omitempty"`
+	XMLName xml.Name `xml:"a:blip,omitempty"`
 	Embed   string   `xml:"r:embed,attr"`
 	Cstate  string   `xml:"cstate,attr"`
 }
 
 // AStretch ...
 type AStretch struct {
-	XMLName  xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/main stretch,omitempty"`
+	XMLName  xml.Name `xml:"a:stretch,omitempty"`
 	FillRect AFillRect
 }
 
 // AFillRect ...
 type AFillRect struct {
-	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/main fillRect,omitempty"`
+	XMLName xml.Name `xml:"a:fillRect,omitempty"`
 }
 
 // PICSpPr is a struct representing the <pic:spPr> element in OpenXML,
 // which describes the shape properties for a picture.
 type PICSpPr struct {
-	XMLName  xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/picture spPr,omitempty"`
+	XMLName  xml.Name `xml:"pic:spPr,omitempty"`
 	Xfrm     AXfrm
 	PrstGeom APrstGeom
 }
@@ -446,7 +455,7 @@ func (p *PICSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 // AXfrm is a struct representing the <a:xfrm> element in OpenXML,
 // which describes the position and size of a shape.
 type AXfrm struct {
-	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/main xfrm,omitempty"`
+	XMLName xml.Name `xml:"a:xfrm,omitempty"`
 	Off     AOff
 	Ext     AExt
 }
@@ -494,7 +503,7 @@ func (a *AXfrm) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 // AOff is a struct representing the <a:off> element in OpenXML,
 // which describes the offset of a shape from its original position.
 type AOff struct {
-	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/main off,omitempty"`
+	XMLName xml.Name `xml:"a:off,omitempty"`
 	X       int      `xml:"x,attr"`
 	Y       int      `xml:"y,attr"`
 }
@@ -502,7 +511,7 @@ type AOff struct {
 // AExt is a struct representing the <a:ext> element in OpenXML,
 // which describes the size of a shape.
 type AExt struct {
-	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/main ext,omitempty"`
+	XMLName xml.Name `xml:"a:ext,omitempty"`
 	CX      int      `xml:"cx,attr"`
 	CY      int      `xml:"cy,attr"`
 }
@@ -510,7 +519,7 @@ type AExt struct {
 // APrstGeom is a struct representing the <a:prstGeom> element in OpenXML,
 // which describes the preset shape geometry for a shape.
 type APrstGeom struct {
-	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/main prstGeom,omitempty"`
+	XMLName xml.Name `xml:"a:prstGeom,omitempty"`
 	Prst    string   `xml:"prst,attr"`
 	AvLst   AAvLst
 }
@@ -518,7 +527,7 @@ type APrstGeom struct {
 // AAvLst is a struct representing the <a:avLst> element in OpenXML,
 // which describes the adjustments to the shape's preset geometry.
 type AAvLst struct {
-	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/main avLst,omitempty"`
+	XMLName xml.Name `xml:"a:avLst,omitempty"`
 	RawXML  string   `xml:",innerxml"`
 }
 

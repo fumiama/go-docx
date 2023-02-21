@@ -77,7 +77,7 @@ func main() {
 					fmt.Printf("\tWe've found a new run with the text ->%s\n", child.Run.Text.Text)
 				}
 				if child.Run.Drawing != nil {
-					fmt.Printf("\tWe've found a new run with the drawing ->%d\n", child.Run.Drawing.Inline.DistT) // TODO: replace to refid
+					fmt.Printf("\tWe've found a new run with the drawing ->%s\n", child.Run.Drawing.Inline.DocPr.Name) // TODO: replace to refid
 				}
 			}
 			if child.Link != nil {
