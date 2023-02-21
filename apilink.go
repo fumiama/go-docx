@@ -1,7 +1,7 @@
 package docxlib
 
 const (
-	HYPERLINK_STYLE = "a1"
+	HYPERLINK_STYLE = "a3"
 )
 
 // AddLink adds an hyperlink to paragraph

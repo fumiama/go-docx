@@ -21,19 +21,19 @@ func main() {
 	// add new paragraph
 	para1 := w.AddParagraph().Justification("distribute")
 	// add text
-	para1.AddText("test").Justification("distribute")
-	para1.AddText("test font size").Size("44").Justification("distribute")
-	para1.AddText("test color").Color("808080").Justification("distribute")
+	para1.AddText("test")
+	para1.AddText("test font size").Size("44")
+	para1.AddText("test color").Color("808080")
 
 	para2 := w.AddParagraph().Justification("end")
-	para2.AddText("test font size and color").Size("44").Color("ff0000").Justification("end")
+	para2.AddText("test font size and color").Size("44").Color("ff0000")
 
 	nextPara := w.AddParagraph()
 	nextPara.AddLink("google", `http://google.com`)
 
 	para3 := w.AddParagraph().Justification("center")
 	// add text
-	para3.AddText("一行2个 inline").Size("44").Justification("center")
+	para3.AddText("一行2个 inline").Size("44")
 
 	para4 := w.AddParagraph().Justification("center")
 	r, err := para4.AddInlineDrawingFrom("testdata/fumiama.JPG")
@@ -50,7 +50,7 @@ func main() {
 
 	para5 := w.AddParagraph().Justification("center")
 	// add text
-	para5.AddText("一行1个 横向 inline").Size("44").Justification("center")
+	para5.AddText("一行1个 横向 inline").Size("44")
 
 	para6 := w.AddParagraph()
 	_, err = para6.AddInlineDrawingFrom("testdata/fumiamayoko.png")

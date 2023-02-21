@@ -20,22 +20,6 @@ func (r *Run) Size(size string) *Run {
 	return r
 }
 
-// Justification allows to set run's horizonal alignment
-//
-//	w:jc 属性的取值可以是以下之一：
-//		start：左对齐。
-//		center：居中对齐。
-//		end：右对齐。
-//		both：两端对齐。
-//		distribute：分散对齐。
-func (r *Run) Justification(val string) *Run {
-	r.RunProperties.Justification = &Justification{
-		Val: val,
-	}
-
-	return r
-}
-
 // AddTab add a tab in front of the run
 func (r *Run) AddTab() *Run {
 	r.FrontTab = append(r.FrontTab, struct {

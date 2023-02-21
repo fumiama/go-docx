@@ -514,10 +514,10 @@ const drawing_doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 
 func TestUnmarshalDrawingStructure(t *testing.T) {
 	doc := Document{
-		XMLW:    XMLNS_W,
-		XMLR:    XMLNS_R,
-		XMLWP:   XMLNS_WP,
-		XMLWP14: XMLNS_WP14,
+		XMLW:  XMLNS_W,
+		XMLR:  XMLNS_R,
+		XMLWP: XMLNS_WP,
+		// XMLWP14: XMLNS_WP14,
 		XMLName: xml.Name{Space: XMLNS_W, Local: "document"}}
 	err := xml.Unmarshal(StringToBytes(drawing_doc), &doc)
 	if err != nil {
@@ -543,14 +543,14 @@ func TestUnmarshalDrawingStructure(t *testing.T) {
 			if child.Run != nil && child.Run.Drawing != nil {
 				t.Log("fild drawing at aragraph", i, ", child", j)
 				if child.Run.Drawing.Inline != nil {
-					anchor := "mock-anchor-p" + string(rune('0'+i)) + "-c" + string(rune('0'+j))
+					/*anchor := "mock-anchor-p" + string(rune('0'+i)) + "-c" + string(rune('0'+j))
 					edit := "mock-edit-p" + string(rune('0'+i)) + "-c" + string(rune('0'+j))
 					if anchor != child.Run.Drawing.Inline.AnchorID {
 						t.Fatal("expect", anchor, "but got", child.Run.Drawing.Inline.AnchorID)
 					}
 					if edit != child.Run.Drawing.Inline.EditID {
 						t.Fatal("expect", edit, "but got", child.Run.Drawing.Inline.EditID)
-					}
+					}*/
 					if child.Run.Drawing.Inline.Graphic != nil && child.Run.Drawing.Inline.Graphic.GraphicData != nil {
 						t.Log(child.Run.Drawing.Inline.Graphic.GraphicData.URI)
 						if child.Run.Drawing.Inline.Graphic.GraphicData.Pic != nil {
@@ -569,7 +569,7 @@ func TestMarshalDrawingStructure(t *testing.T) {
 	// add new paragraph
 	para1 := w.AddParagraph()
 	// add text
-	para1.AddText("直接粘贴 inline").AddTab().Justification("center")
+	para1.AddText("直接粘贴 inline").AddTab()
 
 	para2 := w.AddParagraph().Justification("center")
 	para2.AddInlineDrawingFrom("testdata/fumiama.JPG")

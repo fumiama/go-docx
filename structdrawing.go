@@ -53,8 +53,8 @@ func (r *Drawing) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				if err != nil {
 					return err
 				}
-				r.Inline.AnchorID = getAtt(tt.Attr, "anchorId")
-				r.Inline.EditID = getAtt(tt.Attr, "editId")
+				// r.Inline.AnchorID = getAtt(tt.Attr, "anchorId")
+				// r.Inline.EditID = getAtt(tt.Attr, "editId")
 				d.DecodeElement(r.Inline, &start)
 			default:
 				continue
@@ -68,13 +68,13 @@ func (r *Drawing) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 // WPInline wp:inline
 type WPInline struct {
-	XMLName  xml.Name `xml:"wp:inline,omitempty"`
-	DistT    int      `xml:"distT,attr"`
-	DistB    int      `xml:"distB,attr"`
-	DistL    int      `xml:"distL,attr"`
-	DistR    int      `xml:"distR,attr"`
-	AnchorID string   `xml:"wp14:anchorId,attr,omitempty"`
-	EditID   string   `xml:"wp14:editId,attr,omitempty"`
+	XMLName xml.Name `xml:"wp:inline,omitempty"`
+	DistT   int      `xml:"distT,attr"`
+	DistB   int      `xml:"distB,attr"`
+	DistL   int      `xml:"distL,attr"`
+	DistR   int      `xml:"distR,attr"`
+	// AnchorID string   `xml:"wp14:anchorId,attr,omitempty"`
+	// EditID   string   `xml:"wp14:editId,attr,omitempty"`
 
 	Extent            *WPExtent
 	EffectExtent      *WPEffectExtent
@@ -333,6 +333,7 @@ func (p *PICPic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 type PICNonVisualPicProperties struct {
 	XMLName                    xml.Name `xml:"pic:nvPicPr,omitempty"`
 	NonVisualDrawingProperties PICNonVisualDrawingProperties
+	CNvPicPr                   struct{} `xml:"pic:cNvPicPr"`
 }
 
 func (p *PICNonVisualPicProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
@@ -350,6 +351,7 @@ func (p *PICNonVisualPicProperties) UnmarshalXML(d *xml.Decoder, start xml.Start
 			switch tt.Name.Local {
 			case "cNvPr":
 				p.NonVisualDrawingProperties.ID = getAtt(tt.Attr, "id")
+				p.NonVisualDrawingProperties.Name = getAtt(tt.Attr, "name")
 			default:
 				continue
 			}
@@ -363,6 +365,7 @@ func (p *PICNonVisualPicProperties) UnmarshalXML(d *xml.Decoder, start xml.Start
 type PICNonVisualDrawingProperties struct {
 	XMLName xml.Name `xml:"pic:cNvPr,omitempty"`
 	ID      string   `xml:"id,attr"`
+	Name    string   `xml:"name,attr"`
 }
 
 // PICBlipFill represents the blip fill of a picture in a Word document.

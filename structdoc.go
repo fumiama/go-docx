@@ -6,10 +6,10 @@ import (
 )
 
 const (
-	XMLNS_W    = `http://schemas.openxmlformats.org/wordprocessingml/2006/main`
-	XMLNS_R    = `http://schemas.openxmlformats.org/officeDocument/2006/relationships`
-	XMLNS_WP   = `http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing`
-	XMLNS_WP14 = `http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing`
+	XMLNS_W  = `http://schemas.openxmlformats.org/wordprocessingml/2006/main`
+	XMLNS_R  = `http://schemas.openxmlformats.org/officeDocument/2006/relationships`
+	XMLNS_WP = `http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing`
+	// XMLNS_WP14 = `http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing`
 
 	XMLNS_PICTURE = `http://schemas.openxmlformats.org/drawingml/2006/picture`
 )

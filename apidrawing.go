@@ -2,8 +2,6 @@ package docxlib
 
 import (
 	"bytes"
-	"fmt"
-	"math/rand"
 	"os"
 	"strconv"
 	"sync/atomic"
@@ -29,8 +27,8 @@ func (p *Paragraph) AddInlineDrawing(pic []byte) (*Run, error) {
 	}
 	d := &Drawing{
 		Inline: &WPInline{
-			AnchorID: fmt.Sprintf("%08X", rand.Uint32()),
-			EditID:   fmt.Sprintf("%08X", rand.Uint32()),
+			// AnchorID: fmt.Sprintf("%08X", rand.Uint32()),
+			// EditID:   fmt.Sprintf("%08X", rand.Uint32()),
 
 			Extent: &WPExtent{
 				CX: w,
@@ -54,7 +52,8 @@ func (p *Paragraph) AddInlineDrawing(pic []byte) (*Run, error) {
 						XMLPIC: XMLNS_DRAWINGML_PICTURE,
 						NonVisualPicProperties: &PICNonVisualPicProperties{
 							NonVisualDrawingProperties: PICNonVisualDrawingProperties{
-								ID: id,
+								ID:   id,
+								Name: "图片 " + id,
 							},
 						},
 						BlipFill: &PICBlipFill{

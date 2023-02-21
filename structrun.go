@@ -73,12 +73,11 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 // RunProperties encapsulates visual properties of a run
 type RunProperties struct {
-	XMLName       xml.Name       `xml:"w:rPr,omitempty"`
-	Color         *Color         `xml:"w:color,omitempty"`
-	Size          *Size          `xml:"w:sz,omitempty"`
-	RunStyle      *RunStyle      `xml:"w:rStyle,omitempty"`
-	Style         *Style         `xml:"w:pStyle,omitempty"`
-	Justification *Justification `xml:"w:jc,omitempty"`
+	XMLName  xml.Name  `xml:"w:rPr,omitempty"`
+	Color    *Color    `xml:"w:color,omitempty"`
+	Size     *Size     `xml:"w:sz,omitempty"`
+	RunStyle *RunStyle `xml:"w:rStyle,omitempty"`
+	Style    *Style    `xml:"w:pStyle,omitempty"`
 }
 
 func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
@@ -110,10 +109,6 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 				var value Style
 				value.Val = getAtt(tt.Attr, "val")
 				r.Style = &value
-			case "jc":
-				var value Justification
-				value.Val = getAtt(tt.Attr, "val")
-				r.Justification = &value
 			default:
 				continue
 			}
