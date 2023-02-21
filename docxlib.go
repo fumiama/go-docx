@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"io"
+	"io/fs"
 )
 
 var (
@@ -24,16 +25,21 @@ type Docx struct {
 	rId     uintptr
 	imageId uintptr
 
+	template string
+	tmplfs   fs.FS
+	tmpfslst []string
+
 	buf        *bytes.Buffer
 	isbufempty bool
+
 	io.Reader
 	io.WriterTo
 }
 
-// New generates a new empty docx file that we can manipulate and
+// NewA4 generates a new empty A4 docx file that we can manipulate and
 // later on, save
-func New() *Docx {
-	return newEmptyFile()
+func NewA4() *Docx {
+	return newEmptyA4File()
 }
 
 // Parse generates a new docx file in memory from a reader

@@ -5,7 +5,7 @@ import (
 	"encoding/xml"
 )
 
-func newEmptyFile() *Docx {
+func newEmptyA4File() *Docx {
 	docx := &Docx{
 		Document: Document{
 			XMLName: xml.Name{
@@ -45,7 +45,16 @@ func newEmptyFile() *Docx {
 		media:        make([]Media, 0, 64),
 		mediaNameIdx: make(map[string]int, 64),
 		rId:          3,
-		buf:          bytes.NewBuffer(make([]byte, 0, 1024*1024*4)),
+		template:     "a4",
+		tmpfslst: []string{
+			"_rels/.rels",
+			"docProps/app.xml",
+			"docProps/core.xml",
+			"word/theme/theme1.xml",
+			"word/styles.xml",
+			"[Content_Types].xml",
+		},
+		buf: bytes.NewBuffer(make([]byte, 0, 1024*1024*4)),
 	}
 	docx.Document.file = docx
 	return docx

@@ -16,23 +16,32 @@ import (
 func unpack(zipReader *zip.Reader) (docx *Docx, err error) {
 	docx = new(Docx)
 	docx.mediaNameIdx = make(map[string]int, 64)
+	docx.tmplfs = zipReader
+	docx.tmpfslst = make([]string, 0, 64)
 	for _, f := range zipReader.File {
 		if f.Name == "word/_rels/document.xml.rels" {
 			err = docx.parseDocRelation(f)
 			if err != nil {
 				return
 			}
+			continue
 		}
 		if f.Name == "word/document.xml" {
 			err = docx.parseDocument(f)
 			if err != nil {
 				return
 			}
+			continue
 		}
-		err = docx.checkAndParseMedia(f)
-		if err != nil {
-			return
+		if strings.HasPrefix(f.Name, MEDIA_FOLDER) {
+			err = docx.parseMedia(f)
+			if err != nil {
+				return
+			}
+			continue
 		}
+		// fill remaining files into tmpfslst
+		docx.tmpfslst = append(docx.tmpfslst, f.Name)
 	}
 	docx.buf = bytes.NewBuffer(make([]byte, 0, 1024*1024*4))
 	return
@@ -72,10 +81,7 @@ func (f *Docx) parseDocRelation(file *zip.File) error {
 	return xml.NewDecoder(zf).Decode(&f.DocRelation)
 }
 
-func (f *Docx) checkAndParseMedia(file *zip.File) error {
-	if !strings.HasPrefix(file.Name, MEDIA_FOLDER) {
-		return nil
-	}
+func (f *Docx) parseMedia(file *zip.File) error {
 	name := file.Name[len(MEDIA_FOLDER):]
 	zf, err := file.Open()
 	if err != nil {

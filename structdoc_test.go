@@ -568,7 +568,7 @@ func TestUnmarshalDrawingStructure(t *testing.T) {
 }
 
 func TestMarshalDrawingStructure(t *testing.T) {
-	w := New()
+	w := NewA4()
 	// add new paragraph
 	para1 := w.AddParagraph()
 	// add text
@@ -594,7 +594,7 @@ func TestMarshalDrawingStructure(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	w = New()
+	w = NewA4()
 	err = xml.NewDecoder(f).Decode(&w.Document)
 	if err != nil {
 		t.Fatal(err)

@@ -12,22 +12,24 @@ import (
 // and writes the relevant files. Some of them come from the empty_constants file,
 // others from the actual in-memory structure
 func (f *Docx) pack(zipWriter *zip.Writer) (err error) {
-	fileslst := []string{
-		"_rels/.rels",
-		"docProps/app.xml",
-		"docProps/core.xml",
-		"word/theme/theme1.xml",
-		"word/styles.xml",
-		"[Content_Types].xml",
-	}
 	files := make(map[string]io.Reader, 64)
 
-	for _, name := range fileslst {
-		files[name], err = TEMP_XML_FS.Open("xml/" + name)
-		if err != nil {
-			return
+	if f.template != "" {
+		for _, name := range f.tmpfslst {
+			files[name], err = TEMP_XML_FS.Open("xml/" + f.template + "/" + name)
+			if err != nil {
+				return
+			}
+		}
+	} else {
+		for _, name := range f.tmpfslst {
+			files[name], err = f.tmplfs.Open(name)
+			if err != nil {
+				return
+			}
 		}
 	}
+
 	files["word/_rels/document.xml.rels"] = marshaller{data: &f.DocRelation}
 	files["word/document.xml"] = marshaller{data: f.Document}
 

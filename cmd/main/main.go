@@ -17,7 +17,7 @@ func init() {
 func main() {
 	fmt.Printf("Preparing new document to write at %s\n", *fileLocation)
 
-	w := docxlib.New()
+	w := docxlib.NewA4()
 	// add new paragraph
 	para1 := w.AddParagraph()
 	// add text
