@@ -6,6 +6,35 @@ import (
 	"strings"
 )
 
+type ParagraphProperties struct {
+	XMLName       xml.Name       `xml:"w:pPr,omitempty"`
+	Justification *Justification `xml:"w:jc,omitempty"`
+}
+
+func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		switch tt := t.(type) {
+		case xml.StartElement:
+			switch tt.Name.Local {
+			case "jc":
+				p.Justification = &Justification{Val: getAtt(tt.Attr, "val")}
+			default:
+				continue
+			}
+		}
+
+	}
+	return nil
+
+}
+
 type ParagraphChild struct {
 	Link       *Hyperlink     `xml:"w:hyperlink,omitempty"`
 	Run        *Run           `xml:"w:r,omitempty"`
@@ -13,8 +42,9 @@ type ParagraphChild struct {
 }
 
 type Paragraph struct {
-	XMLName  xml.Name         `xml:"w:p,omitempty"`
-	Children []ParagraphChild // Children will generate an unnecessary tag <Children> ... </Children> and we skip it by a self-defined xml.Marshaler
+	XMLName    xml.Name `xml:"w:p,omitempty"`
+	Properties *ParagraphProperties
+	Children   []ParagraphChild // Children will generate an unnecessary tag <Children> ... </Children> and we skip it by a self-defined xml.Marshaler
 
 	file *Docx
 }
@@ -50,6 +80,12 @@ func (p *Paragraph) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	err := e.EncodeToken(start)
 	if err != nil {
 		return err
+	}
+	if p.Properties != nil {
+		err = e.Encode(p.Properties)
+		if err != nil {
+			return err
+		}
 	}
 	for _, c := range p.Children {
 		switch {
@@ -99,13 +135,15 @@ func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				var value Run
 				d.DecodeElement(&value, &start)
 				elem.Run = &value
-				if value.InstrText == "" && value.Text == nil && value.Drawing == nil {
-					continue
-				}
 			case "rPr":
 				var value RunProperties
 				d.DecodeElement(&value, &start)
 				elem.Properties = &value
+			case "pPr":
+				var value ParagraphProperties
+				d.DecodeElement(&value, &start)
+				p.Properties = &value
+				continue
 			default:
 				continue
 			}

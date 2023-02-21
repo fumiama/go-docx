@@ -19,36 +19,41 @@ func main() {
 
 	w := docxlib.NewA4()
 	// add new paragraph
-	para1 := w.AddParagraph()
+	para1 := w.AddParagraph().Justification("distribute")
 	// add text
-	para1.AddText("test")
+	para1.AddText("test").Justification("distribute")
+	para1.AddText("test font size").Size("44").Justification("distribute")
+	para1.AddText("test color").Color("808080").Justification("distribute")
 
-	para1.AddText("test font size").Size("44")
-	para1.AddText("test color").Color("808080")
-	para2 := w.AddParagraph()
-	para2.AddText("test font size and color").Size("44").Color("ff0000")
+	para2 := w.AddParagraph().Justification("end")
+	para2.AddText("test font size and color").Size("44").Color("ff0000").Justification("end")
 
 	nextPara := w.AddParagraph()
 	nextPara.AddLink("google", `http://google.com`)
 
-	para3 := w.AddParagraph()
+	para3 := w.AddParagraph().Justification("center")
 	// add text
-	para3.AddText("直接粘贴 inline")
+	para3.AddText("一行2个 inline").Size("44").Justification("center")
 
-	para4 := w.AddParagraph()
+	para4 := w.AddParagraph().Justification("center")
 	r, err := para4.AddInlineDrawingFrom("testdata/fumiama.JPG")
 	if err != nil {
 		panic(err)
 	}
-	r.Drawing.Inline.Size(r.Drawing.Inline.Extent.CX/2, r.Drawing.Inline.Extent.CY/2)
+	r.Drawing.Inline.Size(r.Drawing.Inline.Extent.CX*4/5, r.Drawing.Inline.Extent.CY*4/5)
+	para4.AddTab().AddTab()
 	r, err = para4.AddInlineDrawingFrom("testdata/fumiama2x.webp")
 	if err != nil {
 		panic(err)
 	}
-	r.Drawing.Inline.Size(r.Drawing.Inline.Extent.CX/2, r.Drawing.Inline.Extent.CY/2)
+	r.Drawing.Inline.Size(r.Drawing.Inline.Extent.CX*4/5, r.Drawing.Inline.Extent.CY*4/5)
 
-	para5 := w.AddParagraph()
-	_, err = para5.AddInlineDrawingFrom("testdata/fumiamayoko.png")
+	para5 := w.AddParagraph().Justification("center")
+	// add text
+	para5.AddText("一行1个 横向 inline").Size("44").Justification("center")
+
+	para6 := w.AddParagraph()
+	_, err = para6.AddInlineDrawingFrom("testdata/fumiamayoko.png")
 	if err != nil {
 		panic(err)
 	}

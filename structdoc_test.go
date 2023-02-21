@@ -40,9 +40,6 @@ func TestUnmarshalPlainStructure(t *testing.T) {
 				if child.Link == nil && child.Properties == nil && child.Run == nil {
 					t.Fatalf("There are Paragraph children with all fields nil")
 				}
-				if child.Run != nil && child.Run.Text == nil && child.Run.InstrText == "" {
-					t.Fatalf("We have a run with no text")
-				}
 				if child.Link != nil && child.Link.ID == "" {
 					t.Fatalf("We have a link without ID")
 				}
@@ -572,10 +569,11 @@ func TestMarshalDrawingStructure(t *testing.T) {
 	// add new paragraph
 	para1 := w.AddParagraph()
 	// add text
-	para1.AddText("直接粘贴 inline")
+	para1.AddText("直接粘贴 inline").AddTab().Justification("center")
 
-	para2 := w.AddParagraph()
+	para2 := w.AddParagraph().Justification("center")
 	para2.AddInlineDrawingFrom("testdata/fumiama.JPG")
+	para2.AddTab().AddTab().AppendTab().AppendTab()
 	para2.AddInlineDrawingFrom("testdata/fumiama2x.webp")
 
 	para3 := w.AddParagraph()

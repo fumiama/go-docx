@@ -10,9 +10,15 @@ import (
 type Run struct {
 	XMLName       xml.Name       `xml:"w:r,omitempty"`
 	RunProperties *RunProperties `xml:"w:rPr,omitempty"`
-	InstrText     string         `xml:"w:instrText,omitempty"`
-	Text          *Text
-	Drawing       *Drawing
+	FrontTab      []struct {
+		XMLName xml.Name `xml:"w:tab,omitempty"`
+	}
+	InstrText string `xml:"w:instrText,omitempty"`
+	Text      *Text
+	Drawing   *Drawing
+	RearTab   []struct {
+		XMLName xml.Name `xml:"w:tab,omitempty"`
+	}
 }
 
 func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
@@ -44,6 +50,16 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				var value Drawing
 				d.DecodeElement(&value, &start)
 				r.Drawing = &value
+			case "tab":
+				if r.InstrText == "" && r.Text == nil && r.Drawing == nil {
+					r.FrontTab = append(r.FrontTab, struct {
+						XMLName xml.Name "xml:\"w:tab,omitempty\""
+					}{})
+				} else {
+					r.RearTab = append(r.RearTab, struct {
+						XMLName xml.Name "xml:\"w:tab,omitempty\""
+					}{})
+				}
 			default:
 				continue
 			}
@@ -57,11 +73,12 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 // RunProperties encapsulates visual properties of a run
 type RunProperties struct {
-	XMLName  xml.Name  `xml:"w:rPr,omitempty"`
-	Color    *Color    `xml:"w:color,omitempty"`
-	Size     *Size     `xml:"w:sz,omitempty"`
-	RunStyle *RunStyle `xml:"w:rStyle,omitempty"`
-	Style    *Style    `xml:"w:pStyle,omitempty"`
+	XMLName       xml.Name       `xml:"w:rPr,omitempty"`
+	Color         *Color         `xml:"w:color,omitempty"`
+	Size          *Size          `xml:"w:sz,omitempty"`
+	RunStyle      *RunStyle      `xml:"w:rStyle,omitempty"`
+	Style         *Style         `xml:"w:pStyle,omitempty"`
+	Justification *Justification `xml:"w:jc,omitempty"`
 }
 
 func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
@@ -93,6 +110,10 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 				var value Style
 				value.Val = getAtt(tt.Attr, "val")
 				r.Style = &value
+			case "jc":
+				var value Justification
+				value.Val = getAtt(tt.Attr, "val")
+				r.Justification = &value
 			default:
 				continue
 			}
@@ -126,5 +147,18 @@ type Color struct {
 // Size contains the font size
 type Size struct {
 	XMLName xml.Name `xml:"w:sz"`
+	Val     string   `xml:"w:val,attr"`
+}
+
+// Justification contains the way of the horizonal alignment
+//
+//	w:jc 属性的取值可以是以下之一：
+//		start：左对齐。
+//		center：居中对齐。
+//		end：右对齐。
+//		both：两端对齐。
+//		distribute：分散对齐。
+type Justification struct {
+	XMLName xml.Name `xml:"w:jc"`
 	Val     string   `xml:"w:val,attr"`
 }
