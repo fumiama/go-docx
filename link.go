@@ -1,8 +1,16 @@
 package docxlib
 
 import (
+	"errors"
 	"strconv"
 	"sync/atomic"
+)
+
+var (
+	// ErrRefIDNotFound cannot find such reference
+	ErrRefIDNotFound = errors.New("ref id not found")
+	// ErrRefTargetNotFound cannot find such target
+	ErrRefTargetNotFound = errors.New("ref target not found")
 )
 
 // when adding an hyperlink we need to store a reference in the relationship field
@@ -36,16 +44,26 @@ func (f *Docx) addImageRelation(m Media) string {
 	return rel.ID
 }
 
-// ReferHref gets the url for a reference
-func (f *Docx) ReferHref(id string) (href string, err error) {
+// ReferTarget gets the target for a reference
+func (f *Docx) ReferTarget(id string) (string, error) {
 	f.DocRelation.mu.RLock()
 	defer f.DocRelation.mu.RUnlock()
 	for _, a := range f.DocRelation.Relationships {
 		if a.ID == id {
-			href = a.Target
-			return
+			return a.Target, nil
 		}
 	}
-	err = ErrRefIDNotFound
-	return
+	return "", ErrRefIDNotFound
+}
+
+// ReferID gets the rId from target
+func (f *Docx) ReferID(target string) (string, error) {
+	f.DocRelation.mu.RLock()
+	defer f.DocRelation.mu.RUnlock()
+	for _, a := range f.DocRelation.Relationships {
+		if a.Target == target {
+			return a.ID, nil
+		}
+	}
+	return "", ErrRefIDNotFound
 }

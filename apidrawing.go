@@ -95,3 +95,15 @@ func (p *Paragraph) AddInlineDrawingFrom(file string) (*Run, error) {
 	}
 	return p.AddInlineDrawing(data)
 }
+
+// Size of the inline drawing by EMU
+func (in *WPInline) Size(w, h int) {
+	if in.Extent != nil {
+		in.Extent.CX = w
+		in.Extent.CY = h
+	}
+	if in.Graphic != nil && in.Graphic.GraphicData != nil && in.Graphic.GraphicData.Pic != nil && in.Graphic.GraphicData.Pic.SpPr != nil {
+		in.Graphic.GraphicData.Pic.SpPr.Xfrm.Ext.CX = w
+		in.Graphic.GraphicData.Pic.SpPr.Xfrm.Ext.CY = h
+	}
+}

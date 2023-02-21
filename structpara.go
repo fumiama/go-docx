@@ -26,7 +26,7 @@ func (p *Paragraph) String() string {
 		case c.Link != nil:
 			id := c.Link.ID
 			text := c.Link.Run.InstrText
-			link, err := p.file.ReferHref(id)
+			link, err := p.file.ReferTarget(id)
 			sb.WriteString(text)
 			sb.WriteByte('(')
 			if err != nil {

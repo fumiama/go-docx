@@ -36,11 +36,22 @@ func main() {
 	para3.AddText("直接粘贴 inline")
 
 	para4 := w.AddParagraph()
-	para4.AddInlineDrawingFrom("testdata/fumiama.JPG")
-	para4.AddInlineDrawingFrom("testdata/fumiama2x.webp")
+	r, err := para4.AddInlineDrawingFrom("testdata/fumiama.JPG")
+	if err != nil {
+		panic(err)
+	}
+	r.Drawing.Inline.Size(r.Drawing.Inline.Extent.CX/2, r.Drawing.Inline.Extent.CY/2)
+	r, err = para4.AddInlineDrawingFrom("testdata/fumiama2x.webp")
+	if err != nil {
+		panic(err)
+	}
+	r.Drawing.Inline.Size(r.Drawing.Inline.Extent.CX/2, r.Drawing.Inline.Extent.CY/2)
 
 	para5 := w.AddParagraph()
-	para5.AddInlineDrawingFrom("testdata/fumiamayoko.png")
+	_, err = para5.AddInlineDrawingFrom("testdata/fumiamayoko.png")
+	if err != nil {
+		panic(err)
+	}
 
 	f, err := os.Create(*fileLocation)
 	if err != nil {
@@ -83,7 +94,7 @@ func main() {
 			if child.Link != nil {
 				id := child.Link.ID
 				text := child.Link.Run.InstrText
-				link, err := doc.ReferHref(id)
+				link, err := doc.ReferTarget(id)
 				if err != nil {
 					fmt.Printf("\tWe found a link with id %s and text %s without target\n", id, text)
 				} else {

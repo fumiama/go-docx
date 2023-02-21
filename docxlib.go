@@ -3,14 +3,8 @@ package docxlib
 import (
 	"archive/zip"
 	"bytes"
-	"errors"
 	"io"
 	"io/fs"
-)
-
-var (
-	// ErrRefIDNotFound cannot find such reference
-	ErrRefIDNotFound = errors.New("ref id not found")
 )
 
 // Docx is the structure that allow to access the internal represntation
