@@ -20,6 +20,14 @@ func main() {
 	w := docxlib.NewA4()
 	// add new paragraph
 	para1 := w.AddParagraph().Justification("distribute")
+	r, err := para1.AddAnchorDrawingFrom("testdata/fumiama.JPG")
+	if err != nil {
+		panic(err)
+	}
+	r.Drawing.Anchor.Size(r.Drawing.Anchor.Extent.CX/4, r.Drawing.Anchor.Extent.CY/4)
+	r.Drawing.Anchor.BehindDoc = 1
+	r.Drawing.Anchor.PositionH.PosOffset = r.Drawing.Anchor.Extent.CX
+	r.Drawing.Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.AlphaModFix = &docxlib.AAlphaModFix{Amount: 50000}
 	// add text
 	para1.AddText("test")
 	para1.AddText("test font size").Size("44")
@@ -36,7 +44,7 @@ func main() {
 	para3.AddText("一行2个 inline").Size("44")
 
 	para4 := w.AddParagraph().Justification("center")
-	r, err := para4.AddInlineDrawingFrom("testdata/fumiama.JPG")
+	r, err = para4.AddInlineDrawingFrom("testdata/fumiama.JPG")
 	if err != nil {
 		panic(err)
 	}
@@ -93,7 +101,12 @@ func main() {
 					fmt.Printf("\tWe've found a new run with the text ->%s\n", child.Run.Text.Text)
 				}
 				if child.Run.Drawing != nil {
-					fmt.Printf("\tWe've found a new run with the drawing ->%s\n", child.Run.Drawing.Inline.DocPr.Name) // TODO: replace to refid
+					if child.Run.Drawing.Inline != nil {
+						fmt.Printf("\tWe've found a new run with the inline drawing ->%s\n", child.Run.Drawing.Inline.DocPr.Name)
+					}
+					if child.Run.Drawing.Anchor != nil {
+						fmt.Printf("\tWe've found a new run with the anchor drawing ->%s\n", child.Run.Drawing.Anchor.DocPr.Name)
+					}
 				}
 			}
 			if child.Link != nil {

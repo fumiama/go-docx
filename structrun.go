@@ -36,19 +36,19 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			switch tt.Name.Local {
 			case "rPr":
 				var value RunProperties
-				d.DecodeElement(&value, &start)
+				d.DecodeElement(&value, &tt)
 				r.RunProperties = &value
 			case "instrText":
 				var value string
-				d.DecodeElement(&value, &start)
+				d.DecodeElement(&value, &tt)
 				r.InstrText = value
 			case "t":
 				var value Text
-				d.DecodeElement(&value, &start)
+				d.DecodeElement(&value, &tt)
 				r.Text = &value
 			case "drawing":
 				var value Drawing
-				d.DecodeElement(&value, &start)
+				d.DecodeElement(&value, &tt)
 				r.Drawing = &value
 			case "tab":
 				if r.InstrText == "" && r.Text == nil && r.Drawing == nil {

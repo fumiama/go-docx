@@ -121,7 +121,7 @@ func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			switch tt.Name.Local {
 			case "hyperlink":
 				var value Hyperlink
-				d.DecodeElement(&value, &start)
+				d.DecodeElement(&value, &tt)
 				id := getAtt(tt.Attr, "id")
 				anchor := getAtt(tt.Attr, "anchor")
 				if id != "" {
@@ -133,15 +133,15 @@ func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				elem.Link = &value
 			case "r":
 				var value Run
-				d.DecodeElement(&value, &start)
+				d.DecodeElement(&value, &tt)
 				elem.Run = &value
 			case "rPr":
 				var value RunProperties
-				d.DecodeElement(&value, &start)
+				d.DecodeElement(&value, &tt)
 				elem.Properties = &value
 			case "pPr":
 				var value ParagraphProperties
-				d.DecodeElement(&value, &start)
+				d.DecodeElement(&value, &tt)
 				p.Properties = &value
 				continue
 			default:

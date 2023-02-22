@@ -25,7 +25,7 @@ func (r *Hyperlink) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		switch tt := t.(type) {
 		case xml.StartElement:
 			if tt.Name.Local == "r" {
-				d.DecodeElement(&r.Run, &start)
+				d.DecodeElement(&r.Run, &tt)
 			} else {
 				continue
 			}

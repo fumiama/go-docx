@@ -60,7 +60,7 @@ func (doc *Document) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 			case "body":
 			case "p":
 				var value Paragraph
-				d.DecodeElement(&value, &start)
+				d.DecodeElement(&value, &tt)
 				if len(value.Children) > 0 {
 					value.file = doc.file
 					doc.Body.Paragraphs = append(doc.Body.Paragraphs, &value)

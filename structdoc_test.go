@@ -111,7 +111,7 @@ const drawing_doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                     <w:noProof/>
                 </w:rPr>
                 <w:drawing>
-                    <wp:inline distT="0" distB="0" distL="0" distR="0" wp14:anchorId="mock-anchor-p1-c0" wp14:editId="mock-edit-p1-c0">
+                    <wp:inline distT="0" distB="1" distL="2" distR="3" wp14:anchorId="mock-anchor-p1-c0" wp14:editId="mock-edit-p1-c0">
                         <wp:extent cx="5274310" cy="3369310"/>
                         <wp:effectExtent l="0" t="0" r="0" b="0"/>
                         <wp:docPr id="1" name="图片 1"/>
@@ -175,7 +175,7 @@ const drawing_doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                     <w:noProof/>
                 </w:rPr>
                 <w:drawing>
-                    <wp:inline distT="0" distB="0" distL="0" distR="0" wp14:anchorId="mock-anchor-p3-c0" wp14:editId="mock-edit-p3-c0">
+                    <wp:inline distT="0" distB="1" distL="2" distR="3" wp14:anchorId="mock-anchor-p3-c0" wp14:editId="mock-edit-p3-c0">
                         <wp:extent cx="2339163" cy="1494293"/>
                         <wp:effectExtent l="0" t="0" r="0" b="4445"/>
                         <wp:docPr id="2" name="图片 2"/>
@@ -221,7 +221,7 @@ const drawing_doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                     <w:noProof/>
                 </w:rPr>
                 <w:drawing>
-                    <wp:inline distT="0" distB="0" distL="0" distR="0" wp14:anchorId="mock-anchor-p3-c1" wp14:editId="mock-edit-p3-c1">
+                    <wp:inline distT="0" distB="1" distL="2" distR="3" wp14:anchorId="mock-anchor-p3-c1" wp14:editId="mock-edit-p3-c1">
                         <wp:extent cx="2339163" cy="1494293"/>
                         <wp:effectExtent l="0" t="0" r="0" b="4445"/>
                         <wp:docPr id="4" name="图片 4"/>
@@ -288,7 +288,7 @@ const drawing_doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                 <mc:AlternateContent>
                     <mc:Choice Requires="wpg">
                         <w:drawing>
-                            <wp:inline distT="0" distB="0" distL="0" distR="0" wp14:anchorId="mock-anchor-p5-c0" wp14:editId="mock-edit-p5-c0">
+                            <wp:inline distT="0" distB="1" distL="2" distR="3" wp14:anchorId="mock-anchor-p5-c0" wp14:editId="mock-edit-p5-c0">
                                 <wp:extent cx="4677868" cy="1494155"/>
                                 <wp:effectExtent l="0" t="0" r="0" b="4445"/>
                                 <wp:docPr id="7" name="组合 7"/>
@@ -447,7 +447,7 @@ const drawing_doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                     <w:noProof/>
                 </w:rPr>
                 <w:drawing>
-                    <wp:anchor distT="0" distB="0" distL="114300" distR="114300" simplePos="0" relativeHeight="251658240" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1" wp14:anchorId="mock-anchor-px-cx" wp14:editId="mock-edit-px-cx">
+                    <wp:anchor distT="0" distB="1" distL="2" distR="3" simplePos="0" relativeHeight="251658240" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1" wp14:anchorId="mock-anchor-px-cx" wp14:editId="mock-edit-px-cx">
                         <wp:simplePos x="0" y="0"/>
                         <wp:positionH relativeFrom="column">
                             <wp:posOffset>2935605</wp:posOffset>
@@ -543,34 +543,26 @@ func TestUnmarshalDrawingStructure(t *testing.T) {
 			if child.Run != nil && child.Run.Drawing != nil {
 				t.Log("fild drawing at aragraph", i, ", child", j)
 				if child.Run.Drawing.Inline != nil {
-					/*anchor := "mock-anchor-p" + string(rune('0'+i)) + "-c" + string(rune('0'+j))
-					edit := "mock-edit-p" + string(rune('0'+i)) + "-c" + string(rune('0'+j))
-					if anchor != child.Run.Drawing.Inline.AnchorID {
-						t.Fatal("expect", anchor, "but got", child.Run.Drawing.Inline.AnchorID)
+					if child.Run.Drawing.Inline.DistT != 0 || child.Run.Drawing.Inline.DistB != 1 || child.Run.Drawing.Inline.DistL != 2 || child.Run.Drawing.Inline.DistR != 3 {
+						t.Fatal("unexpected inline dist")
 					}
-					if edit != child.Run.Drawing.Inline.EditID {
-						t.Fatal("expect", edit, "but got", child.Run.Drawing.Inline.EditID)
-					}*/
-					if child.Run.Drawing.Inline.Graphic != nil && child.Run.Drawing.Inline.Graphic.GraphicData != nil {
-						t.Log(child.Run.Drawing.Inline.Graphic.GraphicData.URI)
-						if child.Run.Drawing.Inline.Graphic.GraphicData.Pic != nil {
-							t.Log(child.Run.Drawing.Inline.Graphic.GraphicData.Pic.NonVisualPicProperties.NonVisualDrawingProperties.ID, child.Run.Drawing.Inline.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
-						}
-					}
-
 				}
 			}
 		}
 	}
 }
 
-func TestMarshalDrawingStructure(t *testing.T) {
+func TestInlineDrawingStructure(t *testing.T) {
 	w := NewA4()
 	// add new paragraph
 	para1 := w.AddParagraph()
 	// add text
 	para1.AddText("直接粘贴 inline").AddTab()
-
+	r, err := para1.AddAnchorDrawingFrom("testdata/fumiama.JPG")
+	if err != nil {
+		t.Fatal(err)
+	}
+	r.Drawing.Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.AlphaModFix = &AAlphaModFix{Amount: 50000}
 	para2 := w.AddParagraph().Justification("center")
 	para2.AddInlineDrawingFrom("testdata/fumiama.JPG")
 	para2.AddTab().AddTab().AppendTab().AppendTab()
@@ -579,7 +571,7 @@ func TestMarshalDrawingStructure(t *testing.T) {
 	para3 := w.AddParagraph()
 	para3.AddInlineDrawingFrom("testdata/fumiamayoko.png")
 
-	f, err := os.Create("TestMarshalDrawingStructure_Marshal.xml")
+	f, err := os.Create("TestMarshalInlineDrawingStructure.xml")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -597,7 +589,7 @@ func TestMarshalDrawingStructure(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f1, err := os.Create("TestMarshalDrawingStructure_Unmarshal.xml")
+	f1, err := os.Create("TestUnmarshalInlineDrawingStructure.xml")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -628,8 +620,5 @@ func TestMarshalDrawingStructure(t *testing.T) {
 	md52 := h.Sum64()
 	if md51 != md52 {
 		t.Fail()
-	} /* else {
-		_ = os.Remove("TestMarshalDrawingStructure_Marshal.xml")
-		_ = os.Remove("TestMarshalDrawingStructure_Unmarshal.xml")
-	}*/
+	}
 }
