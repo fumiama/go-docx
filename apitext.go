@@ -10,7 +10,7 @@ func (p *Paragraph) AddTab() *Run {
 			XMLName xml.Name "xml:\"w:tab,omitempty\""
 		}{{}},
 	}
-	p.Children = append(p.Children, ParagraphChild{Run: run})
+	p.Children = append(p.Children, run)
 	return run
 }
 
@@ -29,7 +29,7 @@ func (p *Paragraph) AddText(text string) *Run {
 		RunProperties: &RunProperties{},
 	}
 
-	p.Children = append(p.Children, ParagraphChild{Run: run})
+	p.Children = append(p.Children, run)
 
 	return run
 }

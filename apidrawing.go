@@ -83,7 +83,7 @@ func (p *Paragraph) AddInlineDrawing(pic []byte) (*Run, error) {
 		Drawing:       d,
 		RunProperties: &RunProperties{},
 	}
-	p.Children = append(p.Children, ParagraphChild{Run: run})
+	p.Children = append(p.Children, run)
 	return run, nil
 }
 
@@ -191,7 +191,7 @@ func (p *Paragraph) AddAnchorDrawing(pic []byte) (*Run, error) {
 		Drawing:       d,
 		RunProperties: &RunProperties{},
 	}
-	p.Children = append(p.Children, ParagraphChild{Run: run})
+	p.Children = append(p.Children, run)
 	return run, nil
 }
 

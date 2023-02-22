@@ -3,7 +3,7 @@ package docxlib
 // AddParagraph adds a new paragraph
 func (f *Docx) AddParagraph() *Paragraph {
 	p := &Paragraph{
-		Children: make([]ParagraphChild, 0, 64),
+		Children: make([]interface{}, 0, 64),
 		file:     f,
 	}
 

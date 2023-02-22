@@ -19,7 +19,7 @@ func (p *Paragraph) AddLink(text string, link string) *Hyperlink {
 		},
 	}
 
-	p.Children = append(p.Children, ParagraphChild{Link: hyperlink})
+	p.Children = append(p.Children, hyperlink)
 
 	return hyperlink
 }

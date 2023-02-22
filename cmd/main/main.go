@@ -96,29 +96,28 @@ func main() {
 	for _, para := range doc.Document.Body.Paragraphs {
 		fmt.Println("New paragraph")
 		for _, child := range para.Children {
-			if child.Run != nil {
-				if child.Run.Text != nil {
-					fmt.Printf("\tWe've found a new run with the text ->%s\n", child.Run.Text.Text)
+			switch o := child.(type) {
+			case *docxlib.Run:
+				if o.Text != nil {
+					fmt.Printf("\tWe've found a new run with the text ->%s\n", o.Text.Text)
 				}
-				if child.Run.Drawing != nil {
-					if child.Run.Drawing.Inline != nil {
-						fmt.Printf("\tWe've found a new run with the inline drawing ->%s\n", child.Run.Drawing.Inline.DocPr.Name)
+				if o.Drawing != nil {
+					if o.Drawing.Inline != nil {
+						fmt.Printf("\tWe've found a new run with the inline drawing ->%s\n", o.Drawing.Inline.DocPr.Name)
 					}
-					if child.Run.Drawing.Anchor != nil {
-						fmt.Printf("\tWe've found a new run with the anchor drawing ->%s\n", child.Run.Drawing.Anchor.DocPr.Name)
+					if o.Drawing.Anchor != nil {
+						fmt.Printf("\tWe've found a new run with the anchor drawing ->%s\n", o.Drawing.Anchor.DocPr.Name)
 					}
 				}
-			}
-			if child.Link != nil {
-				id := child.Link.ID
-				text := child.Link.Run.InstrText
+			case *docxlib.Hyperlink:
+				id := o.ID
+				text := o.Run.InstrText
 				link, err := doc.ReferTarget(id)
 				if err != nil {
 					fmt.Printf("\tWe found a link with id %s and text %s without target\n", id, text)
 				} else {
 					fmt.Printf("\tWe've found a new hyperlink with ref %s and the text %s\n", link, text)
 				}
-
 			}
 		}
 		fmt.Print("End of paragraph\n\n")

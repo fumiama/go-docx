@@ -429,7 +429,7 @@ func (p *PICPic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 type PICNonVisualPicProperties struct {
 	XMLName                    xml.Name `xml:"pic:nvPicPr,omitempty"`
 	NonVisualDrawingProperties PICNonVisualDrawingProperties
-	CNvPicPr                   struct{} `xml:"pic:cNvPicPr"`
+	CNvPicPr                   PicCNvPicPr
 }
 
 func (p *PICNonVisualPicProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
@@ -448,6 +448,8 @@ func (p *PICNonVisualPicProperties) UnmarshalXML(d *xml.Decoder, start xml.Start
 			case "cNvPr":
 				p.NonVisualDrawingProperties.ID = getAtt(tt.Attr, "id")
 				p.NonVisualDrawingProperties.Name = getAtt(tt.Attr, "name")
+			case "cNvPicPr":
+				d.DecodeElement(&p.CNvPicPr, &tt)
 			default:
 				continue
 			}
@@ -455,6 +457,48 @@ func (p *PICNonVisualPicProperties) UnmarshalXML(d *xml.Decoder, start xml.Start
 
 	}
 	return nil
+}
+
+// PicCNvPicPr represents the non-visual properties of a picture.
+type PicCNvPicPr struct {
+	XMLName xml.Name `xml:"pic:cNvPicPr,omitempty"`
+	Locks   *APicLocks
+}
+
+func (p *PicCNvPicPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	// Loop through XML tokens
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		// Switch based on token type
+		switch tt := t.(type) {
+		case xml.StartElement:
+			switch tt.Name.Local {
+			case "picLocks":
+				var value APicLocks
+				value.NoChangeAspect, err = strconv.Atoi(getAtt(tt.Attr, "noChangeAspect"))
+				if err != nil {
+					return err
+				}
+				p.Locks = &value
+			default:
+				continue
+			}
+		}
+	}
+	return nil
+}
+
+// APicLocks represents the locks applied to a picture.
+type APicLocks struct {
+	XMLName        xml.Name `xml:"a:picLocks,omitempty"`
+	NoChangeAspect int      `xml:"noChangeAspect,attr"`
 }
 
 // PICNonVisualDrawingProperties represents the non-visual drawing properties of a picture in a Word document.

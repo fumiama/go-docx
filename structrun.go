@@ -10,7 +10,7 @@ import (
 type Run struct {
 	XMLName       xml.Name       `xml:"w:r,omitempty"`
 	RunProperties *RunProperties `xml:"w:rPr,omitempty"`
-	FrontTab      []struct {
+	FrontTab      []struct {     // TODO: replace with variable []RunChild
 		XMLName xml.Name `xml:"w:tab,omitempty"`
 	}
 	InstrText string `xml:"w:instrText,omitempty"`
