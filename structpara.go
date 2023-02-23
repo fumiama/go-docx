@@ -27,6 +27,10 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 			case "jc":
 				p.Justification = &Justification{Val: getAtt(tt.Attr, "val")}
 			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 				continue
 			}
 		}
@@ -39,6 +43,12 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 // Paragraph <w:p>
 type Paragraph struct {
 	// XMLName    xml.Name `xml:"w:p,omitempty"`
+
+	RsidR        string `xml:"w:rsidR,attr,omitempty"`
+	RsidRPr      string `xml:"w:rsidRPr,attr,omitempty"`
+	RsidRDefault string `xml:"w:rsidRDefault,attr,omitempty"`
+	RsidP        string `xml:"w:rsidP,attr,omitempty"`
+
 	Properties *ParagraphProperties
 	Children   []interface{} // Children will generate an unnecessary tag <Children> ... </Children> and we skip it by a self-defined xml.Marshaler
 
@@ -95,6 +105,20 @@ func (p *Paragraph) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 
 // UnmarshalXML ...
 func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "rsidR":
+			p.RsidR = attr.Value
+		case "rsidRPr":
+			p.RsidRPr = attr.Value
+		case "rsidRDefault":
+			p.RsidRDefault = attr.Value
+		case "rsidP":
+			p.RsidP = attr.Value
+		default:
+			// ignore other attributes
+		}
+	}
 	children := make([]interface{}, 0, 64)
 	for {
 		t, err := d.Token()
@@ -145,6 +169,10 @@ func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				p.Properties = &value
 				continue
 			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 				continue
 			}
 			children = append(children, elem)

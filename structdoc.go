@@ -99,6 +99,11 @@ func (doc *Document) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
+				continue
+			}
+			err = d.Skip() // skip unsupported tags
+			if err != nil {
+				return err
 			}
 		}
 

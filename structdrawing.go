@@ -52,6 +52,10 @@ func (r *Drawing) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 					return err
 				}
 			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 				continue
 			}
 		}
@@ -61,7 +65,14 @@ func (r *Drawing) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 }
 
-// WPInline wp:inline
+// WPInline is an element that represents an inline image within a text paragraph.
+//
+// It contains information about the image's size and position,
+// as well as any non-visual properties associated with the image.
+// The <wp:inline> element can contain child elements such as <wp:extent> to specify
+// the dimensions of the image and <wp:cNvGraphicFramePr> to specify the non-visual
+// properties of the image. Inline images are often used in documents where the images
+// are meant to be treated as part of the text flow, such as in a newsletter or a product brochure.
 type WPInline struct {
 	XMLName xml.Name `xml:"wp:inline,omitempty"`
 	DistT   int64    `xml:"distT,attr"`
@@ -166,6 +177,10 @@ func (r *WPInline) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 				}
 				r.Graphic = &value
 			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 				continue
 			}
 		}
@@ -316,6 +331,10 @@ func (w *WPCNvGraphicFramePr) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 				}
 				w.Locks = &value
 			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 				continue
 			}
 		}
@@ -367,6 +386,10 @@ func (a *AGraphic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				value.URI = getAtt(tt.Attr, "uri")
 				a.GraphicData = &value
 			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 				continue
 			}
 		}
@@ -404,6 +427,10 @@ func (a *AGraphicData) UnmarshalXML(d *xml.Decoder, start xml.StartElement) erro
 				value.XMLPIC = getAtt(tt.Attr, "pic")
 				a.Pic = &value
 			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 				continue
 			}
 		}
@@ -456,6 +483,10 @@ func (p *PICPic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				}
 				p.SpPr = &value
 			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 				continue
 			}
 		}
@@ -493,6 +524,10 @@ func (p *PICNonVisualPicProperties) UnmarshalXML(d *xml.Decoder, start xml.Start
 					return err
 				}
 			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 				continue
 			}
 		}
@@ -530,6 +565,10 @@ func (p *PicCNvPicPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 				}
 				p.Locks = &value
 			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 				continue
 			}
 		}
@@ -581,6 +620,10 @@ func (p *PICBlipFill) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 					return err
 				}
 			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 				continue
 			}
 		}
@@ -628,6 +671,10 @@ func (a *ABlip) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				}
 				a.AlphaModFix = &value
 			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 				continue
 			}
 		}
@@ -686,6 +733,10 @@ func (p *PICSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				}
 				p.PrstGeom.Prst = getAtt(tt.Attr, "prst")
 			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 				continue
 			}
 		}
@@ -758,6 +809,10 @@ func (a *AXfrm) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error)
 					return err
 				}
 			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 				continue
 			}
 		}
@@ -831,7 +886,15 @@ func (a *AAvLst) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error
 	return nil
 }
 
-// WPAnchor wp:anchor
+// WPAnchor is an element that represents an anchored object in a Word document.
+//
+// It allows for the positioning of a drawing object relative to a specific location
+// in the text of the document. The <wp:anchor> element contains child elements that
+// specify the dimensions and position of the anchored object, as well as the non-visual
+// properties of the object. The <wp:anchor> element can contain the <wp:docPr> element,
+// which contains the non-visual properties of the anchored object, such as its ID and name,
+// as well as the <a:graphic> element, which specifies the visual properties of the object,
+// such as its shape and fill.
 type WPAnchor struct {
 	XMLName        xml.Name `xml:"wp:anchor,omitempty"`
 	DistT          int64    `xml:"distT,attr"`
@@ -984,6 +1047,10 @@ func (r *WPAnchor) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 					return err
 				}
 			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 				continue
 			}
 		}
@@ -1030,6 +1097,10 @@ func (r *WPPositionH) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 					return err
 				}
 			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 				continue
 			}
 		}
@@ -1069,6 +1140,10 @@ func (r *WPPositionV) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 					return err
 				}
 			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 				continue
 			}
 		}

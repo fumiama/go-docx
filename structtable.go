@@ -1,0 +1,473 @@
+package docxlib
+
+import (
+	"encoding/xml"
+	"io"
+	"strconv"
+	"strings"
+	"sync"
+)
+
+// WTable represents a table within a Word document.
+type WTable struct {
+	XMLName         xml.Name `xml:"w:tbl,omitempty"`
+	TableProperties *WTableProperties
+	TableGrid       *WTableGrid
+	TableRows       []*WTableRow
+}
+
+// WTableProperties is an element that represents the properties of a table in Word document.
+type WTableProperties struct {
+	XMLName xml.Name `xml:"w:tblPr,omitempty"`
+	Style   *WTableStyle
+	Width   *WTableWidth
+	Look    *WTableLook
+}
+
+// UnmarshalXML implements the xml.Unmarshaler interface.
+func (t *WTableProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		token, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		if tt, ok := token.(xml.StartElement); ok {
+			switch tt.Name.Local {
+			case "tblStyle":
+				t.Style = new(WTableStyle)
+				err = d.DecodeElement(t.Style, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+			case "tblW":
+				t.Width = new(WTableWidth)
+				err = d.DecodeElement(t.Width, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+			case "tblLook":
+				t.Look = new(WTableLook)
+				err = d.DecodeElement(t.Look, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
+				continue
+			}
+		}
+	}
+	return nil
+}
+
+// WTableStyle represents the style of a table in a Word document.
+type WTableStyle struct {
+	XMLName xml.Name `xml:"w:tblStyle,omitempty"`
+	Val     string   `xml:"w:val,attr"`
+}
+
+// UnmarshalXML ...
+func (t *WTableStyle) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
+	for _, attr := range start.Attr {
+		if attr.Value == "" {
+			continue
+		}
+		switch attr.Name.Local {
+		case "val":
+			t.Val = attr.Value
+		default:
+			// ignore other attributes
+		}
+	}
+	// Consume the end element
+	_, err = d.Token()
+	if err != nil {
+		return
+	}
+	return nil
+}
+
+// WTableWidth represents the width of a table in a Word document.
+type WTableWidth struct {
+	XMLName xml.Name `xml:"w:tblW,omitempty"`
+	W       int64    `xml:"w:w,attr"`
+	Type    string   `xml:"w:type,attr"`
+}
+
+// UnmarshalXML ...
+func (t *WTableWidth) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
+	for _, attr := range start.Attr {
+		if attr.Value == "" {
+			continue
+		}
+		switch attr.Name.Local {
+		case "w":
+			t.W, err = strconv.ParseInt(attr.Value, 10, 64)
+			if err != nil {
+				return
+			}
+		case "type":
+			t.Type = attr.Value
+		default:
+			// ignore other attributes
+		}
+	}
+	// Consume the end element
+	_, err = d.Token()
+	if err != nil {
+		return
+	}
+	return nil
+}
+
+// WTableLook represents the look of a table in a Word document.
+type WTableLook struct {
+	XMLName  xml.Name `xml:"w:tblLook,omitempty"`
+	Val      string   `xml:"w:val,attr"`
+	FirstRow int      `xml:"w:firstRow,attr"`
+	LastRow  int      `xml:"w:lastRow,attr"`
+	FirstCol int      `xml:"w:firstColumn,attr"`
+	LastCol  int      `xml:"w:lastColumn,attr"`
+	NoHBand  int      `xml:"w:noHBand,attr"`
+	NoVBand  int      `xml:"w:noVBand,attr"`
+}
+
+// UnmarshalXML ...
+func (t *WTableLook) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		if attr.Value == "" {
+			continue
+		}
+		switch attr.Name.Local {
+		case "val":
+			t.Val = attr.Value
+		case "firstRow":
+			t.FirstRow = int(attr.Value[0] - '0')
+		case "lastRow":
+			t.LastRow = int(attr.Value[0] - '0')
+		case "firstColumn":
+			t.FirstCol = int(attr.Value[0] - '0')
+		case "lastColumn":
+			t.LastCol = int(attr.Value[0] - '0')
+		case "noHBand":
+			t.NoHBand = int(attr.Value[0] - '0')
+		case "noVBand":
+			t.NoVBand = int(attr.Value[0] - '0')
+		default:
+			// ignore other attributes
+		}
+	}
+	// Consume the end element
+	_, err := d.Token()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// WTableGrid is a structure that represents the table grid of a Word document.
+type WTableGrid struct {
+	XMLName  xml.Name    `xml:"w:tblGrid,omitempty"`
+	GridCols []*WGridCol `xml:"w:gridCol,omitempty"`
+}
+
+// UnmarshalXML ...
+func (t *WTableGrid) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		tok, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		if el, ok := tok.(xml.StartElement); ok {
+			switch el.Name.Local {
+			case "gridCol":
+				var gc WGridCol
+				err := d.DecodeElement(&gc, &el)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				t.GridCols = append(t.GridCols, &gc)
+			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
+				continue
+			}
+		}
+	}
+	return nil
+}
+
+// WGridCol is a structure that represents a table grid column of a Word document.
+type WGridCol struct {
+	XMLName xml.Name `xml:"w:gridCol,omitempty"`
+	W       int64    `xml:"w,attr"`
+}
+
+// UnmarshalXML ...
+func (g *WGridCol) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
+	for _, attr := range start.Attr {
+		if attr.Value == "" {
+			continue
+		}
+		switch attr.Name.Local {
+		case "w":
+			g.W, err = strconv.ParseInt(attr.Value, 10, 64)
+			if err != nil {
+				return
+			}
+		default:
+			// ignore other attributes
+		}
+	}
+	// Consume the end element
+	_, err = d.Token()
+	if err != nil {
+		return
+	}
+	return nil
+}
+
+// WTableRow represents a row within a table.
+type WTableRow struct {
+	XMLName            xml.Name `xml:"w:tr,omitempty"`
+	RsidR              string   `xml:"w:rsidR,attr"`
+	RsidTr             string   `xml:"w:rsidTr,attr"`
+	TableRowProperties *WTableRowProperties
+	TableCells         []*WTableCell
+}
+
+// UnmarshalXML ...
+func (w *WTableRow) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "rsidR":
+			w.RsidR = attr.Value
+		case "rsidTr":
+			w.RsidTr = attr.Value
+		default:
+			// ignore other attributes
+		}
+	}
+
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		if tt, ok := t.(xml.StartElement); ok {
+			switch tt.Name.Local {
+			case "trPr":
+				w.TableRowProperties = new(WTableRowProperties)
+				err = d.DecodeElement(w.TableRowProperties, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+			case "tc":
+				var value WTableCell
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.TableCells = append(w.TableCells, &value)
+			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
+				continue
+			}
+		}
+	}
+	return nil
+}
+
+// WTableRowProperties represents the properties of a row within a table.
+type WTableRowProperties struct {
+	XMLName  xml.Name `xml:"w:trPr,omitempty"`
+	TrHeight *WTrHeight
+}
+
+// UnmarshalXML ...
+func (t *WTableRowProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		tok, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		if elem, ok := tok.(xml.StartElement); ok {
+			switch elem.Name.Local {
+			case "trHeight":
+				th := new(WTrHeight)
+				for _, attr := range elem.Attr {
+					if attr.Name.Local == "val" {
+						th.Val, err = strconv.Atoi(attr.Value)
+						if err != nil {
+							return err
+						}
+						break
+					}
+				}
+				t.TrHeight = th
+				err = d.Skip()
+				if err != nil {
+					return err
+				}
+			default:
+				err = d.Skip()
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+
+// WTrHeight represents the height of a row within a table.
+type WTrHeight struct {
+	XMLName xml.Name `xml:"w:trHeight,omitempty"`
+	Val     int      `xml:"w:val,attr"`
+}
+
+// WTableCell represents a cell within a table.
+type WTableCell struct {
+	mu sync.Mutex
+
+	XMLName    xml.Name `xml:"w:tc,omitempty"`
+	TcPr       *WTcPr
+	Paragraphs []Paragraph `xml:"w:p,omitempty"`
+
+	file *Docx
+}
+
+// UnmarshalXML ...
+func (r *WTableCell) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		if tt, ok := t.(xml.StartElement); ok {
+			switch tt.Name.Local {
+			case "p":
+				var value Paragraph
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				if len(value.Children) > 0 {
+					value.file = r.file
+					r.mu.Lock()
+					r.Paragraphs = append(r.Paragraphs, value)
+					r.mu.Unlock()
+				}
+			case "tcPr":
+				var value WTcPr
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				r.TcPr = &value
+			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
+				continue
+			}
+		}
+	}
+	return nil
+}
+
+// WTcPr represents the properties of a table cell.
+type WTcPr struct {
+	XMLName        xml.Name            `xml:"w:tcPr,omitempty"`
+	TableCellWidth *WTableCellWidth    `xml:"w:tcW,omitempty"`
+	GridSpan       *WGridSpan          `xml:"w:gridSpan,omitempty"`
+	VAlign         *WVerticalAlignment `xml:"w:vAlign,omitempty"`
+}
+
+// UnmarshalXML ...
+func (r *WTcPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		if tt, ok := t.(xml.StartElement); ok {
+			switch tt.Name.Local {
+			case "tcW":
+				r.TableCellWidth = new(WTableCellWidth)
+				r.TableCellWidth.W, err = strconv.ParseInt(getAtt(tt.Attr, "w"), 10, 64)
+				if err != nil {
+					return err
+				}
+				r.TableCellWidth.Type = getAtt(tt.Attr, "type")
+			case "gridSpan":
+				r.GridSpan = new(WGridSpan)
+				r.GridSpan.Val, err = strconv.Atoi(getAtt(tt.Attr, "val"))
+				if err != nil {
+					return err
+				}
+			case "vAlign":
+				r.VAlign = new(WVerticalAlignment)
+				r.VAlign.Val = getAtt(tt.Attr, "val")
+			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
+				continue
+			}
+		}
+	}
+	return nil
+}
+
+// WTableCellWidth represents the width of a table cell.
+type WTableCellWidth struct {
+	XMLName xml.Name `xml:"w:tcW,omitempty"`
+	W       int64    `xml:"w,attr"`
+	Type    string   `xml:"type,attr"`
+}
+
+// WGridSpan represents the number of grid columns this cell should span.
+type WGridSpan struct {
+	XMLName xml.Name `xml:"w:gridSpan,omitempty"`
+	Val     int      `xml:"val,attr"`
+}
+
+// WVerticalAlignment represents the vertical alignment of the content of a cell.
+type WVerticalAlignment struct {
+	XMLName xml.Name `xml:"w:vAlign,omitempty"`
+	Val     string   `xml:"val,attr"`
+}

@@ -74,6 +74,10 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 					}{})
 				}
 			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 				continue
 			}
 		}
@@ -128,6 +132,10 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 				value.Val = getAtt(tt.Attr, "val")
 				r.Style = &value
 			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 				continue
 			}
 		}
