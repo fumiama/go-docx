@@ -1,5 +1,6 @@
 package docxlib
 
+//nolint:revive,stylecheck
 const MEDIA_FOLDER = `word/media/`
 
 // Media is in word/media

@@ -4,7 +4,7 @@ import (
 	"sync"
 )
 
-//nolint:revive
+//nolint:revive,stylecheck
 const (
 	XMLNS_REL     = `http://schemas.openxmlformats.org/package/2006/relationships`
 	REL_HYPERLINK = `http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink`

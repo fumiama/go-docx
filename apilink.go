@@ -1,5 +1,6 @@
 package docxlib
 
+//nolint:revive,stylecheck
 const (
 	HYPERLINK_STYLE = "a3"
 )

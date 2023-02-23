@@ -7,11 +7,13 @@ import (
 	"strings"
 )
 
+//nolint:revive,stylecheck
 const (
 	// A4_EMU_MAX_WIDTH is the max display width of an A4 paper
 	A4_EMU_MAX_WIDTH = 5274310
 )
 
+//nolint:revive,stylecheck
 const (
 	XMLNS_DRAWINGML_MAIN    = `http://schemas.openxmlformats.org/drawingml/2006/main`
 	XMLNS_DRAWINGML_PICTURE = `http://schemas.openxmlformats.org/drawingml/2006/picture`
