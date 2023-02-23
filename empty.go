@@ -16,7 +16,7 @@ func newEmptyA4File() *Docx {
 			XMLWP: XMLNS_WP,
 			// XMLWP14: XMLNS_WP14,
 			Body: Body{
-				Paragraphs: make([]Paragraph, 0, 64),
+				Items: make([]interface{}, 0, 64),
 			},
 		},
 		docRelation: Relationships{

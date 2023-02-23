@@ -1,15 +1,32 @@
 package docxlib
 
+import "unsafe"
+
 // AddParagraph adds a new paragraph
 func (f *Docx) AddParagraph() *Paragraph {
 	f.Document.Body.mu.Lock()
 	defer f.Document.Body.mu.Unlock()
-	f.Document.Body.Paragraphs = append(f.Document.Body.Paragraphs, Paragraph{
+	f.Document.Body.Items = append(f.Document.Body.Items, Paragraph{
 		Children: make([]interface{}, 0, 64),
 		file:     f,
 	})
 
-	return &f.Document.Body.Paragraphs[len(f.Document.Body.Paragraphs)-1]
+	p := f.Document.Body.Items[len(f.Document.Body.Items)-1]
+
+	return *(**Paragraph)(unsafe.Add(unsafe.Pointer(&p), unsafe.Sizeof(uintptr(0))))
+}
+
+// AddParagraph adds a new paragraph
+func (c *WTableCell) AddParagraph() *Paragraph {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.Paragraphs = append(c.Paragraphs, Paragraph{
+		Children: make([]interface{}, 0, 64),
+		file:     c.file,
+	})
+
+	return &c.Paragraphs[len(c.Paragraphs)-1]
 }
 
 // Justification allows to set para's horizonal alignment

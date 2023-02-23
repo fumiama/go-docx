@@ -1,6 +1,8 @@
 package docxlib
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/xml"
 	"io"
 	"strings"
@@ -40,7 +42,7 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 
 // Paragraph <w:p>
 type Paragraph struct {
-	// XMLName    xml.Name `xml:"w:p,omitempty"`
+	XMLName xml.Name `xml:"w:p,omitempty"`
 
 	RsidR        string `xml:"w:rsidR,attr,omitempty"`
 	RsidRPr      string `xml:"w:rsidRPr,attr,omitempty"`
@@ -61,8 +63,9 @@ func (p *Paragraph) String() string {
 			id := o.ID
 			text := o.Run.InstrText
 			link, err := p.file.ReferTarget(id)
+			sb.WriteString("[")
 			sb.WriteString(text)
-			sb.WriteByte('(')
+			sb.WriteString("](")
 			if err != nil {
 				sb.WriteString(id)
 			} else {
@@ -70,9 +73,36 @@ func (p *Paragraph) String() string {
 			}
 			sb.WriteByte(')')
 		case *Run:
-			sb.WriteString("run") //TODO: implement
+			switch {
+			case o.Text != nil:
+				sb.WriteString(o.Text.Text)
+			case o.Drawing != nil:
+				if o.Drawing.Inline != nil {
+					sb.WriteString("![inline image: ")
+					tgt, err := p.file.ReferTarget(o.Drawing.Inline.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
+					if err != nil {
+						sb.WriteString(err.Error())
+					} else {
+						h := md5.Sum(p.file.Media(tgt[6:]).Data)
+						sb.WriteString(hex.EncodeToString(h[:]))
+					}
+					sb.WriteString("]()")
+					continue
+				}
+				if o.Drawing.Anchor != nil {
+					sb.WriteString("![anchor image: ")
+					tgt, err := p.file.ReferTarget(o.Drawing.Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
+					if err != nil {
+						sb.WriteString(err.Error())
+					} else {
+						h := md5.Sum(p.file.Media(tgt[6:]).Data)
+						sb.WriteString(hex.EncodeToString(h[:]))
+					}
+					sb.WriteString("]()")
+				}
+			}
 		case *RunProperties:
-			sb.WriteString("prop") //TODO: implement
+			sb.WriteString("<prop>") //TODO: implement
 		default:
 			continue
 		}

@@ -28,8 +28,8 @@ func getAtt(atts []xml.Attr, name string) string {
 
 // Body <w:body>
 type Body struct {
-	mu         sync.Mutex
-	Paragraphs []Paragraph `xml:"w:p,omitempty"`
+	mu    sync.Mutex
+	Items []interface{}
 
 	file *Docx
 }
@@ -46,23 +46,32 @@ func (b *Body) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		}
 
 		if tt, ok := t.(xml.StartElement); ok {
-			if tt.Name.Local == "p" {
+			switch tt.Name.Local {
+			case "p":
 				var value Paragraph
 				err = d.DecodeElement(&value, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
-				if len(value.Children) > 0 {
-					value.file = b.file
-					b.mu.Lock()
-					b.Paragraphs = append(b.Paragraphs, value)
-					b.mu.Unlock()
+				value.file = b.file
+				b.mu.Lock()
+				b.Items = append(b.Items, value)
+				b.mu.Unlock()
+			case "tbl":
+				var value WTable
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
 				}
-				continue
-			}
-			err = d.Skip() // skip unsupported tags
-			if err != nil {
-				return err
+				value.file = b.file
+				b.mu.Lock()
+				b.Items = append(b.Items, value)
+				b.mu.Unlock()
+			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}

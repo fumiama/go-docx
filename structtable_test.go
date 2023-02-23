@@ -8,28 +8,25 @@ import (
 	"testing"
 )
 
-func TestDrawingStructure(t *testing.T) {
+func TestTableStructure(t *testing.T) {
 	w := NewA4()
 	// add new paragraph
 	para1 := w.AddParagraph()
 	// add text
-	para1.AddText("直接粘贴 inline").AddTab()
-	r, err := para1.AddAnchorDrawingFrom("testdata/fumiama.JPG")
+	para1.AddText("table")
+	tab1 := w.AddTable(4, 3)
+	para2 := tab1.TableRows[3].TableCells[2].AddParagraph()
+	r, err := para2.AddAnchorDrawingFrom("testdata/fumiama.JPG")
 	if err != nil {
 		t.Fatal(err)
 	}
 	r.Drawing.Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.AlphaModFix = &AAlphaModFix{Amount: 50000}
 	r.Drawing.Anchor.Graphic.GraphicData.Pic.NonVisualPicProperties.CNvPicPr.Locks = &APicLocks{NoChangeAspect: 1}
 	r.Drawing.Anchor.Graphic.GraphicData.Pic.SpPr.Xfrm.Rot = 50000
-	para2 := w.AddParagraph().Justification("center")
-	para2.AddInlineDrawingFrom("testdata/fumiama.JPG")
-	para2.AddTab().AddTab().AppendTab().AppendTab()
-	para2.AddInlineDrawingFrom("testdata/fumiama2x.webp")
+	para3 := tab1.TableRows[0].TableCells[0].AddParagraph()
+	para3.AddText("first cell")
 
-	para3 := w.AddParagraph()
-	para3.AddInlineDrawingFrom("testdata/fumiamayoko.png")
-
-	f, err := os.Create("TestMarshalDrawingStructure.xml")
+	f, err := os.Create("TestMarshalTableStructure.xml")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -47,7 +44,7 @@ func TestDrawingStructure(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f1, err := os.Create("TestUnmarshalDrawingStructure.xml")
+	f1, err := os.Create("TestUnmarshalTableStructure.xml")
 	if err != nil {
 		t.Fatal(err)
 	}

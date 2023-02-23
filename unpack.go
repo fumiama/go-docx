@@ -61,6 +61,8 @@ func (f *Docx) parseDocument(file *zip.File) error {
 	// f.Document.XMLWP14 = XMLNS_WP14
 	f.Document.XMLName.Space = XMLNS_W
 	f.Document.XMLName.Local = "document"
+
+	f.Document.Body.file = f
 	err = xml.NewDecoder(zf).Decode(&f.Document)
 	if err != nil {
 		return err

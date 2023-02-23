@@ -26,10 +26,11 @@ func TestUnmarshalPlainStructure(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if len(doc.Body.Paragraphs) != tc.numParagraphs {
-			t.Fatalf("We expected %d paragraphs, we got %d", tc.numParagraphs, len(doc.Body.Paragraphs))
+		if len(doc.Body.Items) != tc.numParagraphs {
+			t.Fatalf("We expected %d paragraphs, we got %d", tc.numParagraphs, len(doc.Body.Items))
 		}
-		for i, p := range doc.Body.Paragraphs {
+		for i, it := range doc.Body.Items {
+			p := it.(Paragraph)
 			if len(p.Children) == 0 {
 				t.Fatalf("We were not able to parse paragraph %d", i)
 			}
