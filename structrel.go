@@ -12,12 +12,14 @@ const (
 	REL_TARGETMODE = "External"
 )
 
+// Relationships ...
 type Relationships struct {
 	mu           sync.RWMutex
 	Xmlns        string `xml:"xmlns,attr"`
 	Relationship []Relationship
 }
 
+// Relationship ...
 type Relationship struct {
 	ID         string `xml:"Id,attr"`
 	Type       string `xml:"Type,attr"`

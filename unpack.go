@@ -76,12 +76,14 @@ func (f *Docx) parseDocRelation(file *zip.File) error {
 	}
 	defer zf.Close()
 
-	f.DocRelation.Xmlns = XMLNS_R
-	//TODO: find last rId & imageId
-	return xml.NewDecoder(zf).Decode(&f.DocRelation)
+	f.docRelation.Xmlns = XMLNS_R
+	//TODO: find last rID
+	return xml.NewDecoder(zf).Decode(&f.docRelation)
 }
 
+// parseMedia add the media into Docx struct
 func (f *Docx) parseMedia(file *zip.File) error {
+	//TODO: find last imageID
 	name := file.Name[len(MEDIA_FOLDER):]
 	zf, err := file.Open()
 	if err != nil {

@@ -6,11 +6,13 @@ import (
 	"strings"
 )
 
+// ParagraphProperties <w:pPr>
 type ParagraphProperties struct {
 	XMLName       xml.Name       `xml:"w:pPr,omitempty"`
 	Justification *Justification `xml:"w:jc,omitempty"`
 }
 
+// UnmarshalXML ...
 func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		t, err := d.Token()
@@ -34,6 +36,7 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 
 }
 
+// Paragraph <w:p>
 type Paragraph struct {
 	// XMLName    xml.Name `xml:"w:p,omitempty"`
 	Properties *ParagraphProperties
@@ -89,6 +92,7 @@ func (p *Paragraph) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	return e.EncodeToken(start.End())
 }
 
+// UnmarshalXML ...
 func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	children := make([]interface{}, 0, 64)
 	for {

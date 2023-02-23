@@ -15,9 +15,9 @@ func (p *Paragraph) AddInlineDrawing(pic []byte) (*Run, error) {
 	if err != nil {
 		return nil, err
 	}
-	idn := int(atomic.AddUintptr(&p.file.imageId, 1))
+	idn := int(atomic.AddUintptr(&p.file.imageID, 1))
 	id := strconv.Itoa(idn)
-	rId := p.file.addImage(Media{Name: "image" + id + "." + format, Data: pic})
+	rid := p.file.addImage(Media{Name: "image" + id + "." + format, Data: pic})
 	w, h := int64(sz.Width), int64(sz.Height)
 	if float64(w)/float64(h) > 1.2 {
 		h = A4_EMU_MAX_WIDTH * h / w
@@ -59,7 +59,7 @@ func (p *Paragraph) AddInlineDrawing(pic []byte) (*Run, error) {
 						},
 						BlipFill: &PICBlipFill{
 							Blip: ABlip{
-								Embed:  rId,
+								Embed:  rid,
 								Cstate: "print",
 							},
 						},
@@ -114,7 +114,7 @@ func (p *Paragraph) AddAnchorDrawing(pic []byte) (*Run, error) {
 	if err != nil {
 		return nil, err
 	}
-	idn := int(atomic.AddUintptr(&p.file.imageId, 1))
+	idn := int(atomic.AddUintptr(&p.file.imageID, 1))
 	id := strconv.Itoa(idn)
 	rId := p.file.addImage(Media{Name: "image" + id + "." + format, Data: pic})
 	w, h := int64(sz.Width), int64(sz.Height)
@@ -195,7 +195,7 @@ func (p *Paragraph) AddAnchorDrawing(pic []byte) (*Run, error) {
 	return run, nil
 }
 
-// AddInlineDrawingFrom adds drawing from file to paragraph
+// AddAnchorDrawingFrom adds drawing from file to paragraph
 func (p *Paragraph) AddAnchorDrawingFrom(file string) (*Run, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {

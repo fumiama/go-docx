@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-// This receives a zip file writer (word documents are a zip with multiple xml inside)
+// pack receives a zip file writer (word documents are a zip with multiple xml inside)
 // and writes the relevant files. Some of them come from the empty_constants file,
 // others from the actual in-memory structure
 func (f *Docx) pack(zipWriter *zip.Writer) (err error) {
@@ -16,7 +16,7 @@ func (f *Docx) pack(zipWriter *zip.Writer) (err error) {
 
 	if f.template != "" {
 		for _, name := range f.tmpfslst {
-			files[name], err = TEMP_XML_FS.Open("xml/" + f.template + "/" + name)
+			files[name], err = TemplateXMLFS.Open("xml/" + f.template + "/" + name)
 			if err != nil {
 				return
 			}
@@ -30,7 +30,7 @@ func (f *Docx) pack(zipWriter *zip.Writer) (err error) {
 		}
 	}
 
-	files["word/_rels/document.xml.rels"] = marshaller{data: &f.DocRelation}
+	files["word/_rels/document.xml.rels"] = marshaller{data: &f.docRelation}
 	files["word/document.xml"] = marshaller{data: &f.Document}
 
 	for _, m := range f.media {

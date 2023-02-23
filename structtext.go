@@ -7,11 +7,14 @@ import (
 
 // Text object contains the actual text
 type Text struct {
-	XMLName  xml.Name `xml:"w:t,omitempty"`
-	XMLSpace string   `xml:"xml:space,attr,omitempty"`
-	Text     string   `xml:",chardata"`
+	XMLName xml.Name `xml:"w:t,omitempty"`
+
+	// XMLSpace string   `xml:"xml:space,attr,omitempty"`
+
+	Text string `xml:",chardata"`
 }
 
+// UnmarshalXML ...
 func (r *Text) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		t, err := d.Token()
@@ -22,8 +25,7 @@ func (r *Text) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.CharData:
+		if tt, ok := t.(xml.CharData); ok {
 			r.Text = string(tt) // implicitly copy
 		}
 

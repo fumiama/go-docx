@@ -24,6 +24,7 @@ type Drawing struct {
 	Anchor  *WPAnchor
 }
 
+// UnmarshalXML ...
 func (r *Drawing) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		t, err := d.Token()
@@ -75,6 +76,7 @@ type WPInline struct {
 	Graphic           *AGraphic
 }
 
+// UnmarshalXML ...
 func (r *WPInline) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
@@ -180,6 +182,7 @@ type WPExtent struct {
 	CY      int64    `xml:"cy,attr"`
 }
 
+// UnmarshalXML ...
 func (r *WPExtent) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	var err error
 	for _, attr := range start.Attr {
@@ -213,6 +216,7 @@ type WPEffectExtent struct {
 	B       int64    `xml:"b,attr"`
 }
 
+// UnmarshalXML ...
 func (r *WPEffectExtent) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	var err error
 	for _, attr := range start.Attr {
@@ -254,6 +258,7 @@ type WPDocPr struct {
 	Name    string   `xml:"name,attr,omitempty"`
 }
 
+// UnmarshalXML ...
 func (r *WPDocPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
@@ -284,6 +289,7 @@ type WPCNvGraphicFramePr struct {
 	Locks   *AGraphicFrameLocks
 }
 
+// UnmarshalXML ...
 func (w *WPCNvGraphicFramePr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		t, err := d.Token()
@@ -329,6 +335,7 @@ type AGraphic struct {
 	GraphicData *AGraphicData
 }
 
+// UnmarshalXML ...
 func (a *AGraphic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
@@ -373,6 +380,7 @@ type AGraphicData struct {
 	Pic     *PICPic
 }
 
+// UnmarshalXML ...
 func (a *AGraphicData) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		t, err := d.Token()
@@ -411,6 +419,7 @@ type PICPic struct {
 	SpPr                   *PICSpPr
 }
 
+// UnmarshalXML ...
 func (p *PICPic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		t, err := d.Token()
@@ -460,6 +469,7 @@ type PICNonVisualPicProperties struct {
 	CNvPicPr                   PicCNvPicPr
 }
 
+// UnmarshalXML ...
 func (p *PICNonVisualPicProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		t, err := d.Token()
@@ -495,6 +505,7 @@ type PicCNvPicPr struct {
 	Locks   *APicLocks
 }
 
+// UnmarshalXML ...
 func (p *PicCNvPicPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	// Loop through XML tokens
 	for {
@@ -544,6 +555,7 @@ type PICBlipFill struct {
 	Stretch AStretch
 }
 
+// UnmarshalXML ...
 func (p *PICBlipFill) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		t, err := d.Token()
@@ -583,6 +595,7 @@ type ABlip struct {
 	AlphaModFix *AAlphaModFix
 }
 
+// UnmarshalXML ...
 func (a *ABlip) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
@@ -645,6 +658,7 @@ type PICSpPr struct {
 	PrstGeom APrstGeom
 }
 
+// UnmarshalXML ...
 func (p *PICSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		t, err := d.Token()
@@ -688,6 +702,7 @@ type AXfrm struct {
 	Ext     AExt
 }
 
+// UnmarshalXML ...
 func (a *AXfrm) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
@@ -779,6 +794,7 @@ type AAvLst struct {
 	RawXML  string   `xml:",innerxml"`
 }
 
+// UnmarshalXML ...
 func (a *AAvLst) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
 	var content []byte
 
@@ -838,6 +854,7 @@ type WPAnchor struct {
 	Graphic           *AGraphic
 }
 
+// UnmarshalXML ...
 func (r *WPAnchor) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
 	for _, tt := range start.Attr {
 		switch tt.Name.Local {
@@ -985,11 +1002,12 @@ type WPPositionH struct {
 	PosOffset    int64    `xml:"wp:posOffset"`
 }
 
+// UnmarshalXML ...
 func (r *WPPositionH) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for _, attr := range start.Attr {
-		switch attr.Name.Local {
-		case "relativeFrom":
+		if attr.Name.Local == "relativeFrom" {
 			r.RelativeFrom = attr.Value
+			break
 		}
 	}
 	for {
@@ -1023,11 +1041,12 @@ type WPPositionV struct {
 	PosOffset    int64    `xml:"wp:posOffset"`
 }
 
+// UnmarshalXML ...
 func (r *WPPositionV) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for _, attr := range start.Attr {
-		switch attr.Name.Local {
-		case "relativeFrom":
+		if attr.Name.Local == "relativeFrom" {
 			r.RelativeFrom = attr.Value
+			break
 		}
 	}
 	for {

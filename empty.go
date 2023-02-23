@@ -19,7 +19,7 @@ func newEmptyA4File() *Docx {
 				Paragraphs: make([]Paragraph, 0, 64),
 			},
 		},
-		DocRelation: Relationships{
+		docRelation: Relationships{
 			Xmlns: XMLNS_REL,
 			Relationship: []Relationship{
 				{
@@ -51,7 +51,7 @@ func newEmptyA4File() *Docx {
 		},
 		media:        make([]Media, 0, 64),
 		mediaNameIdx: make(map[string]int, 64),
-		rId:          5,
+		rID:          5,
 		template:     "a4",
 		tmpfslst: []string{
 			"_rels/.rels",

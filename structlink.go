@@ -13,6 +13,7 @@ type Hyperlink struct {
 	Run     Run
 }
 
+// UnmarshalXML ...
 func (r *Hyperlink) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		t, err := d.Token()

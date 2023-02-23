@@ -12,14 +12,15 @@ import (
 // Docx is the structure that allow to access the internal represntation
 // in memory of the doc (either read or about to be written)
 type Docx struct {
-	Document    Document
-	DocRelation Relationships
+	Document Document // Document is word/document.xml
+
+	docRelation Relationships // docRelation is word/_rels/document.xml.rels
 
 	media        []Media
 	mediaNameIdx map[string]int
 
-	rId     uintptr
-	imageId uintptr
+	rID     uintptr
+	imageID uintptr
 
 	template string
 	tmplfs   fs.FS

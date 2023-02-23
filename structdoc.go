@@ -25,6 +25,7 @@ func getAtt(atts []xml.Attr, name string) string {
 	return ""
 }
 
+// Body <w:body>
 type Body struct {
 	mu         sync.Mutex
 	Paragraphs []Paragraph `xml:"w:p,omitempty"`
@@ -32,6 +33,7 @@ type Body struct {
 	file *Docx
 }
 
+// UnmarshalXML ...
 func (b *Body) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		t, err := d.Token()
@@ -68,6 +70,7 @@ func (b *Body) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 }
 
+// Document <w:document>
 type Document struct {
 	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main document"`
 	XMLW    string   `xml:"xmlns:w,attr"`            // cannot be unmarshalled in
@@ -78,6 +81,7 @@ type Document struct {
 	Body Body `xml:"w:body"`
 }
 
+// UnmarshalXML ...
 func (doc *Document) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		t, err := d.Token()

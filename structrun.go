@@ -11,7 +11,7 @@ import (
 type Run struct {
 	XMLName       xml.Name       `xml:"w:r,omitempty"`
 	RunProperties *RunProperties `xml:"w:rPr,omitempty"`
-	FrontTab      []struct {     // TODO: replace with variable []RunChild
+	FrontTab      []struct {     //TODO: replace with variable []RunChild
 		XMLName xml.Name `xml:"w:tab,omitempty"`
 	}
 	InstrText string `xml:"w:instrText,omitempty"`
@@ -22,6 +22,7 @@ type Run struct {
 	}
 }
 
+// UnmarshalXML ...
 func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		t, err := d.Token()
@@ -97,6 +98,7 @@ type RunProperties struct {
 	Style    *Style    `xml:"w:pStyle,omitempty"`
 }
 
+// UnmarshalXML ...
 func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		t, err := d.Token()
