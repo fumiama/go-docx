@@ -82,7 +82,7 @@ func (p *Paragraph) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 		}
 	}
 	for _, c := range p.Children {
-		e.Encode(c)
+		err = e.Encode(c)
 		if err != nil {
 			return err
 		}

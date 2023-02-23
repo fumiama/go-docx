@@ -71,6 +71,11 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 }
 
+// WTab is the literal tab
+type WTab struct {
+	XMLName xml.Name `xml:"w:tab,omitempty"`
+}
+
 // RunProperties encapsulates visual properties of a run
 type RunProperties struct {
 	XMLName  xml.Name  `xml:"w:rPr,omitempty"`
