@@ -81,11 +81,9 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				continue
 			}
 		}
-
 	}
 
 	return nil
-
 }
 
 // WTab is the literal tab
@@ -139,11 +137,9 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 				continue
 			}
 		}
-
 	}
 
 	return nil
-
 }
 
 // RunStyle contains styling for a run

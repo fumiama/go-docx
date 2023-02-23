@@ -59,10 +59,8 @@ func (r *Drawing) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				continue
 			}
 		}
-
 	}
 	return nil
-
 }
 
 // WPInline is an element that represents an inline image within a text paragraph.
@@ -184,10 +182,8 @@ func (r *WPInline) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 				continue
 			}
 		}
-
 	}
 	return nil
-
 }
 
 // WPExtent represents the extent of a drawing in a Word document.
@@ -338,7 +334,6 @@ func (w *WPCNvGraphicFramePr) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 				continue
 			}
 		}
-
 	}
 	return nil
 }
@@ -393,7 +388,6 @@ func (a *AGraphic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				continue
 			}
 		}
-
 	}
 	return nil
 }
@@ -434,7 +428,6 @@ func (a *AGraphicData) UnmarshalXML(d *xml.Decoder, start xml.StartElement) erro
 				continue
 			}
 		}
-
 	}
 	return nil
 }
@@ -490,7 +483,6 @@ func (p *PICPic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				continue
 			}
 		}
-
 	}
 	return nil
 }
@@ -531,7 +523,6 @@ func (p *PICNonVisualPicProperties) UnmarshalXML(d *xml.Decoder, start xml.Start
 				continue
 			}
 		}
-
 	}
 	return nil
 }
@@ -627,7 +618,6 @@ func (p *PICBlipFill) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 				continue
 			}
 		}
-
 	}
 	return nil
 }
@@ -678,7 +668,6 @@ func (a *ABlip) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				continue
 			}
 		}
-
 	}
 	return nil
 }
@@ -740,7 +729,6 @@ func (p *PICSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				continue
 			}
 		}
-
 	}
 	return nil
 }
@@ -816,7 +804,6 @@ func (a *AXfrm) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error)
 				continue
 			}
 		}
-
 	}
 	return nil
 }

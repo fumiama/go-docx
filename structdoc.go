@@ -65,10 +65,8 @@ func (b *Body) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				return err
 			}
 		}
-
 	}
 	return nil
-
 }
 
 // Document <w:document>
@@ -106,8 +104,6 @@ func (doc *Document) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 				return err
 			}
 		}
-
 	}
 	return nil
-
 }

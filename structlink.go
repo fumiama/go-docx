@@ -37,8 +37,6 @@ func (r *Hyperlink) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				return err
 			}
 		}
-
 	}
 	return nil
-
 }

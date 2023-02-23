@@ -34,10 +34,8 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 				continue
 			}
 		}
-
 	}
 	return nil
-
 }
 
 // Paragraph <w:p>
@@ -177,9 +175,7 @@ func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			}
 			children = append(children, elem)
 		}
-
 	}
 	p.Children = children
 	return nil
-
 }
