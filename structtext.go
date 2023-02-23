@@ -28,7 +28,6 @@ func (r *Text) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		if tt, ok := t.(xml.CharData); ok {
 			r.Text = string(tt) // implicitly copy
 		}
-
 	}
 
 	return nil
