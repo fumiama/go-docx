@@ -1,3 +1,4 @@
+// Package main is a function demo
 package main
 
 import (
