@@ -72,6 +72,7 @@ func (p *Paragraph) String() string {
 	return sb.String()
 }
 
+// MarshalXML ...
 func (p *Paragraph) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	err := e.EncodeToken(start)
 	if err != nil {

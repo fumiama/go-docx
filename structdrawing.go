@@ -634,6 +634,7 @@ func (a *ABlip) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	return nil
 }
 
+// AAlphaModFix ...
 type AAlphaModFix struct {
 	XMLName xml.Name `xml:"a:alphaModFix,omitempty"`
 	Amount  int      `xml:"amt,attr"`

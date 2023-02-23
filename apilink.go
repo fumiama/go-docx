@@ -6,9 +6,9 @@ const (
 
 // AddLink adds an hyperlink to paragraph
 func (p *Paragraph) AddLink(text string, link string) *Hyperlink {
-	rId := p.file.addLinkRelation(link)
+	rid := p.file.addLinkRelation(link)
 	hyperlink := &Hyperlink{
-		ID: rId,
+		ID: rid,
 		Run: Run{
 			RunProperties: &RunProperties{
 				RunStyle: &RunStyle{

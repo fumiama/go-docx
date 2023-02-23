@@ -77,7 +77,7 @@ func Parse(reader io.ReaderAt, size int64) (doc *Docx, err error) {
 	return
 }
 
-// Write allows to save a docx to a writer
+// WriteTo allows to save a docx to a writer
 func (f *Docx) WriteTo(writer io.Writer) (_ int64, err error) {
 	zipWriter := zip.NewWriter(writer)
 	defer zipWriter.Close()
