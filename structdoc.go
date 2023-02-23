@@ -42,8 +42,7 @@ func (b *Body) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			if tt.Name.Local == "p" {
 				var value Paragraph
 				err = d.DecodeElement(&value, &tt)
@@ -89,8 +88,7 @@ func (doc *Document) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			if tt.Name.Local == "body" {
 				err = d.DecodeElement(&doc.Body, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {

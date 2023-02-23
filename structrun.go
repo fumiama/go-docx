@@ -32,8 +32,7 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "rPr":
 				var value RunProperties
@@ -108,8 +107,7 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "color":
 				var value Color

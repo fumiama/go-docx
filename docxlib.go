@@ -1,3 +1,5 @@
+// Package docxlib is one of the most functional libraries to read and write .docx
+// (a.k.a. Microsoft Word documents or ECMA-376 Office Open XML) files in Go.
 package docxlib
 
 import (

@@ -34,8 +34,7 @@ func (r *Drawing) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "inline":
 				r.Inline = new(WPInline)
@@ -112,8 +111,7 @@ func (r *WPInline) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "extent":
 				r.Extent = new(WPExtent)
@@ -296,8 +294,7 @@ func (w *WPCNvGraphicFramePr) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "graphicFrameLocks":
 				var value AGraphicFrameLocks
@@ -350,8 +347,7 @@ func (a *AGraphic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "graphicData":
 				var value AGraphicData
@@ -387,8 +383,7 @@ func (a *AGraphicData) UnmarshalXML(d *xml.Decoder, start xml.StartElement) erro
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "pic":
 				var value PICPic
@@ -426,8 +421,7 @@ func (p *PICPic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "nvPicPr":
 				var value PICNonVisualPicProperties
@@ -476,8 +470,7 @@ func (p *PICNonVisualPicProperties) UnmarshalXML(d *xml.Decoder, start xml.Start
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "cNvPr":
 				p.NonVisualDrawingProperties.ID = getAtt(tt.Attr, "id")
@@ -514,8 +507,7 @@ func (p *PicCNvPicPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 		}
 
 		// Switch based on token type
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "picLocks":
 				var value APicLocks
@@ -562,8 +554,7 @@ func (p *PICBlipFill) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "blip":
 				err = d.DecodeElement(&p.Blip, &tt)
@@ -612,8 +603,7 @@ func (a *ABlip) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "alphaModFix":
 				var value AAlphaModFix
@@ -665,8 +655,7 @@ func (p *PICSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "xfrm":
 				err = d.DecodeElement(&p.Xfrm, &tt)
@@ -730,8 +719,7 @@ func (a *AXfrm) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error)
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "off":
 				a.Off.X, err = strconv.ParseInt(getAtt(tt.Attr, "x"), 10, 64)
@@ -914,8 +902,7 @@ func (r *WPAnchor) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "simplePos":
 				r.SimplePosXY = new(WPSimplePos)
@@ -1014,8 +1001,7 @@ func (r *WPPositionH) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "posOffset":
 				err = d.DecodeElement(&r.PosOffset, &tt)
@@ -1053,8 +1039,7 @@ func (r *WPPositionV) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "posOffset":
 				err = d.DecodeElement(&r.PosOffset, &tt)

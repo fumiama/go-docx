@@ -20,8 +20,7 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 		if err != nil {
 			return err
 		}
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "jc":
 				p.Justification = &Justification{Val: getAtt(tt.Attr, "val")}
@@ -100,8 +99,7 @@ func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		if err != nil {
 			return err
 		}
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			var elem interface{}
 			switch tt.Name.Local {
 			case "hyperlink":

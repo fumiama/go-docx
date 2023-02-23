@@ -23,8 +23,7 @@ func (r *Hyperlink) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			return err
 		}
 
-		switch tt := t.(type) {
-		case xml.StartElement:
+		if tt, ok := t.(xml.StartElement); ok {
 			if tt.Name.Local == "r" {
 				err = d.DecodeElement(&r.Run, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {

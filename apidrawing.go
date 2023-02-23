@@ -97,14 +97,14 @@ func (p *Paragraph) AddInlineDrawingFrom(file string) (*Run, error) {
 }
 
 // Size of the inline drawing by EMU
-func (in *WPInline) Size(w, h int64) {
-	if in.Extent != nil {
-		in.Extent.CX = w
-		in.Extent.CY = h
+func (r *WPInline) Size(w, h int64) {
+	if r.Extent != nil {
+		r.Extent.CX = w
+		r.Extent.CY = h
 	}
-	if in.Graphic != nil && in.Graphic.GraphicData != nil && in.Graphic.GraphicData.Pic != nil && in.Graphic.GraphicData.Pic.SpPr != nil {
-		in.Graphic.GraphicData.Pic.SpPr.Xfrm.Ext.CX = w
-		in.Graphic.GraphicData.Pic.SpPr.Xfrm.Ext.CY = h
+	if r.Graphic != nil && r.Graphic.GraphicData != nil && r.Graphic.GraphicData.Pic != nil && r.Graphic.GraphicData.Pic.SpPr != nil {
+		r.Graphic.GraphicData.Pic.SpPr.Xfrm.Ext.CX = w
+		r.Graphic.GraphicData.Pic.SpPr.Xfrm.Ext.CY = h
 	}
 }
 
@@ -205,13 +205,13 @@ func (p *Paragraph) AddAnchorDrawingFrom(file string) (*Run, error) {
 }
 
 // Size of the anchor drawing by EMU
-func (a *WPAnchor) Size(w, h int64) {
-	if a.Extent != nil {
-		a.Extent.CX = w
-		a.Extent.CY = h
+func (r *WPAnchor) Size(w, h int64) {
+	if r.Extent != nil {
+		r.Extent.CX = w
+		r.Extent.CY = h
 	}
-	if a.Graphic != nil && a.Graphic.GraphicData != nil && a.Graphic.GraphicData.Pic != nil && a.Graphic.GraphicData.Pic.SpPr != nil {
-		a.Graphic.GraphicData.Pic.SpPr.Xfrm.Ext.CX = w
-		a.Graphic.GraphicData.Pic.SpPr.Xfrm.Ext.CY = h
+	if r.Graphic != nil && r.Graphic.GraphicData != nil && r.Graphic.GraphicData.Pic != nil && r.Graphic.GraphicData.Pic.SpPr != nil {
+		r.Graphic.GraphicData.Pic.SpPr.Xfrm.Ext.CX = w
+		r.Graphic.GraphicData.Pic.SpPr.Xfrm.Ext.CY = h
 	}
 }

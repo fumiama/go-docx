@@ -89,7 +89,7 @@ func main() {
 		panic(err)
 	}
 	size := fileinfo.Size()
-	doc, err := docxlib.Parse(readFile, int64(size))
+	doc, err := docxlib.Parse(readFile, size)
 	if err != nil {
 		panic(err)
 	}
