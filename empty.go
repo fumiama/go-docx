@@ -15,16 +15,13 @@ func newEmptyA4File() *Docx {
 			XMLR:  XMLNS_R,
 			XMLWP: XMLNS_WP,
 			// XMLWP14: XMLNS_WP14,
-			Body: &Body{
-				XMLName: xml.Name{
-					Space: "w",
-				},
-				Paragraphs: make([]*Paragraph, 0, 64),
+			Body: Body{
+				Paragraphs: make([]Paragraph, 0, 64),
 			},
 		},
 		DocRelation: Relationships{
 			Xmlns: XMLNS_REL,
-			Relationships: []*Relationship{
+			Relationship: []Relationship{
 				{
 					ID:     "rId1",
 					Type:   `http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles`,
@@ -69,6 +66,6 @@ func newEmptyA4File() *Docx {
 		},
 		buf: bytes.NewBuffer(make([]byte, 0, 1024*1024*4)),
 	}
-	docx.Document.file = docx
+	docx.Document.Body.file = docx
 	return docx
 }

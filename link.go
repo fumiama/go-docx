@@ -17,14 +17,14 @@ var (
 //
 //	this func is not thread-safe
 func (f *Docx) addLinkRelation(link string) string {
-	rel := &Relationship{
+	rel := Relationship{
 		ID:         "rId" + strconv.Itoa(int(atomic.AddUintptr(&f.rId, 1))),
 		Type:       REL_HYPERLINK,
 		Target:     link,
 		TargetMode: REL_TARGETMODE,
 	}
 
-	f.DocRelation.Relationships = append(f.DocRelation.Relationships, rel)
+	f.DocRelation.Relationship = append(f.DocRelation.Relationship, rel)
 
 	return rel.ID
 }
@@ -33,13 +33,13 @@ func (f *Docx) addLinkRelation(link string) string {
 //
 //	this func is not thread-safe
 func (f *Docx) addImageRelation(m Media) string {
-	rel := &Relationship{
+	rel := Relationship{
 		ID:     "rId" + strconv.Itoa(int(atomic.AddUintptr(&f.rId, 1))),
 		Type:   REL_IMAGE,
 		Target: "media/" + m.Name,
 	}
 
-	f.DocRelation.Relationships = append(f.DocRelation.Relationships, rel)
+	f.DocRelation.Relationship = append(f.DocRelation.Relationship, rel)
 
 	return rel.ID
 }
@@ -48,7 +48,7 @@ func (f *Docx) addImageRelation(m Media) string {
 func (f *Docx) ReferTarget(id string) (string, error) {
 	f.DocRelation.mu.RLock()
 	defer f.DocRelation.mu.RUnlock()
-	for _, a := range f.DocRelation.Relationships {
+	for _, a := range f.DocRelation.Relationship {
 		if a.ID == id {
 			return a.Target, nil
 		}
@@ -60,7 +60,7 @@ func (f *Docx) ReferTarget(id string) (string, error) {
 func (f *Docx) ReferID(target string) (string, error) {
 	f.DocRelation.mu.RLock()
 	defer f.DocRelation.mu.RUnlock()
-	for _, a := range f.DocRelation.Relationships {
+	for _, a := range f.DocRelation.Relationship {
 		if a.Target == target {
 			return a.ID, nil
 		}

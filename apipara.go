@@ -2,14 +2,14 @@ package docxlib
 
 // AddParagraph adds a new paragraph
 func (f *Docx) AddParagraph() *Paragraph {
-	p := &Paragraph{
+	f.Document.Body.mu.Lock()
+	defer f.Document.Body.mu.Unlock()
+	f.Document.Body.Paragraphs = append(f.Document.Body.Paragraphs, Paragraph{
 		Children: make([]interface{}, 0, 64),
 		file:     f,
-	}
+	})
 
-	f.Document.Body.Paragraphs = append(f.Document.Body.Paragraphs, p)
-
-	return p
+	return &f.Document.Body.Paragraphs[len(f.Document.Body.Paragraphs)-1]
 }
 
 // Justification allows to set para's horizonal alignment

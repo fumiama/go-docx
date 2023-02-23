@@ -31,7 +31,7 @@ func (f *Docx) pack(zipWriter *zip.Writer) (err error) {
 	}
 
 	files["word/_rels/document.xml.rels"] = marshaller{data: &f.DocRelation}
-	files["word/document.xml"] = marshaller{data: f.Document}
+	files["word/document.xml"] = marshaller{data: &f.Document}
 
 	for _, m := range f.media {
 		files[m.String()] = bytes.NewReader(m.Data)

@@ -1,7 +1,6 @@
 package docxlib
 
 import (
-	"encoding/xml"
 	"sync"
 )
 
@@ -14,16 +13,14 @@ const (
 )
 
 type Relationships struct {
-	mu            sync.RWMutex
-	XMLName       xml.Name        `xml:"Relationships"`
-	Xmlns         string          `xml:"xmlns,attr"`
-	Relationships []*Relationship `xml:"Relationship"`
+	mu           sync.RWMutex
+	Xmlns        string `xml:"xmlns,attr"`
+	Relationship []Relationship
 }
 
 type Relationship struct {
-	XMLName    xml.Name `xml:"Relationship"`
-	ID         string   `xml:"Id,attr"`
-	Type       string   `xml:"Type,attr"`
-	Target     string   `xml:"Target,attr"`
-	TargetMode string   `xml:"TargetMode,attr,omitempty"`
+	ID         string `xml:"Id,attr"`
+	Type       string `xml:"Type,attr"`
+	Target     string `xml:"Target,attr"`
+	TargetMode string `xml:"TargetMode,attr,omitempty"`
 }

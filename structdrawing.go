@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"io"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -38,10 +39,16 @@ func (r *Drawing) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			switch tt.Name.Local {
 			case "inline":
 				r.Inline = new(WPInline)
-				d.DecodeElement(r.Inline, &tt)
+				err = d.DecodeElement(r.Inline, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 			case "anchor":
 				r.Anchor = new(WPAnchor)
-				d.DecodeElement(r.Anchor, &tt)
+				err = d.DecodeElement(r.Anchor, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 			default:
 				continue
 			}
@@ -138,14 +145,23 @@ func (r *WPInline) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 				}
 			case "docPr":
 				r.DocPr = new(WPDocPr)
-				d.DecodeElement(r.DocPr, &tt)
+				err = d.DecodeElement(r.DocPr, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 			case "cNvGraphicFramePr":
 				var value WPCNvGraphicFramePr
-				d.DecodeElement(&value, &tt)
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 				r.CNvGraphicFramePr = &value
 			case "graphic":
 				var value AGraphic
-				d.DecodeElement(&value, &tt)
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 				r.Graphic = &value
 			default:
 				continue
@@ -285,7 +301,10 @@ func (w *WPCNvGraphicFramePr) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 			switch tt.Name.Local {
 			case "graphicFrameLocks":
 				var value AGraphicFrameLocks
-				d.DecodeElement(&value, &tt)
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 				value.NoChangeAspect, err = strconv.Atoi(getAtt(tt.Attr, "noChangeAspect"))
 				if err != nil {
 					return err
@@ -336,7 +355,10 @@ func (a *AGraphic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			switch tt.Name.Local {
 			case "graphicData":
 				var value AGraphicData
-				d.DecodeElement(&value, &tt)
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 				value.URI = getAtt(tt.Attr, "uri")
 				a.GraphicData = &value
 			default:
@@ -370,7 +392,10 @@ func (a *AGraphicData) UnmarshalXML(d *xml.Decoder, start xml.StartElement) erro
 			switch tt.Name.Local {
 			case "pic":
 				var value PICPic
-				d.DecodeElement(&value, &tt)
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 				value.XMLPIC = getAtt(tt.Attr, "pic")
 				a.Pic = &value
 			default:
@@ -406,15 +431,24 @@ func (p *PICPic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			switch tt.Name.Local {
 			case "nvPicPr":
 				var value PICNonVisualPicProperties
-				d.DecodeElement(&value, &tt)
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 				p.NonVisualPicProperties = &value
 			case "blipFill":
 				var value PICBlipFill
-				d.DecodeElement(&value, &tt)
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 				p.BlipFill = &value
 			case "spPr":
 				var value PICSpPr
-				d.DecodeElement(&value, &tt)
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 				p.SpPr = &value
 			default:
 				continue
@@ -449,7 +483,10 @@ func (p *PICNonVisualPicProperties) UnmarshalXML(d *xml.Decoder, start xml.Start
 				p.NonVisualDrawingProperties.ID = getAtt(tt.Attr, "id")
 				p.NonVisualDrawingProperties.Name = getAtt(tt.Attr, "name")
 			case "cNvPicPr":
-				d.DecodeElement(&p.CNvPicPr, &tt)
+				err = d.DecodeElement(&p.CNvPicPr, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 			default:
 				continue
 			}
@@ -529,9 +566,15 @@ func (p *PICBlipFill) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 		case xml.StartElement:
 			switch tt.Name.Local {
 			case "blip":
-				d.DecodeElement(&p.Blip, &tt)
+				err = d.DecodeElement(&p.Blip, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 			case "stretch":
-				d.DecodeElement(&p.Stretch, &tt)
+				err = d.DecodeElement(&p.Stretch, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 			default:
 				continue
 			}
@@ -626,9 +669,15 @@ func (p *PICSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		case xml.StartElement:
 			switch tt.Name.Local {
 			case "xfrm":
-				d.DecodeElement(&p.Xfrm, &tt)
+				err = d.DecodeElement(&p.Xfrm, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 			case "prstGeom":
-				d.DecodeElement(&p.PrstGeom, &tt)
+				err = d.DecodeElement(&p.PrstGeom, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 				p.PrstGeom.Prst = getAtt(tt.Attr, "prst")
 			default:
 				continue
@@ -881,17 +930,29 @@ func (r *WPAnchor) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 			case "positionH":
 				r.PositionH = new(WPPositionH)
 				// r.PositionH.RelativeFrom = getAtt(tt.Attr, "relativeFrom")
-				d.DecodeElement(&r.PositionH, &tt)
+				err = d.DecodeElement(&r.PositionH, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 			case "positionV":
 				r.PositionV = new(WPPositionV)
 				// r.PositionV.RelativeFrom = getAtt(tt.Attr, "relativeFrom")
-				d.DecodeElement(&r.PositionV, &tt)
+				err = d.DecodeElement(&r.PositionV, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 			case "extent":
 				r.Extent = new(WPExtent)
-				d.DecodeElement(&r.Extent, &tt)
+				err = d.DecodeElement(&r.Extent, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 			case "effectExtent":
 				r.EffectExtent = new(WPEffectExtent)
-				d.DecodeElement(&r.EffectExtent, &tt)
+				err = d.DecodeElement(&r.EffectExtent, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 			case "wrapNone":
 				r.WrapNone = &struct{}{}
 			case "wrapSquare":
@@ -899,13 +960,22 @@ func (r *WPAnchor) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 				r.WrapSquare.WrapText = getAtt(tt.Attr, "wrapText")
 			case "docPr":
 				r.DocPr = new(WPDocPr)
-				d.DecodeElement(r.DocPr, &tt)
+				err = d.DecodeElement(r.DocPr, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 			case "cNvGraphicFramePr":
 				r.CNvGraphicFramePr = new(WPCNvGraphicFramePr)
-				d.DecodeElement(r.CNvGraphicFramePr, &tt)
+				err = d.DecodeElement(r.CNvGraphicFramePr, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 			case "graphic":
 				r.Graphic = new(AGraphic)
-				d.DecodeElement(&r.Graphic, &tt)
+				err = d.DecodeElement(&r.Graphic, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 			default:
 				continue
 			}
@@ -949,7 +1019,7 @@ func (r *WPPositionH) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 			switch tt.Name.Local {
 			case "posOffset":
 				err = d.DecodeElement(&r.PosOffset, &tt)
-				if err != nil {
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
 			default:
@@ -988,7 +1058,7 @@ func (r *WPPositionV) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 			switch tt.Name.Local {
 			case "posOffset":
 				err = d.DecodeElement(&r.PosOffset, &tt)
-				if err != nil {
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
 			default:

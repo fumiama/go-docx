@@ -36,7 +36,7 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 }
 
 type Paragraph struct {
-	XMLName    xml.Name `xml:"w:p,omitempty"`
+	// XMLName    xml.Name `xml:"w:p,omitempty"`
 	Properties *ParagraphProperties
 	Children   []interface{} // Children will generate an unnecessary tag <Children> ... </Children> and we skip it by a self-defined xml.Marshaler
 
@@ -106,7 +106,10 @@ func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			switch tt.Name.Local {
 			case "hyperlink":
 				var value Hyperlink
-				d.DecodeElement(&value, &tt)
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 				id := getAtt(tt.Attr, "id")
 				anchor := getAtt(tt.Attr, "anchor")
 				if id != "" {
@@ -118,15 +121,24 @@ func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				elem = &value
 			case "r":
 				var value Run
-				d.DecodeElement(&value, &tt)
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 				elem = &value
 			case "rPr":
 				var value RunProperties
-				d.DecodeElement(&value, &tt)
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 				elem = &value
 			case "pPr":
 				var value ParagraphProperties
-				d.DecodeElement(&value, &tt)
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 				p.Properties = &value
 				continue
 			default:

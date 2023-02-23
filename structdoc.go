@@ -3,6 +3,8 @@ package docxlib
 import (
 	"encoding/xml"
 	"io"
+	"strings"
+	"sync"
 )
 
 const (
@@ -24,27 +26,13 @@ func getAtt(atts []xml.Attr, name string) string {
 }
 
 type Body struct {
-	XMLName    xml.Name     `xml:"w:body"`
-	Paragraphs []*Paragraph `xml:"w:p,omitempty"`
-}
-
-type Document struct {
-	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main document"`
-	XMLW    string   `xml:"xmlns:w,attr"`              // cannot be unmarshalled in
-	XMLR    string   `xml:"xmlns:r,attr,omitempty"`    // cannot be unmarshalled in
-	XMLWP   string   `xml:"xmlns:wp,attr,omitempty"`   // cannot be unmarshalled in
-	XMLWP14 string   `xml:"xmlns:wp14,attr,omitempty"` // cannot be unmarshalled in
-	Body    *Body
+	mu         sync.Mutex
+	Paragraphs []Paragraph `xml:"w:p,omitempty"`
 
 	file *Docx
 }
 
-func (doc *Document) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	if doc.Body == nil {
-		doc.Body = &Body{
-			Paragraphs: make([]*Paragraph, 0, 64),
-		}
-	}
+func (b *Body) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -56,18 +44,58 @@ func (doc *Document) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 
 		switch tt := t.(type) {
 		case xml.StartElement:
-			switch tt.Name.Local {
-			case "body":
-			case "p":
+			if tt.Name.Local == "p" {
 				var value Paragraph
-				d.DecodeElement(&value, &tt)
-				if len(value.Children) > 0 {
-					value.file = doc.file
-					doc.Body.Paragraphs = append(doc.Body.Paragraphs, &value)
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
 				}
-			default:
-				d.Skip()
+				if len(value.Children) > 0 {
+					value.file = b.file
+					b.mu.Lock()
+					b.Paragraphs = append(b.Paragraphs, value)
+					b.mu.Unlock()
+				}
 				continue
+			}
+			err = d.Skip() // skip unsupported tags
+			if err != nil {
+				return err
+			}
+		}
+
+	}
+	return nil
+
+}
+
+type Document struct {
+	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main document"`
+	XMLW    string   `xml:"xmlns:w,attr"`            // cannot be unmarshalled in
+	XMLR    string   `xml:"xmlns:r,attr,omitempty"`  // cannot be unmarshalled in
+	XMLWP   string   `xml:"xmlns:wp,attr,omitempty"` // cannot be unmarshalled in
+	// XMLWP14 string   `xml:"xmlns:wp14,attr,omitempty"` // cannot be unmarshalled in
+
+	Body Body `xml:"w:body"`
+}
+
+func (doc *Document) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		switch tt := t.(type) {
+		case xml.StartElement:
+			if tt.Name.Local == "body" {
+				err = d.DecodeElement(&doc.Body, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 			}
 		}
 

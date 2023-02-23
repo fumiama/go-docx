@@ -3,6 +3,7 @@ package docxlib
 import (
 	"encoding/xml"
 	"io"
+	"strings"
 )
 
 // Run is part of a paragraph that has its own style. It could be
@@ -36,19 +37,31 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			switch tt.Name.Local {
 			case "rPr":
 				var value RunProperties
-				d.DecodeElement(&value, &tt)
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 				r.RunProperties = &value
 			case "instrText":
 				var value string
-				d.DecodeElement(&value, &tt)
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 				r.InstrText = value
 			case "t":
 				var value Text
-				d.DecodeElement(&value, &tt)
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 				r.Text = &value
 			case "drawing":
 				var value Drawing
-				d.DecodeElement(&value, &tt)
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 				r.Drawing = &value
 			case "tab":
 				if r.InstrText == "" && r.Text == nil && r.Drawing == nil {
@@ -159,6 +172,6 @@ type Size struct {
 //		both：两端对齐。
 //		distribute：分散对齐。
 type Justification struct {
-	XMLName xml.Name `xml:"w:jc"`
-	Val     string   `xml:"w:val,attr"`
+	// XMLName xml.Name `xml:"w:jc"`
+	Val string `xml:"w:val,attr"`
 }
