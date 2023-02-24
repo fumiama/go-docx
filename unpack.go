@@ -43,7 +43,7 @@ func unpack(zipReader *zip.Reader) (docx *Docx, err error) {
 		// fill remaining files into tmpfslst
 		docx.tmpfslst = append(docx.tmpfslst, f.Name)
 	}
-	docx.buf = bytes.NewBuffer(make([]byte, 0, 1024*1024*4))
+	docx.buf = bytes.NewBuffer(make([]byte, 0, 1024*1024))
 	return
 }
 

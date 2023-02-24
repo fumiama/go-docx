@@ -64,7 +64,7 @@ func newEmptyA4File() *Docx {
 			"word/webSettings.xml",
 			"[Content_Types].xml",
 		},
-		buf: bytes.NewBuffer(make([]byte, 0, 1024*1024*4)),
+		buf: bytes.NewBuffer(make([]byte, 0, 1024*1024)),
 	}
 	docx.Document.Body.file = docx
 	return docx

@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/fumiama/docxlib"
 )
@@ -150,7 +151,9 @@ func main() {
 
 	}
 	if *unm {
-		f, err := os.Create("unmarshal_" + *fileLocation)
+		i := strings.LastIndex(*fileLocation, "/")
+		name := (*fileLocation)[:i+1] + "unmarshal_" + (*fileLocation)[i+1:]
+		f, err := os.Create(name)
 		if err != nil {
 			panic(err)
 		}
@@ -174,7 +177,7 @@ func main() {
 				fmt.Printf("[%d] ", x)
 				for y, c := range r.TableCells {
 					if len(c.Paragraphs) > 0 && len(c.Paragraphs[0].Children) > 0 {
-						fmt.Printf("<%d> %s\t", y, c.Paragraphs[0].Children[0].(*docxlib.Run).Text.Text)
+						fmt.Printf("<%d> %v\t", y, &c.Paragraphs[0])
 					} else {
 						fmt.Print("\t")
 					}

@@ -128,31 +128,33 @@ func (r *WPInline) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 			switch tt.Name.Local {
 			case "extent":
 				r.Extent = new(WPExtent)
-				r.Extent.CX, err = strconv.ParseInt(getAtt(tt.Attr, "cx"), 10, 64)
-				if err != nil {
-					return err
-				}
-				r.Extent.CY, err = strconv.ParseInt(getAtt(tt.Attr, "cy"), 10, 64)
-				if err != nil {
-					return err
+				for _, v := range tt.Attr {
+					switch v.Name.Local {
+					case "cx":
+						r.Extent.CX, err = strconv.ParseInt(v.Value, 10, 64)
+					case "cy":
+						r.Extent.CY, err = strconv.ParseInt(v.Value, 10, 64)
+					}
+					if err != nil {
+						return err
+					}
 				}
 			case "effectExtent":
 				r.EffectExtent = new(WPEffectExtent)
-				r.EffectExtent.L, err = strconv.ParseInt(getAtt(tt.Attr, "l"), 10, 64)
-				if err != nil {
-					return err
-				}
-				r.EffectExtent.T, err = strconv.ParseInt(getAtt(tt.Attr, "t"), 10, 64)
-				if err != nil {
-					return err
-				}
-				r.EffectExtent.R, err = strconv.ParseInt(getAtt(tt.Attr, "r"), 10, 64)
-				if err != nil {
-					return err
-				}
-				r.EffectExtent.B, err = strconv.ParseInt(getAtt(tt.Attr, "b"), 10, 64)
-				if err != nil {
-					return err
+				for _, v := range tt.Attr {
+					switch v.Name.Local {
+					case "l":
+						r.EffectExtent.L, err = strconv.ParseInt(v.Value, 10, 64)
+					case "t":
+						r.EffectExtent.T, err = strconv.ParseInt(v.Value, 10, 64)
+					case "r":
+						r.EffectExtent.R, err = strconv.ParseInt(v.Value, 10, 64)
+					case "b":
+						r.EffectExtent.B, err = strconv.ParseInt(v.Value, 10, 64)
+					}
+					if err != nil {
+						return err
+					}
 				}
 			case "docPr":
 				r.DocPr = new(WPDocPr)
@@ -321,7 +323,11 @@ func (w *WPCNvGraphicFramePr) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
-				value.NoChangeAspect, err = strconv.Atoi(getAtt(tt.Attr, "noChangeAspect"))
+				v := getAtt(tt.Attr, "noChangeAspect")
+				if v == "" {
+					continue
+				}
+				value.NoChangeAspect, err = strconv.Atoi(v)
 				if err != nil {
 					return err
 				}
@@ -550,7 +556,11 @@ func (p *PicCNvPicPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 			switch tt.Name.Local {
 			case "picLocks":
 				var value APicLocks
-				value.NoChangeAspect, err = strconv.Atoi(getAtt(tt.Attr, "noChangeAspect"))
+				v := getAtt(tt.Attr, "noChangeAspect")
+				if v == "" {
+					continue
+				}
+				value.NoChangeAspect, err = strconv.Atoi(v)
 				if err != nil {
 					return err
 				}
@@ -655,7 +665,11 @@ func (a *ABlip) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			switch tt.Name.Local {
 			case "alphaModFix":
 				var value AAlphaModFix
-				value.Amount, err = strconv.Atoi(getAtt(tt.Attr, "amt"))
+				v := getAtt(tt.Attr, "amt")
+				if v == "" {
+					continue
+				}
+				value.Amount, err = strconv.Atoi(v)
 				if err != nil {
 					return err
 				}
@@ -779,22 +793,28 @@ func (a *AXfrm) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error)
 		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "off":
-				a.Off.X, err = strconv.ParseInt(getAtt(tt.Attr, "x"), 10, 64)
-				if err != nil {
-					return err
-				}
-				a.Off.Y, err = strconv.ParseInt(getAtt(tt.Attr, "y"), 10, 64)
-				if err != nil {
-					return err
+				for _, v := range tt.Attr {
+					switch v.Name.Local {
+					case "x":
+						a.Off.X, err = strconv.ParseInt(v.Value, 10, 64)
+					case "y":
+						a.Off.Y, err = strconv.ParseInt(v.Value, 10, 64)
+					}
+					if err != nil {
+						return err
+					}
 				}
 			case "ext":
-				a.Ext.CX, err = strconv.ParseInt(getAtt(tt.Attr, "cx"), 10, 64)
-				if err != nil {
-					return err
-				}
-				a.Ext.CY, err = strconv.ParseInt(getAtt(tt.Attr, "cy"), 10, 64)
-				if err != nil {
-					return err
+				for _, v := range tt.Attr {
+					switch v.Name.Local {
+					case "cx":
+						a.Ext.CX, err = strconv.ParseInt(v.Value, 10, 64)
+					case "cy":
+						a.Ext.CY, err = strconv.ParseInt(v.Value, 10, 64)
+					}
+					if err != nil {
+						return err
+					}
 				}
 			default:
 				err = d.Skip() // skip unsupported tags
@@ -976,13 +996,16 @@ func (r *WPAnchor) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 			switch tt.Name.Local {
 			case "simplePos":
 				r.SimplePosXY = new(WPSimplePos)
-				r.SimplePosXY.X, err = strconv.ParseInt(getAtt(tt.Attr, "x"), 10, 64)
-				if err != nil {
-					return err
-				}
-				r.SimplePosXY.Y, err = strconv.ParseInt(getAtt(tt.Attr, "y"), 10, 64)
-				if err != nil {
-					return err
+				for _, v := range tt.Attr {
+					switch v.Name.Local {
+					case "x":
+						r.SimplePosXY.X, err = strconv.ParseInt(v.Value, 10, 64)
+					case "y":
+						r.SimplePosXY.Y, err = strconv.ParseInt(v.Value, 10, 64)
+					}
+					if err != nil {
+						return err
+					}
 				}
 			case "positionH":
 				r.PositionH = new(WPPositionH)

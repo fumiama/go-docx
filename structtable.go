@@ -484,14 +484,22 @@ func (r *WTableCellProperties) UnmarshalXML(d *xml.Decoder, start xml.StartEleme
 			switch tt.Name.Local {
 			case "tcW":
 				r.TableCellWidth = new(WTableCellWidth)
-				r.TableCellWidth.W, err = strconv.ParseInt(getAtt(tt.Attr, "w"), 10, 64)
+				v := getAtt(tt.Attr, "w")
+				if v == "" {
+					continue
+				}
+				r.TableCellWidth.W, err = strconv.ParseInt(v, 10, 64)
 				if err != nil {
 					return err
 				}
 				r.TableCellWidth.Type = getAtt(tt.Attr, "type")
 			case "gridSpan":
 				r.GridSpan = new(WGridSpan)
-				r.GridSpan.Val, err = strconv.Atoi(getAtt(tt.Attr, "val"))
+				v := getAtt(tt.Attr, "val")
+				if v == "" {
+					continue
+				}
+				r.GridSpan.Val, err = strconv.Atoi(v)
 				if err != nil {
 					return err
 				}
