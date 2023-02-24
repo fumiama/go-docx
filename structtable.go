@@ -417,7 +417,7 @@ type WTableCell struct {
 }
 
 // UnmarshalXML ...
-func (r *WTableCell) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (c *WTableCell) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -436,10 +436,10 @@ func (r *WTableCell) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 					return err
 				}
 				if len(value.Children) > 0 {
-					value.file = r.file
-					r.mu.Lock()
-					r.Paragraphs = append(r.Paragraphs, value)
-					r.mu.Unlock()
+					value.file = c.file
+					c.mu.Lock()
+					c.Paragraphs = append(c.Paragraphs, value)
+					c.mu.Unlock()
 				}
 			case "tcPr":
 				var value WTableCellProperties
@@ -447,7 +447,7 @@ func (r *WTableCell) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
-				r.TableCellProperties = &value
+				c.TableCellProperties = &value
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {
@@ -623,6 +623,7 @@ type WTableBorder struct {
 	Color string `xml:"w:color,attr"`
 }
 
+// UnmarshalXML ...
 func (t *WTableBorder) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
