@@ -149,7 +149,6 @@ func main() {
 			}
 			fmt.Println("------------------------------")
 		}
-
 	}
 	fmt.Println("End of main")
 }
