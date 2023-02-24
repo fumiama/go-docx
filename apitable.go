@@ -2,11 +2,6 @@ package docxlib
 
 import "unsafe"
 
-//nolint:revive,stylecheck
-const (
-	TABLE_STYLE = "a3"
-)
-
 // AddTable add a new table to body by col*row
 //
 // unit: twips (1/20 point)
@@ -31,15 +26,14 @@ func (f *Docx) AddTable(row int, col int) *WTable {
 	defer f.Document.Body.mu.Unlock()
 	f.Document.Body.Items = append(f.Document.Body.Items, WTable{
 		TableProperties: &WTableProperties{
-			Style: &WTableStyle{Val: TABLE_STYLE},
 			Width: &WTableWidth{Type: "auto"},
 			TableBorders: &WTableBorders{
-				Top:     &WTableBorder{Val: "single", Size: "4", Space: "0", Color: "000000"},
-				Left:    &WTableBorder{Val: "single", Size: "4", Space: "0", Color: "000000"},
-				Bottom:  &WTableBorder{Val: "single", Size: "4", Space: "0", Color: "000000"},
-				Right:   &WTableBorder{Val: "single", Size: "4", Space: "0", Color: "000000"},
-				InsideH: &WTableBorder{Val: "single", Size: "4", Space: "0", Color: "000000"},
-				InsideV: &WTableBorder{Val: "single", Size: "4", Space: "0", Color: "000000"},
+				Top:     &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
+				Left:    &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
+				Bottom:  &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
+				Right:   &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
+				InsideH: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
+				InsideV: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
 			},
 			Look: &WTableLook{
 				Val: "0000",
@@ -57,7 +51,7 @@ func (f *Docx) AddTable(row int, col int) *WTable {
 // AddTableTwips add a new table to body by height and width
 //
 // unit: twips (1/20 point)
-func (f *Docx) AddTableTwips(colWidths []int64, rowHeights []int64) *WTable {
+func (f *Docx) AddTableTwips(rowHeights []int64, colWidths []int64) *WTable {
 	grids := make([]*WGridCol, len(colWidths))
 	trs := make([]*WTableRow, len(rowHeights))
 	for i, w := range colWidths {
@@ -69,10 +63,10 @@ func (f *Docx) AddTableTwips(colWidths []int64, rowHeights []int64) *WTable {
 	}
 	for i, h := range rowHeights {
 		cells := make([]*WTableCell, len(colWidths))
-		for i := range cells {
+		for i, w := range colWidths {
 			cells[i] = &WTableCell{
 				TableCellProperties: &WTableCellProperties{
-					TableCellWidth: &WTableCellWidth{Type: "auto"},
+					TableCellWidth: &WTableCellWidth{W: w, Type: "dxa"},
 				},
 				file: f,
 			}
@@ -91,15 +85,14 @@ func (f *Docx) AddTableTwips(colWidths []int64, rowHeights []int64) *WTable {
 	defer f.Document.Body.mu.Unlock()
 	f.Document.Body.Items = append(f.Document.Body.Items, WTable{
 		TableProperties: &WTableProperties{
-			Style: &WTableStyle{Val: TABLE_STYLE},
 			Width: &WTableWidth{Type: "auto"},
 			TableBorders: &WTableBorders{
-				Top:     &WTableBorder{Val: "single", Size: "4", Space: "0", Color: "000000"},
-				Left:    &WTableBorder{Val: "single", Size: "4", Space: "0", Color: "000000"},
-				Bottom:  &WTableBorder{Val: "single", Size: "4", Space: "0", Color: "000000"},
-				Right:   &WTableBorder{Val: "single", Size: "4", Space: "0", Color: "000000"},
-				InsideH: &WTableBorder{Val: "single", Size: "4", Space: "0", Color: "000000"},
-				InsideV: &WTableBorder{Val: "single", Size: "4", Space: "0", Color: "000000"},
+				Top:     &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
+				Left:    &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
+				Bottom:  &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
+				Right:   &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
+				InsideH: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
+				InsideV: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
 			},
 			Look: &WTableLook{
 				Val: "0000",

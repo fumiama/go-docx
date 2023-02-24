@@ -13,7 +13,6 @@ import (
 func main() {
 	fileLocation := flag.String("f", "new-file.docx", "file location")
 	analyzeOnly := flag.Bool("a", false, "analyze file only")
-	verbose := flag.Bool("v", false, "verbose mode")
 	unm := flag.Bool("u", false, "lease unmarshalled file")
 	flag.Parse()
 	var w *docxlib.Docx
@@ -72,9 +71,19 @@ func main() {
 		tbl1 := w.AddTable(3, 2)
 		for x, r := range tbl1.TableRows {
 			for y, c := range r.TableCells {
+				c.AddParagraph().AddText(fmt.Sprintf("(%d, %d)", x, y))
+			}
+		}
+
+		w.AddParagraph()
+
+		tbl2 := w.AddTableTwips([]int64{2333, 2333, 2333}, []int64{2333, 2333})
+		for x, r := range tbl2.TableRows {
+			for y, c := range r.TableCells {
 				c.AddParagraph().Justification("center").AddText(fmt.Sprintf("(%d, %d)", x, y))
 			}
 		}
+
 		f, err := os.Create(*fileLocation)
 		if err != nil {
 			panic(err)
@@ -103,52 +112,6 @@ func main() {
 	doc, err := docxlib.Parse(readFile, size)
 	if err != nil {
 		panic(err)
-	}
-	if *verbose {
-		for _, it := range doc.Document.Body.Items {
-			switch para := it.(type) {
-			case docxlib.Paragraph:
-				fmt.Println("New paragraph")
-				for _, child := range para.Children {
-					switch o := child.(type) {
-					case *docxlib.Run:
-						if o.Text != nil {
-							fmt.Printf("\tWe've found a new run with the text ->%s\n", o.Text.Text)
-						}
-						if o.Drawing != nil {
-							if o.Drawing.Inline != nil {
-								fmt.Printf("\tWe've found a new run with the inline drawing ->%s\n", o.Drawing.Inline.DocPr.Name)
-							}
-							if o.Drawing.Anchor != nil {
-								fmt.Printf("\tWe've found a new run with the anchor drawing ->%s\n", o.Drawing.Anchor.DocPr.Name)
-							}
-						}
-					case *docxlib.Hyperlink:
-						id := o.ID
-						text := o.Run.InstrText
-						link, err := doc.ReferTarget(id)
-						if err != nil {
-							fmt.Printf("\tWe found a link with id %s and text %s without target\n", id, text)
-						} else {
-							fmt.Printf("\tWe've found a new hyperlink with ref %s and the text %s\n", link, text)
-						}
-					}
-				}
-				fmt.Print("End of paragraph\n\n")
-			case docxlib.WTable:
-				fmt.Println("New table")
-				for x, r := range para.TableRows {
-					fmt.Printf("[%d] ", x)
-					for y, c := range r.TableCells {
-						fmt.Printf("<%d> %s\t", y, c.Paragraphs[0].Children[0].(*docxlib.Run).Text.Text)
-					}
-					fmt.Print("\n")
-				}
-				fmt.Print("End of table\n\n")
-			}
-
-		}
-
 	}
 	if *unm {
 		i := strings.LastIndex(*fileLocation, "/")

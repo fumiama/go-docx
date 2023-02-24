@@ -265,7 +265,7 @@ func (t *WTableGrid) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 // WGridCol is a structure that represents a table grid column of a Word document.
 type WGridCol struct {
 	XMLName xml.Name `xml:"w:gridCol,omitempty"`
-	W       int64    `xml:"w,attr"`
+	W       int64    `xml:"w:w,attr"`
 }
 
 // UnmarshalXML ...
@@ -534,8 +534,8 @@ func (r *WTableCellProperties) UnmarshalXML(d *xml.Decoder, start xml.StartEleme
 // 不同的取值对应着不同的宽度计量单位和宽度定义方式。
 type WTableCellWidth struct {
 	XMLName xml.Name `xml:"w:tcW,omitempty"`
-	W       int64    `xml:"w,attr"`
-	Type    string   `xml:"type,attr"`
+	W       int64    `xml:"w:w,attr"`
+	Type    string   `xml:"w:type,attr"`
 }
 
 // WTableBorders is a structure representing the borders of a Word table.
@@ -617,20 +617,49 @@ func (w *WTableBorders) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 
 // WTableBorder is a structure representing a single border of a Word table.
 type WTableBorder struct {
-	Val   string `xml:"val,attr"`
-	Size  string `xml:"sz,attr"`
-	Space string `xml:"space,attr"`
-	Color string `xml:"color,attr"`
+	Val   string `xml:"w:val,attr"`
+	Size  int    `xml:"w:sz,attr"`
+	Space int    `xml:"w:space,attr"`
+	Color string `xml:"w:color,attr"`
+}
+
+func (t *WTableBorder) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "val":
+			t.Val = attr.Value
+		case "sz":
+			sz, err := strconv.Atoi(attr.Value)
+			if err != nil {
+				return err
+			}
+			t.Size = sz
+		case "space":
+			space, err := strconv.Atoi(attr.Value)
+			if err != nil {
+				return err
+			}
+			t.Space = space
+		case "color":
+			t.Color = attr.Value
+		}
+	}
+	// Consume the end element
+	_, err := d.Token()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // WGridSpan represents the number of grid columns this cell should span.
 type WGridSpan struct {
 	XMLName xml.Name `xml:"w:gridSpan,omitempty"`
-	Val     int      `xml:"val,attr"`
+	Val     int      `xml:"w:val,attr"`
 }
 
 // WVerticalAlignment represents the vertical alignment of the content of a cell.
 type WVerticalAlignment struct {
 	XMLName xml.Name `xml:"w:vAlign,omitempty"`
-	Val     string   `xml:"val,attr"`
+	Val     string   `xml:"w:val,attr"`
 }
