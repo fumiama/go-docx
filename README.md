@@ -32,4 +32,4 @@ The Introduction above is copied from the original repo. I had evolved that repo
 
 ## License
 
-MIT. See [LICENSE](LICENSE)
+AGPL-3.0. See [LICENSE](LICENSE)
