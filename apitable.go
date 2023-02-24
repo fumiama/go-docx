@@ -128,3 +128,37 @@ func (f *Docx) AddTableTwips(rowHeights []int64, colWidths []int64) *WTable {
 
 	return *(**WTable)(unsafe.Add(unsafe.Pointer(&t), unsafe.Sizeof(uintptr(0))))
 }
+
+// Justification allows to set table's horizonal alignment
+//
+//	w:jc 属性的取值可以是以下之一：
+//		start：左对齐。
+//		center：居中对齐。
+//		end：右对齐。
+//		both：两端对齐。
+//		distribute：分散对齐。
+func (t *WTable) Justification(val string) *WTable {
+	if t.TableProperties.Justification == nil {
+		t.TableProperties.Justification = &Justification{Val: val}
+		return t
+	}
+	t.TableProperties.Justification.Val = val
+	return t
+}
+
+// Justification allows to set table's horizonal alignment
+//
+//	w:jc 属性的取值可以是以下之一：
+//		start：左对齐。
+//		center：居中对齐。
+//		end：右对齐。
+//		both：两端对齐。
+//		distribute：分散对齐。
+func (t *WTableRow) Justification(val string) *WTableRow {
+	if t.TableRowProperties.Justification == nil {
+		t.TableRowProperties.Justification = &Justification{Val: val}
+		return t
+	}
+	t.TableRowProperties.Justification.Val = val
+	return t
+}

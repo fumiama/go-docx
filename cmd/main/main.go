@@ -97,9 +97,11 @@ func main() {
 
 		w.AddParagraph()
 
-		tbl2 := w.AddTableTwips([]int64{2333, 2333, 2333}, []int64{2333, 2333})
+		tbl2 := w.AddTableTwips([]int64{2333, 2333, 2333}, []int64{2333, 2333}).Justification("center")
 		for x, r := range tbl2.TableRows {
+			r.Justification("center")
 			for y, c := range r.TableCells {
+				c.TableCellProperties.VAlign = &docxlib.WVerticalAlignment{Val: "center"}
 				c.AddParagraph().Justification("center").AddText(fmt.Sprintf("(%d, %d)", x, y))
 			}
 		}

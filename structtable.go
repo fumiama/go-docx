@@ -84,11 +84,13 @@ func (t *WTable) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 // WTableProperties is an element that represents the properties of a table in Word document.
 type WTableProperties struct {
-	XMLName      xml.Name `xml:"w:tblPr,omitempty"`
-	Style        *WTableStyle
-	Width        *WTableWidth
-	TableBorders *WTableBorders `xml:"w:tblBorders"`
-	Look         *WTableLook
+	XMLName       xml.Name `xml:"w:tblPr,omitempty"`
+	Position      *WTablePositioningProperties
+	Style         *WTableStyle
+	Width         *WTableWidth
+	Justification *Justification `xml:"w:jc,omitempty"`
+	TableBorders  *WTableBorders `xml:"w:tblBorders"`
+	Look          *WTableLook
 }
 
 // UnmarshalXML implements the xml.Unmarshaler interface.
@@ -103,6 +105,12 @@ func (t *WTableProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) 
 		}
 		if tt, ok := token.(xml.StartElement); ok {
 			switch tt.Name.Local {
+			case "tblpPr":
+				t.Position = new(WTablePositioningProperties)
+				err = d.DecodeElement(t.Position, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 			case "tblStyle":
 				t.Style = new(WTableStyle)
 				err = d.DecodeElement(t.Style, &tt)
@@ -113,6 +121,19 @@ func (t *WTableProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) 
 				t.Width = new(WTableWidth)
 				err = d.DecodeElement(t.Width, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+			case "jc":
+				th := new(Justification)
+				for _, attr := range tt.Attr {
+					if attr.Name.Local == "val" {
+						th.Val = attr.Value
+						break
+					}
+				}
+				t.Justification = th
+				err = d.Skip()
+				if err != nil {
 					return err
 				}
 			case "tblLook":
@@ -139,6 +160,55 @@ func (t *WTableProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) 
 	return nil
 }
 
+// WTablePositioningProperties is an element that contains the properties
+// for positioning a table within a document page, including its horizontal
+// and vertical anchors, distance from text, and coordinates.
+type WTablePositioningProperties struct {
+	XMLName       xml.Name `xml:"w:tblpPr,omitempty"`
+	LeftFromText  int      `xml:"w:leftFromText,attr"`
+	RightFromText int      `xml:"w:rightFromText,attr"`
+	VertAnchor    string   `xml:"w:vertAnchor,attr"`
+	HorzAnchor    string   `xml:"w:horzAnchor,attr"`
+	TblpX         int      `xml:"w:tblpX,attr"`
+	TblpY         int      `xml:"w:tblpY,attr"`
+}
+
+// UnmarshalXML ...
+func (tp *WTablePositioningProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "leftFromText":
+			tp.LeftFromText, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return err
+			}
+		case "rightFromText":
+			tp.RightFromText, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return err
+			}
+		case "vertAnchor":
+			tp.VertAnchor = attr.Value
+		case "horzAnchor":
+			tp.HorzAnchor = attr.Value
+		case "tblpX":
+			tp.TblpX, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return err
+			}
+		case "tblpY":
+			tp.TblpY, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	// Consume the end element
+	_, err = d.Token()
+	return err
+}
+
 // WTableStyle represents the style of a table in a Word document.
 type WTableStyle struct {
 	XMLName xml.Name `xml:"w:tblStyle,omitempty"`
@@ -160,10 +230,7 @@ func (t *WTableStyle) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err 
 	}
 	// Consume the end element
 	_, err = d.Token()
-	if err != nil {
-		return
-	}
-	return nil
+	return err
 }
 
 // WTableWidth represents the width of a table in a Word document.
@@ -193,10 +260,7 @@ func (t *WTableWidth) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err 
 	}
 	// Consume the end element
 	_, err = d.Token()
-	if err != nil {
-		return
-	}
-	return nil
+	return err
 }
 
 // WTableLook represents the look of a table in a Word document.
@@ -306,10 +370,7 @@ func (g *WGridCol) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 	}
 	// Consume the end element
 	_, err = d.Token()
-	if err != nil {
-		return
-	}
-	return nil
+	return err
 }
 
 // WTableRow represents a row within a table.
@@ -377,6 +438,7 @@ func (w *WTableRow) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 type WTableRowProperties struct {
 	XMLName        xml.Name `xml:"w:trPr,omitempty"`
 	TableRowHeight *WTableRowHeight
+	Justification  *Justification `xml:"w:jc,omitempty"`
 }
 
 // UnmarshalXML ...
@@ -390,11 +452,11 @@ func (t *WTableRowProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 			return err
 		}
 
-		if elem, ok := tok.(xml.StartElement); ok {
-			switch elem.Name.Local {
+		if tt, ok := tok.(xml.StartElement); ok {
+			switch tt.Name.Local {
 			case "trHeight":
 				th := new(WTableRowHeight)
-				for _, attr := range elem.Attr {
+				for _, attr := range tt.Attr {
 					if attr.Name.Local == "val" {
 						th.Val, err = strconv.ParseInt(attr.Value, 10, 64)
 						if err != nil {
@@ -404,6 +466,19 @@ func (t *WTableRowProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 					}
 				}
 				t.TableRowHeight = th
+				err = d.Skip()
+				if err != nil {
+					return err
+				}
+			case "jc":
+				th := new(Justification)
+				for _, attr := range tt.Attr {
+					if attr.Name.Local == "val" {
+						th.Val = attr.Value
+						break
+					}
+				}
+				t.Justification = th
 				err = d.Skip()
 				if err != nil {
 					return err
