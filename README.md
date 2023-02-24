@@ -26,10 +26,10 @@ This is a variant optimized and expanded by fumiama. The original repo is [gonfv
 
 The Introduction above is copied from the original repo. I had evolved that repo again to fit my needs. Here are the supported functions now.
 
-- [x] parse and save document
-- [x] edit simple text (color, size, alignment, ...)
-- [x] edit picture
-- [x] edit table
+- [x] Parse and save document
+- [x] Edit simple text (color, size, alignment, ...)
+- [x] Edit picture
+- [x] Edit table
 
 ## License
 
