@@ -29,6 +29,7 @@ The Introduction above is copied from the original repo. I had evolved that repo
 - [x] parse and save document
 - [x] edit simple text (color, size, alignment, ...)
 - [x] edit picture
+- [x] edit table
 
 ## License
 
