@@ -154,11 +154,11 @@ func (t *WTable) Justification(val string) *WTable {
 //		end：右对齐。
 //		both：两端对齐。
 //		distribute：分散对齐。
-func (t *WTableRow) Justification(val string) *WTableRow {
-	if t.TableRowProperties.Justification == nil {
-		t.TableRowProperties.Justification = &Justification{Val: val}
-		return t
+func (w *WTableRow) Justification(val string) *WTableRow {
+	if w.TableRowProperties.Justification == nil {
+		w.TableRowProperties.Justification = &Justification{Val: val}
+		return w
 	}
-	t.TableRowProperties.Justification.Val = val
-	return t
+	w.TableRowProperties.Justification.Val = val
+	return w
 }
