@@ -93,54 +93,58 @@ func (p *Paragraph) String() string {
 			}
 			sb.WriteByte(')')
 		case *Run:
-			switch {
-			case o.Text != nil:
-				sb.WriteString(o.Text.Text)
-			case o.Drawing != nil:
-				if o.Drawing.Inline != nil && o.Drawing.Inline.Graphic != nil && o.Drawing.Inline.Graphic.GraphicData != nil && o.Drawing.Inline.Graphic.GraphicData.Pic != nil {
-					sb.WriteString("![inlnim ")
-					switch {
-					case o.Drawing.Inline.DocPr != nil:
-						sb.WriteString(o.Drawing.Inline.DocPr.Name)
-					case o.Drawing.Inline.Graphic.GraphicData.Pic.NonVisualPicProperties != nil:
-						sb.WriteString(o.Drawing.Inline.Graphic.GraphicData.Pic.NonVisualPicProperties.NonVisualDrawingProperties.Name)
-					default:
-						sb.WriteString(o.Drawing.Inline.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
-					}
-					sb.WriteString("](")
-					if o.Drawing.Inline.Graphic.GraphicData.Pic.BlipFill != nil {
-						tgt, err := p.file.ReferTarget(o.Drawing.Inline.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
-						if err != nil {
-							sb.WriteString(err.Error())
-						} else {
-							h := md5.Sum(p.file.Media(tgt[6:]).Data)
-							sb.WriteString(hex.EncodeToString(h[:]))
+			for _, c := range o.Children {
+				switch x := c.(type) {
+				case *Text:
+					sb.WriteString(x.Text)
+				case *WTab:
+					sb.WriteByte('\t')
+				case *Drawing:
+					if x.Inline != nil && x.Inline.Graphic != nil && x.Inline.Graphic.GraphicData != nil && x.Inline.Graphic.GraphicData.Pic != nil {
+						sb.WriteString("![inlnim ")
+						switch {
+						case x.Inline.DocPr != nil:
+							sb.WriteString(x.Inline.DocPr.Name)
+						case x.Inline.Graphic.GraphicData.Pic.NonVisualPicProperties != nil:
+							sb.WriteString(x.Inline.Graphic.GraphicData.Pic.NonVisualPicProperties.NonVisualDrawingProperties.Name)
+						default:
+							sb.WriteString(x.Inline.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
 						}
-					}
-					sb.WriteByte(')')
-					continue
-				}
-				if o.Drawing.Anchor != nil && o.Drawing.Anchor.Graphic != nil && o.Drawing.Anchor.Graphic.GraphicData != nil && o.Drawing.Anchor.Graphic.GraphicData.Pic != nil {
-					sb.WriteString("![anchim ")
-					switch {
-					case o.Drawing.Anchor.DocPr != nil:
-						sb.WriteString(o.Drawing.Anchor.DocPr.Name)
-					case o.Drawing.Anchor.Graphic.GraphicData.Pic.NonVisualPicProperties != nil:
-						sb.WriteString(o.Drawing.Anchor.Graphic.GraphicData.Pic.NonVisualPicProperties.NonVisualDrawingProperties.Name)
-					default:
-						sb.WriteString(o.Drawing.Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
-					}
-					sb.WriteString("](")
-					if o.Drawing.Anchor.Graphic.GraphicData.Pic.BlipFill != nil {
-						tgt, err := p.file.ReferTarget(o.Drawing.Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
-						if err != nil {
-							sb.WriteString(err.Error())
-						} else {
-							h := md5.Sum(p.file.Media(tgt[6:]).Data)
-							sb.WriteString(hex.EncodeToString(h[:]))
+						sb.WriteString("](")
+						if x.Inline.Graphic.GraphicData.Pic.BlipFill != nil {
+							tgt, err := p.file.ReferTarget(x.Inline.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
+							if err != nil {
+								sb.WriteString(err.Error())
+							} else {
+								h := md5.Sum(p.file.Media(tgt[6:]).Data)
+								sb.WriteString(hex.EncodeToString(h[:]))
+							}
 						}
+						sb.WriteByte(')')
+						continue
 					}
-					sb.WriteByte(')')
+					if x.Anchor != nil && x.Anchor.Graphic != nil && x.Anchor.Graphic.GraphicData != nil && x.Anchor.Graphic.GraphicData.Pic != nil {
+						sb.WriteString("![anchim ")
+						switch {
+						case x.Anchor.DocPr != nil:
+							sb.WriteString(x.Anchor.DocPr.Name)
+						case x.Anchor.Graphic.GraphicData.Pic.NonVisualPicProperties != nil:
+							sb.WriteString(x.Anchor.Graphic.GraphicData.Pic.NonVisualPicProperties.NonVisualDrawingProperties.Name)
+						default:
+							sb.WriteString(x.Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
+						}
+						sb.WriteString("](")
+						if x.Anchor.Graphic.GraphicData.Pic.BlipFill != nil {
+							tgt, err := p.file.ReferTarget(x.Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
+							if err != nil {
+								sb.WriteString(err.Error())
+							} else {
+								h := md5.Sum(p.file.Media(tgt[6:]).Data)
+								sb.WriteString(hex.EncodeToString(h[:]))
+							}
+						}
+						sb.WriteByte(')')
+					}
 				}
 			}
 		case *RunProperties:

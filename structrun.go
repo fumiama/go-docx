@@ -29,17 +29,13 @@ import (
 // Run is part of a paragraph that has its own style. It could be
 // a piece of text in bold, or a link
 type Run struct {
-	XMLName       xml.Name       `xml:"w:r,omitempty"`
+	XMLName xml.Name `xml:"w:r,omitempty"`
+
 	RunProperties *RunProperties `xml:"w:rPr,omitempty"`
-	FrontTab      []struct {     //TODO: replace with variable []RunChild
-		XMLName xml.Name `xml:"w:tab,omitempty"`
-	}
+
 	InstrText string `xml:"w:instrText,omitempty"`
-	Text      *Text
-	Drawing   *Drawing
-	RearTab   []struct {
-		XMLName xml.Name `xml:"w:tab,omitempty"`
-	}
+
+	Children []interface{}
 }
 
 // UnmarshalXML ...
@@ -53,6 +49,8 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			return err
 		}
 
+		var child interface{}
+
 		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "rPr":
@@ -62,6 +60,7 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 					return err
 				}
 				r.RunProperties = &value
+				continue
 			case "instrText":
 				var value string
 				err = d.DecodeElement(&value, &tt)
@@ -69,30 +68,23 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 					return err
 				}
 				r.InstrText = value
+				continue
 			case "t":
 				var value Text
 				err = d.DecodeElement(&value, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
-				r.Text = &value
+				child = &value
 			case "drawing":
 				var value Drawing
 				err = d.DecodeElement(&value, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
-				r.Drawing = &value
+				child = &value
 			case "tab":
-				if r.InstrText == "" && r.Text == nil && r.Drawing == nil {
-					r.FrontTab = append(r.FrontTab, struct {
-						XMLName xml.Name "xml:\"w:tab,omitempty\""
-					}{})
-				} else {
-					r.RearTab = append(r.RearTab, struct {
-						XMLName xml.Name "xml:\"w:tab,omitempty\""
-					}{})
-				}
+				child = &WTab{}
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {
@@ -100,6 +92,7 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				}
 				continue
 			}
+			r.Children = append(r.Children, child)
 		}
 	}
 

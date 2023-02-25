@@ -41,9 +41,9 @@ func TestTableStructure(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	r.Drawing.Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.AlphaModFix = &AAlphaModFix{Amount: 50000}
-	r.Drawing.Anchor.Graphic.GraphicData.Pic.NonVisualPicProperties.CNvPicPr.Locks = &APicLocks{NoChangeAspect: 1}
-	r.Drawing.Anchor.Graphic.GraphicData.Pic.SpPr.Xfrm.Rot = 50000
+	r.Children[0].(*Drawing).Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.AlphaModFix = &AAlphaModFix{Amount: 50000}
+	r.Children[0].(*Drawing).Anchor.Graphic.GraphicData.Pic.NonVisualPicProperties.CNvPicPr.Locks = &APicLocks{NoChangeAspect: 1}
+	r.Children[0].(*Drawing).Anchor.Graphic.GraphicData.Pic.SpPr.Xfrm.Rot = 50000
 	para3 := tab1.TableRows[0].TableCells[0].AddParagraph()
 	para3.AddText("first cell")
 

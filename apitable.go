@@ -42,8 +42,6 @@ func (f *Docx) AddTable(row int, col int) *WTable {
 			TableCells:         cells,
 		}
 	}
-	f.Document.Body.mu.Lock()
-	defer f.Document.Body.mu.Unlock()
 	f.Document.Body.Items = append(f.Document.Body.Items, WTable{
 		TableProperties: &WTableProperties{
 			Width: &WTableWidth{Type: "auto"},
@@ -101,8 +99,6 @@ func (f *Docx) AddTableTwips(rowHeights []int64, colWidths []int64) *WTable {
 			}
 		}
 	}
-	f.Document.Body.mu.Lock()
-	defer f.Document.Body.mu.Unlock()
 	f.Document.Body.Items = append(f.Document.Body.Items, WTable{
 		TableProperties: &WTableProperties{
 			Width: &WTableWidth{Type: "auto"},

@@ -38,12 +38,12 @@ func TestDrawingStructure(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	r.Drawing.Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.AlphaModFix = &AAlphaModFix{Amount: 50000}
-	r.Drawing.Anchor.Graphic.GraphicData.Pic.NonVisualPicProperties.CNvPicPr.Locks = &APicLocks{NoChangeAspect: 1}
-	r.Drawing.Anchor.Graphic.GraphicData.Pic.SpPr.Xfrm.Rot = 50000
+	r.Children[0].(*Drawing).Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.AlphaModFix = &AAlphaModFix{Amount: 50000}
+	r.Children[0].(*Drawing).Anchor.Graphic.GraphicData.Pic.NonVisualPicProperties.CNvPicPr.Locks = &APicLocks{NoChangeAspect: 1}
+	r.Children[0].(*Drawing).Anchor.Graphic.GraphicData.Pic.SpPr.Xfrm.Rot = 50000
 	para2 := w.AddParagraph().Justification("center")
 	para2.AddInlineDrawingFrom("testdata/fumiama.JPG")
-	para2.AddTab().AddTab().AppendTab().AppendTab()
+	para2.AddTab().AddTab().AddTab().AddTab()
 	para2.AddInlineDrawingFrom("testdata/fumiama2x.webp")
 
 	para3 := w.AddParagraph()

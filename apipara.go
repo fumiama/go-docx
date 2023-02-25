@@ -24,8 +24,6 @@ import "unsafe"
 
 // AddParagraph adds a new paragraph
 func (f *Docx) AddParagraph() *Paragraph {
-	f.Document.Body.mu.Lock()
-	defer f.Document.Body.mu.Unlock()
 	f.Document.Body.Items = append(f.Document.Body.Items, Paragraph{
 		Children: make([]interface{}, 0, 64),
 		file:     f,
@@ -38,9 +36,6 @@ func (f *Docx) AddParagraph() *Paragraph {
 
 // AddParagraph adds a new paragraph
 func (c *WTableCell) AddParagraph() *Paragraph {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
 	c.Paragraphs = append(c.Paragraphs, Paragraph{
 		Children: make([]interface{}, 0, 64),
 		file:     c.file,

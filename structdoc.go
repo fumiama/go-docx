@@ -24,7 +24,6 @@ import (
 	"encoding/xml"
 	"io"
 	"strings"
-	"sync"
 )
 
 //nolint:revive,stylecheck
@@ -48,7 +47,6 @@ func getAtt(atts []xml.Attr, name string) string {
 
 // Body <w:body>
 type Body struct {
-	mu    sync.Mutex
 	Items []interface{}
 
 	file *Docx
@@ -74,9 +72,7 @@ func (b *Body) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 					return err
 				}
 				value.file = b.file
-				b.mu.Lock()
 				b.Items = append(b.Items, value)
-				b.mu.Unlock()
 			case "tbl":
 				var value WTable
 				err = d.DecodeElement(&value, &tt)
@@ -84,9 +80,7 @@ func (b *Body) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 					return err
 				}
 				value.file = b.file
-				b.mu.Lock()
 				b.Items = append(b.Items, value)
-				b.mu.Unlock()
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {

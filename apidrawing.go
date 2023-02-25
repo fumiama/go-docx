@@ -99,9 +99,11 @@ func (p *Paragraph) AddInlineDrawing(pic []byte) (*Run, error) {
 			},
 		},
 	}
+	c := make([]interface{}, 1, 64)
+	c[0] = d
 	run := &Run{
-		Drawing:       d,
 		RunProperties: &RunProperties{},
+		Children:      c,
 	}
 	p.Children = append(p.Children, run)
 	return run, nil
@@ -207,9 +209,11 @@ func (p *Paragraph) AddAnchorDrawing(pic []byte) (*Run, error) {
 			},
 		},
 	}
+	c := make([]interface{}, 1, 64)
+	c[0] = d
 	run := &Run{
-		Drawing:       d,
 		RunProperties: &RunProperties{},
+		Children:      c,
 	}
 	p.Children = append(p.Children, run)
 	return run, nil

@@ -20,17 +20,20 @@
 
 package docxlib
 
-import "encoding/xml"
+import "strings"
 
 // AddTab adds tab to para
 func (p *Paragraph) AddTab() *Run {
+	c := make([]interface{}, 1, 64)
+	c[0] = &WTab{}
+
 	run := &Run{
 		RunProperties: &RunProperties{},
-		FrontTab: []struct {
-			XMLName xml.Name "xml:\"w:tab,omitempty\""
-		}{{}},
+		Children:      c,
 	}
+
 	p.Children = append(p.Children, run)
+
 	return run
 }
 
@@ -40,13 +43,22 @@ func (p *Paragraph) AddText(text string) *Run {
 		return p.AddTab()
 	}
 
-	t := &Text{
-		Text: text,
+	c := make([]interface{}, 0, 64)
+
+	for i, s := range strings.Split(text, "\t") {
+		if i > 0 {
+			c = append(c, &WTab{})
+		}
+		if s != "" {
+			c = append(c, &Text{
+				Text: s,
+			})
+		}
 	}
 
 	run := &Run{
-		Text:          t,
 		RunProperties: &RunProperties{},
+		Children:      c,
 	}
 
 	p.Children = append(p.Children, run)

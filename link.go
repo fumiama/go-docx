@@ -66,8 +66,6 @@ func (f *Docx) addImageRelation(m Media) string {
 
 // ReferTarget gets the target for a reference
 func (f *Docx) ReferTarget(id string) (string, error) {
-	f.docRelation.mu.RLock()
-	defer f.docRelation.mu.RUnlock()
 	for _, a := range f.docRelation.Relationship {
 		if a.ID == id {
 			return a.Target, nil
@@ -78,8 +76,6 @@ func (f *Docx) ReferTarget(id string) (string, error) {
 
 // ReferID gets the rId from target
 func (f *Docx) ReferID(target string) (string, error) {
-	f.docRelation.mu.RLock()
-	defer f.docRelation.mu.RUnlock()
 	for _, a := range f.docRelation.Relationship {
 		if a.Target == target {
 			return a.ID, nil

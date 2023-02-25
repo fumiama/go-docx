@@ -20,10 +20,6 @@
 
 package docxlib
 
-import (
-	"sync"
-)
-
 //nolint:revive,stylecheck
 const (
 	XMLNS_REL     = `http://schemas.openxmlformats.org/package/2006/relationships`
@@ -35,7 +31,6 @@ const (
 
 // Relationships ...
 type Relationships struct {
-	mu           sync.RWMutex
 	Xmlns        string `xml:"xmlns,attr"`
 	Relationship []Relationship
 }

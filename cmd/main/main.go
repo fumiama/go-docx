@@ -46,10 +46,10 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		r.Drawing.Anchor.Size(r.Drawing.Anchor.Extent.CX/4, r.Drawing.Anchor.Extent.CY/4)
-		r.Drawing.Anchor.BehindDoc = 1
-		r.Drawing.Anchor.PositionH.PosOffset = r.Drawing.Anchor.Extent.CX
-		r.Drawing.Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.AlphaModFix = &docxlib.AAlphaModFix{Amount: 50000}
+		r.Children[0].(*docxlib.Drawing).Anchor.Size(r.Children[0].(*docxlib.Drawing).Anchor.Extent.CX/4, r.Children[0].(*docxlib.Drawing).Anchor.Extent.CY/4)
+		r.Children[0].(*docxlib.Drawing).Anchor.BehindDoc = 1
+		r.Children[0].(*docxlib.Drawing).Anchor.PositionH.PosOffset = r.Children[0].(*docxlib.Drawing).Anchor.Extent.CX
+		r.Children[0].(*docxlib.Drawing).Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.AlphaModFix = &docxlib.AAlphaModFix{Amount: 50000}
 		// add text
 		para1.AddText("test")
 		para1.AddText("test font size").Size("44")
@@ -70,13 +70,13 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		r.Drawing.Inline.Size(r.Drawing.Inline.Extent.CX*4/5, r.Drawing.Inline.Extent.CY*4/5)
+		r.Children[0].(*docxlib.Drawing).Inline.Size(r.Children[0].(*docxlib.Drawing).Inline.Extent.CX*4/5, r.Children[0].(*docxlib.Drawing).Inline.Extent.CY*4/5)
 		para4.AddTab().AddTab()
 		r, err = para4.AddInlineDrawingFrom("testdata/fumiama2x.webp")
 		if err != nil {
 			panic(err)
 		}
-		r.Drawing.Inline.Size(r.Drawing.Inline.Extent.CX*4/5, r.Drawing.Inline.Extent.CY*4/5)
+		r.Children[0].(*docxlib.Drawing).Inline.Size(r.Children[0].(*docxlib.Drawing).Inline.Extent.CX*4/5, r.Children[0].(*docxlib.Drawing).Inline.Extent.CY*4/5)
 
 		para5 := w.AddParagraph().Justification("center")
 		// add text

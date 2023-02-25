@@ -25,7 +25,6 @@ import (
 	"io"
 	"strconv"
 	"strings"
-	"sync"
 )
 
 // WTable represents a table within a Word document.
@@ -502,8 +501,6 @@ type WTableRowHeight struct {
 
 // WTableCell represents a cell within a table.
 type WTableCell struct {
-	mu sync.Mutex
-
 	XMLName             xml.Name `xml:"w:tc,omitempty"`
 	TableCellProperties *WTableCellProperties
 	Paragraphs          []Paragraph `xml:"w:p,omitempty"`
@@ -532,9 +529,7 @@ func (c *WTableCell) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 				}
 				if len(value.Children) > 0 {
 					value.file = c.file
-					c.mu.Lock()
 					c.Paragraphs = append(c.Paragraphs, value)
-					c.mu.Unlock()
 				}
 			case "tcPr":
 				var value WTableCellProperties
