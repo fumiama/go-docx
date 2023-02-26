@@ -105,7 +105,7 @@ func (p *Paragraph) String() string {
 				switch x := c.(type) {
 				case *Text:
 					sb.WriteString(x.Text)
-				case *WTab:
+				case *Tab:
 					sb.WriteByte('\t')
 				case *Drawing:
 					if x.Inline != nil && x.Inline.Graphic != nil && x.Inline.Graphic.GraphicData != nil && x.Inline.Graphic.GraphicData.Pic != nil {

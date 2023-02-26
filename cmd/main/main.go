@@ -52,9 +52,13 @@ func main() {
 		r.Children[0].(*docx.Drawing).Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.AlphaModFix = &docx.AAlphaModFix{Amount: 50000}
 		// add text
 		para1.AddText("test").AddTab()
-		para1.AddText("test font size").Size("44").AddTab()
-		para1.AddText("test color").Color("808080").AddTab()
-		para1.AddText("test shade").Shade("clear", "auto", "E7E6E6").AddTab()
+		para1.AddText("size").Size("44").AddTab()
+		para1.AddText("color").Color("808080").AddTab()
+		para1.AddText("shade").Shade("clear", "auto", "E7E6E6").AddTab()
+		para1.AddText("bold").Bold().AddTab()
+		para1.AddText("italic").Italic().AddTab()
+		para1.AddText("underline").Underline("double").AddTab()
+		para1.AddText("highlight").Highlight("yellow").AddTab()
 
 		para2 := w.AddParagraph().Justification("end")
 		para2.AddText("test font size and color").Size("44").Color("ff0000")

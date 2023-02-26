@@ -25,6 +25,11 @@ import (
 	"io"
 )
 
+// Tab is the literal tab
+type Tab struct {
+	XMLName xml.Name `xml:"w:tab,omitempty"`
+}
+
 // Text object contains the actual text
 type Text struct {
 	XMLName xml.Name `xml:"w:t,omitempty"`

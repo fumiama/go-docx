@@ -46,8 +46,32 @@ func (r *Run) Shade(val, color, fill string) *Run {
 	return r
 }
 
+// Bold ...
+func (r *Run) Bold() *Run {
+	r.RunProperties.Bold = &Bold{}
+	return r
+}
+
+// Italic ...
+func (r *Run) Italic() *Run {
+	r.RunProperties.Italic = &Italic{}
+	return r
+}
+
+// Underline ...
+func (r *Run) Underline(val string) *Run {
+	r.RunProperties.Underline = &Underline{Val: val}
+	return r
+}
+
+// Highlight ...
+func (r *Run) Highlight(val string) *Run {
+	r.RunProperties.Highlight = &Highlight{Val: val}
+	return r
+}
+
 // AddTab add a tab in front of the run
 func (r *Run) AddTab() *Run {
-	r.Children = append(r.Children, &WTab{})
+	r.Children = append(r.Children, &Tab{})
 	return r
 }

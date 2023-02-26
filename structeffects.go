@@ -27,6 +27,28 @@ type Size struct {
 	Val     string   `xml:"w:val,attr"`
 }
 
+// Bold ...
+type Bold struct {
+	XMLName xml.Name `xml:"w:b,omitempty"`
+}
+
+// Italic ...
+type Italic struct {
+	XMLName xml.Name `xml:"w:i,omitempty"`
+}
+
+// Underline ...
+type Underline struct {
+	XMLName xml.Name `xml:"w:u,omitempty"`
+	Val     string   `xml:"w:val,attr,omitempty"`
+}
+
+// Highlight ...
+type Highlight struct {
+	XMLName xml.Name `xml:"w:highlight,omitempty"`
+	Val     string   `xml:"w:val,attr,omitempty"`
+}
+
 // Justification contains the way of the horizonal alignment
 //
 //	w:jc 属性的取值可以是以下之一：

@@ -84,7 +84,7 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				}
 				child = &value
 			case "tab":
-				child = &WTab{}
+				child = &Tab{}
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {
@@ -99,19 +99,18 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	return nil
 }
 
-// WTab is the literal tab
-type WTab struct {
-	XMLName xml.Name `xml:"w:tab,omitempty"`
-}
-
 // RunProperties encapsulates visual properties of a run
 type RunProperties struct {
-	XMLName  xml.Name `xml:"w:rPr,omitempty"`
-	Color    *Color
-	Size     *Size
-	RunStyle *RunStyle
-	Style    *Style
-	Shade    *Shade
+	XMLName   xml.Name `xml:"w:rPr,omitempty"`
+	Bold      *Bold
+	Italic    *Italic
+	Underline *Underline
+	Highlight *Highlight
+	Color     *Color
+	Size      *Size
+	RunStyle  *RunStyle
+	Style     *Style
+	Shade     *Shade
 }
 
 // UnmarshalXML ...
@@ -127,6 +126,18 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 
 		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
+			case "b":
+				r.Bold = &Bold{}
+			case "i":
+				r.Italic = &Italic{}
+			case "u":
+				var value Underline
+				value.Val = getAtt(tt.Attr, "val")
+				r.Underline = &value
+			case "highlight":
+				var value Highlight
+				value.Val = getAtt(tt.Attr, "val")
+				r.Highlight = &value
 			case "color":
 				var value Color
 				value.Val = getAtt(tt.Attr, "val")

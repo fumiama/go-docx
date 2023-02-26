@@ -25,7 +25,7 @@ import "strings"
 // AddTab adds tab to para
 func (p *Paragraph) AddTab() *Run {
 	c := make([]interface{}, 1, 64)
-	c[0] = &WTab{}
+	c[0] = &Tab{}
 
 	run := &Run{
 		RunProperties: &RunProperties{},
@@ -47,7 +47,7 @@ func (p *Paragraph) AddText(text string) *Run {
 
 	for i, s := range strings.Split(text, "\t") {
 		if i > 0 {
-			c = append(c, &WTab{})
+			c = append(c, &Tab{})
 		}
 		if s != "" {
 			c = append(c, &Text{
