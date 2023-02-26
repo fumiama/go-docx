@@ -41,6 +41,9 @@ func TestTableStructure(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	tab1.TableRows[0].TableCells[0].TableCellProperties.VMerge = &WvMerge{Val: "restart"}
+	tab1.TableRows[1].TableCells[0].TableCellProperties.VMerge = &WvMerge{}
+	tab1.TableRows[2].TableCells[0].TableCellProperties.VMerge = &WvMerge{}
 	r.Children[0].(*Drawing).Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.AlphaModFix = &AAlphaModFix{Amount: 50000}
 	r.Children[0].(*Drawing).Anchor.Graphic.GraphicData.Pic.NonVisualPicProperties.CNvPicPr.Locks = &APicLocks{NoChangeAspect: 1}
 	r.Children[0].(*Drawing).Anchor.Graphic.GraphicData.Pic.SpPr.Xfrm.Rot = 50000

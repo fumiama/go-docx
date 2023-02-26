@@ -563,6 +563,7 @@ func (c *WTableCell) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 type WTableCellProperties struct {
 	XMLName        xml.Name `xml:"w:tcPr,omitempty"`
 	TableCellWidth *WTableCellWidth
+	VMerge         *WvMerge
 	GridSpan       *WGridSpan
 	VAlign         *WVerticalAlignment
 	TableBorders   *WTableBorders `xml:"w:tcBorders"`
@@ -593,6 +594,8 @@ func (r *WTableCellProperties) UnmarshalXML(d *xml.Decoder, start xml.StartEleme
 					return err
 				}
 				r.TableCellWidth.Type = getAtt(tt.Attr, "type")
+			case "vMerge":
+				r.VMerge = &WvMerge{Val: getAtt(tt.Attr, "val")}
 			case "gridSpan":
 				r.GridSpan = new(WGridSpan)
 				v := getAtt(tt.Attr, "val")
@@ -643,6 +646,30 @@ type WTableCellWidth struct {
 	XMLName xml.Name `xml:"w:tcW,omitempty"`
 	W       int64    `xml:"w:w,attr"`
 	Type    string   `xml:"w:type,attr"`
+}
+
+// WvMerge element is used to specify whether a table cell
+// should be vertically merged with the cell(s) above or below it.
+// When a cell is merged, its content is merged as well.
+//
+// The <w:vMerge> element has a single attribute called val which
+// specifies the merge behavior. Its possible values are:
+//
+//	continue: This value indicates that the current cell is part
+//	of a vertically merged group of cells, but it is not the first cell
+//	in that group. It means that the current cell should not have its
+//	own content and should inherit the content of the first cell in the merged group.
+//
+//	restart: This value indicates that the current cell is the first cell in a
+//	new vertically merged group of cells. It means that the current cell should
+//	have its own content and should be used as the topmost cell in the merged group.
+//
+// Note that the <w:vMerge> element is only used in table cells that are part of
+// a vertically merged group. For cells that are not part of a merged group,
+// this element should be omitted.
+type WvMerge struct {
+	XMLName xml.Name `xml:"w:vMerge,omitempty"`
+	Val     string   `xml:"w:val,attr,omitempty"`
 }
 
 // WTableBorders is a structure representing the borders of a Word table.
