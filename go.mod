@@ -1,4 +1,4 @@
-module github.com/fumiama/docxlib
+module github.com/fumiama/go-docx
 
 go 1.18
 

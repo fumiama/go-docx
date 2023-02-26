@@ -18,7 +18,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package docxlib
+package docx
 
 // Color allows to set run color
 func (r *Run) Color(color string) *Run {

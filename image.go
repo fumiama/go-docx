@@ -18,7 +18,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package docxlib
+package docx
 
 // addImage add image to docx and return its rId
 func (f *Docx) addImage(m Media) string {

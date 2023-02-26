@@ -27,7 +27,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/fumiama/docxlib"
+	"github.com/fumiama/go-docx"
 )
 
 func main() {
@@ -35,21 +35,21 @@ func main() {
 	analyzeOnly := flag.Bool("a", false, "analyze file only")
 	unm := flag.Bool("u", false, "lease unmarshalled file")
 	flag.Parse()
-	var w *docxlib.Docx
+	var w *docx.Docx
 	if !*analyzeOnly {
 		fmt.Printf("Preparing new document to write at %s\n", *fileLocation)
 
-		w = docxlib.NewA4()
+		w = docx.NewA4()
 		// add new paragraph
 		para1 := w.AddParagraph().Justification("distribute")
 		r, err := para1.AddAnchorDrawingFrom("testdata/fumiama.JPG")
 		if err != nil {
 			panic(err)
 		}
-		r.Children[0].(*docxlib.Drawing).Anchor.Size(r.Children[0].(*docxlib.Drawing).Anchor.Extent.CX/4, r.Children[0].(*docxlib.Drawing).Anchor.Extent.CY/4)
-		r.Children[0].(*docxlib.Drawing).Anchor.BehindDoc = 1
-		r.Children[0].(*docxlib.Drawing).Anchor.PositionH.PosOffset = r.Children[0].(*docxlib.Drawing).Anchor.Extent.CX
-		r.Children[0].(*docxlib.Drawing).Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.AlphaModFix = &docxlib.AAlphaModFix{Amount: 50000}
+		r.Children[0].(*docx.Drawing).Anchor.Size(r.Children[0].(*docx.Drawing).Anchor.Extent.CX/4, r.Children[0].(*docx.Drawing).Anchor.Extent.CY/4)
+		r.Children[0].(*docx.Drawing).Anchor.BehindDoc = 1
+		r.Children[0].(*docx.Drawing).Anchor.PositionH.PosOffset = r.Children[0].(*docx.Drawing).Anchor.Extent.CX
+		r.Children[0].(*docx.Drawing).Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.AlphaModFix = &docx.AAlphaModFix{Amount: 50000}
 		// add text
 		para1.AddText("test")
 		para1.AddText("test font size").Size("44")
@@ -70,13 +70,13 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		r.Children[0].(*docxlib.Drawing).Inline.Size(r.Children[0].(*docxlib.Drawing).Inline.Extent.CX*4/5, r.Children[0].(*docxlib.Drawing).Inline.Extent.CY*4/5)
+		r.Children[0].(*docx.Drawing).Inline.Size(r.Children[0].(*docx.Drawing).Inline.Extent.CX*4/5, r.Children[0].(*docx.Drawing).Inline.Extent.CY*4/5)
 		para4.AddTab().AddTab()
 		r, err = para4.AddInlineDrawingFrom("testdata/fumiama2x.webp")
 		if err != nil {
 			panic(err)
 		}
-		r.Children[0].(*docxlib.Drawing).Inline.Size(r.Children[0].(*docxlib.Drawing).Inline.Extent.CX*4/5, r.Children[0].(*docxlib.Drawing).Inline.Extent.CY*4/5)
+		r.Children[0].(*docx.Drawing).Inline.Size(r.Children[0].(*docx.Drawing).Inline.Extent.CX*4/5, r.Children[0].(*docx.Drawing).Inline.Extent.CY*4/5)
 
 		para5 := w.AddParagraph().Justification("center")
 		// add text
@@ -101,7 +101,7 @@ func main() {
 		for x, r := range tbl2.TableRows {
 			r.Justification("center")
 			for y, c := range r.TableCells {
-				c.TableCellProperties.VAlign = &docxlib.WVerticalAlignment{Val: "center"}
+				c.TableCellProperties.VAlign = &docx.WVerticalAlignment{Val: "center"}
 				c.AddParagraph().Justification("center").AddText(fmt.Sprintf("(%d, %d)", x, y))
 			}
 		}
@@ -131,7 +131,7 @@ func main() {
 		panic(err)
 	}
 	size := fileinfo.Size()
-	doc, err := docxlib.Parse(readFile, size)
+	doc, err := docx.Parse(readFile, size)
 	if err != nil {
 		panic(err)
 	}
@@ -154,9 +154,9 @@ func main() {
 	fmt.Println("Plain text:")
 	for _, it := range doc.Document.Body.Items {
 		switch para := it.(type) {
-		case docxlib.Paragraph:
+		case docx.Paragraph:
 			fmt.Println(para.String())
-		case docxlib.WTable:
+		case docx.WTable:
 			fmt.Println("------------------------------")
 			for x, r := range para.TableRows {
 				fmt.Printf("[%d] ", x)

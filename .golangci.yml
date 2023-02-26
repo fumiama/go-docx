@@ -4,7 +4,7 @@ linters-settings:
     ignoretests: true
 
   goimports:
-    local-prefixes: github.com/fumiama/docxlib
+    local-prefixes: github.com/fumiama/go-docx
 
   forbidigo:
     # Forbid the following identifiers

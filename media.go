@@ -18,7 +18,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package docxlib
+package docx
 
 //nolint:revive,stylecheck
 const MEDIA_FOLDER = `word/media/`
