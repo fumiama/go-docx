@@ -58,7 +58,20 @@ func (r *Run) Italic() *Run {
 	return r
 }
 
-// Underline ...
+// Underline has several possible values including
+//
+//	none: Specifies that no underline should be applied.
+//	single: Specifies a single underline.
+//	words: Specifies that only words within the text should be underlined.
+//	double: Specifies a double underline.
+//	thick: Specifies a thick underline.
+//	dotted: Specifies a dotted underline.
+//	dash: Specifies a dash underline.
+//	dotDash: Specifies an alternating dot-dash underline.
+//	dotDotDash: Specifies an alternating dot-dot-dash underline.
+//	wave: Specifies a wavy underline.
+//	dashLong: Specifies a long dash underline.
+//	wavyDouble: Specifies a double wavy underline.
 func (r *Run) Underline(val string) *Run {
 	r.RunProperties.Underline = &Underline{Val: val}
 	return r
@@ -73,5 +86,15 @@ func (r *Run) Highlight(val string) *Run {
 // AddTab add a tab in front of the run
 func (r *Run) AddTab() *Run {
 	r.Children = append(r.Children, &Tab{})
+	return r
+}
+
+// Font sets the font of the run
+func (r *Run) Font(ascii, hansi, hint string) *Run {
+	r.RunProperties.Fonts = &RunFonts{
+		Ascii: ascii,
+		HAnsi: hansi,
+		Hint:  hint,
+	}
 	return r
 }

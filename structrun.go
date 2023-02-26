@@ -102,6 +102,7 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 // RunProperties encapsulates visual properties of a run
 type RunProperties struct {
 	XMLName   xml.Name `xml:"w:rPr,omitempty"`
+	Fonts     *RunFonts
 	Bold      *Bold
 	Italic    *Italic
 	Underline *Underline
@@ -126,6 +127,13 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 
 		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
+			case "rFonts":
+				var value RunFonts
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				r.Fonts = &value
 			case "b":
 				r.Bold = &Bold{}
 			case "i":
@@ -172,4 +180,29 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 	}
 
 	return nil
+}
+
+// RunFonts specifies the fonts used in the text of a run.
+type RunFonts struct {
+	XMLName xml.Name `xml:"w:rFonts,omitempty"`
+	Ascii   string   `xml:"w:ascii,attr,omitempty"`
+	HAnsi   string   `xml:"w:hAnsi,attr,omitempty"`
+	Hint    string   `xml:"w:hint,attr,omitempty"`
+}
+
+// UnmarshalXML ...
+func (f *RunFonts) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "ascii":
+			f.Ascii = attr.Value
+		case "hAnsi":
+			f.HAnsi = attr.Value
+		case "hint":
+			f.Hint = attr.Value
+		}
+	}
+	// Consume the end element
+	_, err := d.Token()
+	return err
 }
