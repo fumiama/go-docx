@@ -33,6 +33,9 @@ import (
 //
 //  1. Document
 //  2. Relationships
+//  3. Media
+//
+// Then it stores all other files into tmpfslist for packing.
 func unpack(zipReader *zip.Reader) (docx *Docx, err error) {
 	docx = new(Docx)
 	docx.mediaNameIdx = make(map[string]int, 64)

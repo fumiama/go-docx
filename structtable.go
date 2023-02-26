@@ -164,12 +164,14 @@ func (t *WTableProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) 
 // and vertical anchors, distance from text, and coordinates.
 type WTablePositioningProperties struct {
 	XMLName       xml.Name `xml:"w:tblpPr,omitempty"`
-	LeftFromText  int      `xml:"w:leftFromText,attr"`
-	RightFromText int      `xml:"w:rightFromText,attr"`
-	VertAnchor    string   `xml:"w:vertAnchor,attr"`
-	HorzAnchor    string   `xml:"w:horzAnchor,attr"`
-	TblpX         int      `xml:"w:tblpX,attr"`
-	TblpY         int      `xml:"w:tblpY,attr"`
+	LeftFromText  int      `xml:"w:leftFromText,attr,omitempty"`
+	RightFromText int      `xml:"w:rightFromText,attr,omitempty"`
+	VertAnchor    string   `xml:"w:vertAnchor,attr,omitempty"`
+	HorzAnchor    string   `xml:"w:horzAnchor,attr,omitempty"`
+	TblpXSpec     string   `xml:"w:tblpXSpec,attr,omitempty"`
+	TblpYSpec     string   `xml:"w:tblpYSpec,attr,omitempty"`
+	TblpX         int      `xml:"w:tblpX,attr,omitempty"`
+	TblpY         int      `xml:"w:tblpY,attr,omitempty"`
 }
 
 // UnmarshalXML ...
@@ -190,6 +192,10 @@ func (tp *WTablePositioningProperties) UnmarshalXML(d *xml.Decoder, start xml.St
 			tp.VertAnchor = attr.Value
 		case "horzAnchor":
 			tp.HorzAnchor = attr.Value
+		case "tblpXSpec":
+			tp.TblpXSpec = attr.Value
+		case "tblpYSpec":
+			tp.TblpYSpec = attr.Value
 		case "tblpX":
 			tp.TblpX, err = strconv.Atoi(attr.Value)
 			if err != nil {
@@ -375,8 +381,8 @@ func (g *WGridCol) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 // WTableRow represents a row within a table.
 type WTableRow struct {
 	XMLName            xml.Name `xml:"w:tr,omitempty"`
-	RsidR              string   `xml:"w:rsidR,attr"`
-	RsidTr             string   `xml:"w:rsidTr,attr"`
+	RsidR              string   `xml:"w:rsidR,attr,omitempty"`
+	RsidTr             string   `xml:"w:rsidTr,attr,omitempty"`
 	TableRowProperties *WTableRowProperties
 	TableCells         []*WTableCell
 
