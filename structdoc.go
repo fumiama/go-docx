@@ -28,9 +28,11 @@ import (
 
 //nolint:revive,stylecheck
 const (
-	XMLNS_W  = `http://schemas.openxmlformats.org/wordprocessingml/2006/main`
-	XMLNS_R  = `http://schemas.openxmlformats.org/officeDocument/2006/relationships`
-	XMLNS_WP = `http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing`
+	XMLNS_W   = `http://schemas.openxmlformats.org/wordprocessingml/2006/main`
+	XMLNS_R   = `http://schemas.openxmlformats.org/officeDocument/2006/relationships`
+	XMLNS_WP  = `http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing`
+	XMLNS_WPS = `http://schemas.microsoft.com/office/word/2010/wordprocessingShape`
+	// XMLNS_MC  = `http://schemas.openxmlformats.org/markup-compatibility/2006`
 	// XMLNS_WP14 = `http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing`
 
 	XMLNS_PICTURE = `http://schemas.openxmlformats.org/drawingml/2006/picture`
@@ -95,9 +97,11 @@ func (b *Body) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 // Document <w:document>
 type Document struct {
 	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main document"`
-	XMLW    string   `xml:"xmlns:w,attr"`            // cannot be unmarshalled in
-	XMLR    string   `xml:"xmlns:r,attr,omitempty"`  // cannot be unmarshalled in
-	XMLWP   string   `xml:"xmlns:wp,attr,omitempty"` // cannot be unmarshalled in
+	XMLW    string   `xml:"xmlns:w,attr"`             // cannot be unmarshalled in
+	XMLR    string   `xml:"xmlns:r,attr,omitempty"`   // cannot be unmarshalled in
+	XMLWP   string   `xml:"xmlns:wp,attr,omitempty"`  // cannot be unmarshalled in
+	XMLWPS  string   `xml:"xmlns:wps,attr,omitempty"` // cannot be unmarshalled in
+	// XMLMC   string   `xml:"xmlns:mc,attr,omitempty"`  // cannot be unmarshalled in
 	// XMLWP14 string   `xml:"xmlns:wp14,attr,omitempty"` // cannot be unmarshalled in
 
 	Body Body `xml:"w:body"`

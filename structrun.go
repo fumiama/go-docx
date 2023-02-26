@@ -49,54 +49,90 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			return err
 		}
 
-		var child interface{}
-
 		if tt, ok := t.(xml.StartElement); ok {
-			switch tt.Name.Local {
-			case "rPr":
-				var value RunProperties
-				err = d.DecodeElement(&value, &tt)
-				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
-					return err
-				}
-				r.RunProperties = &value
-				continue
-			case "instrText":
-				var value string
-				err = d.DecodeElement(&value, &tt)
-				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
-					return err
-				}
-				r.InstrText = value
-				continue
-			case "t":
-				var value Text
-				err = d.DecodeElement(&value, &tt)
-				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
-					return err
-				}
-				child = &value
-			case "drawing":
-				var value Drawing
-				err = d.DecodeElement(&value, &tt)
-				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
-					return err
-				}
-				child = &value
-			case "tab":
-				child = &Tab{}
-			default:
-				err = d.Skip() // skip unsupported tags
-				if err != nil {
-					return err
-				}
-				continue
+			child, err := r.parse(d, tt)
+			if err != nil {
+				return err
 			}
-			r.Children = append(r.Children, child)
+			if child != nil {
+				r.Children = append(r.Children, child)
+			}
 		}
 	}
 
 	return nil
+}
+
+func (r *Run) parse(d *xml.Decoder, tt xml.StartElement) (child interface{}, err error) {
+	switch tt.Name.Local {
+	case "rPr":
+		var value RunProperties
+		err = d.DecodeElement(&value, &tt)
+		if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+			return nil, err
+		}
+		r.RunProperties = &value
+		return nil, nil
+	case "instrText":
+		var value string
+		err = d.DecodeElement(&value, &tt)
+		if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+			return nil, err
+		}
+		r.InstrText = value
+		return nil, nil
+	case "t":
+		var value Text
+		err = d.DecodeElement(&value, &tt)
+		if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+			return nil, err
+		}
+		child = &value
+	case "drawing":
+		var value Drawing
+		err = d.DecodeElement(&value, &tt)
+		if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+			return nil, err
+		}
+		child = &value
+	case "tab":
+		child = &Tab{}
+	case "AlternateContent":
+	altcont:
+		for {
+			tok, err1 := d.Token()
+			if err1 == io.EOF {
+				break
+			}
+			if err1 != nil {
+				return nil, err1
+			}
+
+			if ttt, ok := tok.(xml.StartElement); ok && ttt.Name.Local == "Choice" {
+				for _, attr := range ttt.Attr {
+					if attr.Name.Local == "Requires" {
+						if attr.Value == "wps" {
+							child, err = r.parse(d, ttt)
+							break altcont
+						}
+						break
+					}
+				}
+			}
+			if et, ok := tok.(xml.EndElement); ok {
+				if et.Name.Local == "AlternateContent" {
+					break
+				}
+			}
+			err = d.Skip() // skip unsupported tags
+			if err != nil {
+				return nil, err
+			}
+		}
+	default:
+		err = d.Skip() // skip unsupported tags
+	}
+	return
 }
 
 // RunProperties encapsulates visual properties of a run

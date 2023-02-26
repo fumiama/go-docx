@@ -31,9 +31,11 @@ func newEmptyA4File() *Docx {
 			XMLName: xml.Name{
 				Space: "w",
 			},
-			XMLW:  XMLNS_W,
-			XMLR:  XMLNS_R,
-			XMLWP: XMLNS_WP,
+			XMLW:   XMLNS_W,
+			XMLR:   XMLNS_R,
+			XMLWP:  XMLNS_WP,
+			XMLWPS: XMLNS_WPS,
+			// XMLMC:  XMLNS_MC,
 			// XMLWP14: XMLNS_WP14,
 			Body: Body{
 				Items: make([]interface{}, 0, 64),

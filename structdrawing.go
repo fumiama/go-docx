@@ -741,10 +741,6 @@ func (p *PICSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 					return err
 				}
 			case "prstGeom":
-				err = d.DecodeElement(&p.PrstGeom, &tt)
-				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
-					return err
-				}
 				p.PrstGeom.Prst = getAtt(tt.Attr, "prst")
 			default:
 				err = d.Skip() // skip unsupported tags
