@@ -185,7 +185,7 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 // RunFonts specifies the fonts used in the text of a run.
 type RunFonts struct {
 	XMLName xml.Name `xml:"w:rFonts,omitempty"`
-	Ascii   string   `xml:"w:ascii,attr,omitempty"`
+	ASCII   string   `xml:"w:ascii,attr,omitempty"`
 	HAnsi   string   `xml:"w:hAnsi,attr,omitempty"`
 	Hint    string   `xml:"w:hint,attr,omitempty"`
 }
@@ -195,7 +195,7 @@ func (f *RunFonts) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "ascii":
-			f.Ascii = attr.Value
+			f.ASCII = attr.Value
 		case "hAnsi":
 			f.HAnsi = attr.Value
 		case "hint":

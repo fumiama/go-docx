@@ -92,7 +92,7 @@ func (r *Run) AddTab() *Run {
 // Font sets the font of the run
 func (r *Run) Font(ascii, hansi, hint string) *Run {
 	r.RunProperties.Fonts = &RunFonts{
-		Ascii: ascii,
+		ASCII: ascii,
 		HAnsi: hansi,
 		Hint:  hint,
 	}
