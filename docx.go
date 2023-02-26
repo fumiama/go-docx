@@ -18,7 +18,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-// package docx is one of the most functional libraries to read and write .docx
+// Package docx is one of the most functional libraries to read and write .docx
 // (a.k.a. Microsoft Word documents or ECMA-376 Office Open XML) files in Go.
 package docx
 
