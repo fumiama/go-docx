@@ -36,7 +36,7 @@ func TestTableStructure(t *testing.T) {
 	para1.AddText("table")
 	tab1 := w.AddTable(4, 3).Justification("center")
 	tab1.TableProperties.Position = &WTablePositioningProperties{LeftFromText: 2333}
-	para2 := tab1.TableRows[3].Justification("center").TableCells[2].AddParagraph()
+	para2 := tab1.TableRows[3].Justification("center").TableCells[2].Shade("clear", "auto", "E7E6E6").AddParagraph()
 	r, err := para2.AddAnchorDrawingFrom("testdata/fumiama.JPG")
 	if err != nil {
 		t.Fatal(err)

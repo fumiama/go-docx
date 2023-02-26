@@ -158,3 +158,13 @@ func (w *WTableRow) Justification(val string) *WTableRow {
 	w.TableRowProperties.Justification.Val = val
 	return w
 }
+
+// Shade allows to set cell's shade
+func (c *WTableCell) Shade(val, color, fill string) *WTableCell {
+	c.TableCellProperties.Shade = &Shade{
+		Val:   val,
+		Color: color,
+		Fill:  fill,
+	}
+	return c
+}

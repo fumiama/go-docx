@@ -30,8 +30,9 @@ import (
 
 // ParagraphProperties <w:pPr>
 type ParagraphProperties struct {
-	XMLName       xml.Name       `xml:"w:pPr,omitempty"`
-	Justification *Justification `xml:"w:jc,omitempty"`
+	XMLName       xml.Name `xml:"w:pPr,omitempty"`
+	Justification *Justification
+	Shade         *Shade
 }
 
 // UnmarshalXML ...
@@ -48,6 +49,13 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 			switch tt.Name.Local {
 			case "jc":
 				p.Justification = &Justification{Val: getAtt(tt.Attr, "val")}
+			case "shd":
+				var value Shade
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				p.Shade = &value
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {

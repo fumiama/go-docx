@@ -51,9 +51,10 @@ func main() {
 		r.Children[0].(*docx.Drawing).Anchor.PositionH.PosOffset = r.Children[0].(*docx.Drawing).Anchor.Extent.CX
 		r.Children[0].(*docx.Drawing).Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.AlphaModFix = &docx.AAlphaModFix{Amount: 50000}
 		// add text
-		para1.AddText("test")
-		para1.AddText("test font size").Size("44")
-		para1.AddText("test color").Color("808080")
+		para1.AddText("test").AddTab()
+		para1.AddText("test font size").Size("44").AddTab()
+		para1.AddText("test color").Color("808080").AddTab()
+		para1.AddText("test shade").Shade("clear", "auto", "E7E6E6").AddTab()
 
 		para2 := w.AddParagraph().Justification("end")
 		para2.AddText("test font size and color").Size("44").Color("ff0000")
@@ -88,10 +89,16 @@ func main() {
 			panic(err)
 		}
 
-		tbl1 := w.AddTable(3, 2)
+		w.AddParagraph()
+
+		tbl1 := w.AddTable(9, 9)
 		for x, r := range tbl1.TableRows {
+			red := (x + 1) * 28
 			for y, c := range r.TableCells {
-				c.AddParagraph().AddText(fmt.Sprintf("(%d, %d)", x, y))
+				green := ((y + 1) / 3) * 85
+				blue := (y%3 + 1) * 85
+				v := fmt.Sprintf("%02X%02X%02X", red, green, blue)
+				c.Shade("clear", "auto", v).AddParagraph().AddText(v).Size("18")
 			}
 		}
 
@@ -105,6 +112,7 @@ func main() {
 				c.AddParagraph().Justification("center").AddText(fmt.Sprintf("(%d, %d)", x, y))
 			}
 		}
+		tbl2.TableRows[0].TableCells[0].Shade("clear", "auto", "E7E6E6")
 
 		f, err := os.Create(*fileLocation)
 		if err != nil {

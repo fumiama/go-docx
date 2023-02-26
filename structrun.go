@@ -106,11 +106,12 @@ type WTab struct {
 
 // RunProperties encapsulates visual properties of a run
 type RunProperties struct {
-	XMLName  xml.Name  `xml:"w:rPr,omitempty"`
-	Color    *Color    `xml:"w:color,omitempty"`
-	Size     *Size     `xml:"w:sz,omitempty"`
-	RunStyle *RunStyle `xml:"w:rStyle,omitempty"`
-	Style    *Style    `xml:"w:pStyle,omitempty"`
+	XMLName  xml.Name `xml:"w:rPr,omitempty"`
+	Color    *Color
+	Size     *Size
+	RunStyle *RunStyle
+	Style    *Style
+	Shade    *Shade
 }
 
 // UnmarshalXML ...
@@ -142,6 +143,13 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 				var value Style
 				value.Val = getAtt(tt.Attr, "val")
 				r.Style = &value
+			case "shd":
+				var value Shade
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				r.Shade = &value
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {
@@ -153,42 +161,4 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 	}
 
 	return nil
-}
-
-// RunStyle contains styling for a run
-type RunStyle struct {
-	XMLName xml.Name `xml:"w:rStyle,omitempty"`
-	Val     string   `xml:"w:val,attr"`
-}
-
-// Style contains styling for a paragraph
-type Style struct {
-	XMLName xml.Name `xml:"w:pStyle,omitempty"`
-	Val     string   `xml:"w:val,attr"`
-}
-
-// Color contains the sound of music. :D
-// I'm kidding. It contains the color
-type Color struct {
-	XMLName xml.Name `xml:"w:color"`
-	Val     string   `xml:"w:val,attr"`
-}
-
-// Size contains the font size
-type Size struct {
-	XMLName xml.Name `xml:"w:sz"`
-	Val     string   `xml:"w:val,attr"`
-}
-
-// Justification contains the way of the horizonal alignment
-//
-//	w:jc 属性的取值可以是以下之一：
-//		start：左对齐。
-//		center：居中对齐。
-//		end：右对齐。
-//		both：两端对齐。
-//		distribute：分散对齐。
-type Justification struct {
-	// XMLName xml.Name `xml:"w:jc"`
-	Val string `xml:"w:val,attr"`
 }

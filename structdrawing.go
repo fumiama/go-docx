@@ -236,10 +236,7 @@ func (r *WPExtent) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 	// Consume the end element
 	_, err = d.Token()
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // WPEffectExtent represents the effect extent of a drawing in a Word document.
@@ -280,10 +277,7 @@ func (r *WPEffectExtent) UnmarshalXML(d *xml.Decoder, start xml.StartElement) er
 	}
 	// Consume the end element
 	_, err = d.Token()
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // WPDocPr represents the document properties of a drawing in a Word document.
@@ -312,10 +306,7 @@ func (r *WPDocPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 	// Consume the end element
 	_, err := d.Token()
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // WPCNvGraphicFramePr represents the non-visual properties of a graphic frame.

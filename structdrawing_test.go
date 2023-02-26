@@ -33,7 +33,7 @@ func TestDrawingStructure(t *testing.T) {
 	// add new paragraph
 	para1 := w.AddParagraph()
 	// add text
-	para1.AddText("直接粘贴 inline").AddTab()
+	para1.AddText("直接粘贴 inline").Shade("clear", "auto", "E7E6E6").AddTab()
 	r, err := para1.AddAnchorDrawingFrom("testdata/fumiama.JPG")
 	if err != nil {
 		t.Fatal(err)

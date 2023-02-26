@@ -87,10 +87,7 @@ func (f *Docx) parseDocument(file *zip.File) error {
 
 	f.Document.Body.file = f
 	err = xml.NewDecoder(zf).Decode(&f.Document)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // parseDocRelation processes one of the relevant files, the one with the relationships

@@ -25,7 +25,6 @@ func (r *Run) Color(color string) *Run {
 	r.RunProperties.Color = &Color{
 		Val: color,
 	}
-
 	return r
 }
 
@@ -34,7 +33,16 @@ func (r *Run) Size(size string) *Run {
 	r.RunProperties.Size = &Size{
 		Val: size,
 	}
+	return r
+}
 
+// Shade allows to set run shade
+func (r *Run) Shade(val, color, fill string) *Run {
+	r.RunProperties.Shade = &Shade{
+		Val:   val,
+		Color: color,
+		Fill:  fill,
+	}
 	return r
 }
 

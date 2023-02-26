@@ -307,10 +307,7 @@ func (t *WTableLook) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 	}
 	// Consume the end element
 	_, err := d.Token()
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // WTableGrid is a structure that represents the table grid of a Word document.
@@ -382,6 +379,7 @@ func (g *WGridCol) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 type WTableRow struct {
 	XMLName            xml.Name `xml:"w:tr,omitempty"`
 	RsidR              string   `xml:"w:rsidR,attr,omitempty"`
+	RsidRPr            string   `xml:"w:rsidRPr,attr,omitempty"`
 	RsidTr             string   `xml:"w:rsidTr,attr,omitempty"`
 	TableRowProperties *WTableRowProperties
 	TableCells         []*WTableCell
@@ -395,6 +393,8 @@ func (w *WTableRow) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		switch attr.Name.Local {
 		case "rsidR":
 			w.RsidR = attr.Value
+		case "rsidRPr":
+			w.RsidRPr = attr.Value
 		case "rsidTr":
 			w.RsidTr = attr.Value
 		default:
@@ -443,7 +443,7 @@ func (w *WTableRow) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 type WTableRowProperties struct {
 	XMLName        xml.Name `xml:"w:trPr,omitempty"`
 	TableRowHeight *WTableRowHeight
-	Justification  *Justification `xml:"w:jc,omitempty"`
+	Justification  *Justification
 }
 
 // UnmarshalXML ...
@@ -462,12 +462,14 @@ func (t *WTableRowProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 			case "trHeight":
 				th := new(WTableRowHeight)
 				for _, attr := range tt.Attr {
-					if attr.Name.Local == "val" {
+					switch attr.Name.Local {
+					case "val":
 						th.Val, err = strconv.ParseInt(attr.Value, 10, 64)
 						if err != nil {
 							return err
 						}
-						break
+					case "hRule":
+						th.Rule = attr.Value
 					}
 				}
 				t.TableRowHeight = th
@@ -502,6 +504,7 @@ func (t *WTableRowProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 // WTableRowHeight represents the height of a row within a table.
 type WTableRowHeight struct {
 	XMLName xml.Name `xml:"w:trHeight,omitempty"`
+	Rule    string   `xml:"w:hRule,omitempty"`
 	Val     int64    `xml:"w:val,attr"`
 }
 
@@ -563,6 +566,7 @@ type WTableCellProperties struct {
 	GridSpan       *WGridSpan
 	VAlign         *WVerticalAlignment
 	TableBorders   *WTableBorders `xml:"w:tcBorders"`
+	Shade          *Shade
 }
 
 // UnmarshalXML ...
@@ -608,6 +612,13 @@ func (r *WTableCellProperties) UnmarshalXML(d *xml.Decoder, start xml.StartEleme
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
+			case "shd":
+				var value Shade
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				r.Shade = &value
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {
@@ -743,10 +754,7 @@ func (t *WTableBorder) UnmarshalXML(d *xml.Decoder, start xml.StartElement) erro
 	}
 	// Consume the end element
 	_, err := d.Token()
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // WGridSpan represents the number of grid columns this cell should span.
