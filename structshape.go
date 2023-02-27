@@ -98,7 +98,7 @@ type WPSSpPr struct {
 	Xfrm     AXfrm
 	PrstGeom APrstGeom
 	NoFill   *struct{} `xml:"a:noFill,omitempty"`
-	Ln       *ALine
+	Elems    []interface{}
 }
 
 // UnmarshalXML ...
@@ -132,11 +132,12 @@ func (w *WPSSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			case "noFill":
 				w.NoFill = &struct{}{}
 			case "ln":
-				w.Ln = &ALine{}
-				err = d.DecodeElement(&w.Ln, &tt)
+				var ln ALine
+				err = d.DecodeElement(&ln, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
+				w.Elems = append(w.Elems, &ln)
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {

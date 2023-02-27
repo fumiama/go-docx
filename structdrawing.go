@@ -312,7 +312,7 @@ func (r *WPDocPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 // WPCNvGraphicFramePr represents the non-visual properties of a graphic frame.
 type WPCNvGraphicFramePr struct {
 	XMLName xml.Name `xml:"wp:cNvGraphicFramePr,omitempty"`
-	Locks   *AGraphicFrameLocks
+	Locks   AGraphicFrameLocks
 }
 
 // UnmarshalXML ...
@@ -329,20 +329,14 @@ func (w *WPCNvGraphicFramePr) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "graphicFrameLocks":
-				var value AGraphicFrameLocks
-				err = d.DecodeElement(&value, &tt)
-				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
-					return err
-				}
 				v := getAtt(tt.Attr, "noChangeAspect")
 				if v == "" {
 					continue
 				}
-				value.NoChangeAspect, err = strconv.Atoi(v)
+				w.Locks.NoChangeAspect, err = strconv.Atoi(v)
 				if err != nil {
 					return err
 				}
-				w.Locks = &value
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {
@@ -358,7 +352,7 @@ func (w *WPCNvGraphicFramePr) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 // AGraphicFrameLocks represents the locks applied to a graphic frame.
 type AGraphicFrameLocks struct {
 	XMLName        xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/main graphicFrameLocks,omitempty"`
-	NoChangeAspect int      `xml:"noChangeAspect,attr"`
+	NoChangeAspect int      `xml:"noChangeAspect,attr,omitempty"`
 }
 
 // AGraphic represents a graphic in a Word document.
@@ -414,6 +408,7 @@ type AGraphicData struct {
 	XMLName xml.Name `xml:"a:graphicData,omitempty"`
 	URI     string   `xml:"uri,attr"`
 	Pic     *PICPic
+	Shape   *WPSWordprocessingShape
 }
 
 // UnmarshalXML ...
@@ -437,6 +432,13 @@ func (a *AGraphicData) UnmarshalXML(d *xml.Decoder, start xml.StartElement) erro
 				}
 				value.XMLPIC = getAtt(tt.Attr, "pic")
 				a.Pic = &value
+			case "wsp":
+				var value WPSWordprocessingShape
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				a.Shape = &value
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {

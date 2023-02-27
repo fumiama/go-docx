@@ -20,8 +20,14 @@
 
 package docx
 
+import (
+	"strconv"
+	"sync/atomic"
+)
+
 // addImage add image to docx and return its rId
-func (f *Docx) addImage(m Media) string {
+func (f *Docx) addImage(format string, data []byte) string {
+	m := Media{Name: "image" + strconv.Itoa(int(atomic.AddUintptr(&f.imageID, 1))) + "." + format, Data: data}
 	f.addMedia(m)
 	return f.addImageRelation(m)
 }

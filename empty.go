@@ -74,6 +74,7 @@ func newEmptyA4File() *Docx {
 		media:        make([]Media, 0, 64),
 		mediaNameIdx: make(map[string]int, 64),
 		rID:          5,
+		slowIDs:      make(map[string]uintptr, 64),
 		template:     "a4",
 		tmpfslst: []string{
 			"_rels/.rels",

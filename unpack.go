@@ -39,6 +39,7 @@ import (
 func unpack(zipReader *zip.Reader) (docx *Docx, err error) {
 	docx = new(Docx)
 	docx.mediaNameIdx = make(map[string]int, 64)
+	docx.slowIDs = make(map[string]uintptr, 64)
 	docx.tmplfs = zipReader
 	docx.tmpfslst = make([]string, 0, 64)
 	for _, f := range zipReader.File {
@@ -88,6 +89,7 @@ func (f *Docx) parseDocument(file *zip.File) error {
 	f.Document.XMLName.Local = "document"
 
 	f.Document.Body.file = f
+	//TODO: find last docID
 	err = xml.NewDecoder(zf).Decode(&f.Document)
 	return err
 }

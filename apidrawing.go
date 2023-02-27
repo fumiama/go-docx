@@ -35,9 +35,9 @@ func (p *Paragraph) AddInlineDrawing(pic []byte) (*Run, error) {
 	if err != nil {
 		return nil, err
 	}
-	idn := int(atomic.AddUintptr(&p.file.imageID, 1))
-	id := strconv.Itoa(idn)
-	rid := p.file.addImage(Media{Name: "image" + id + "." + format, Data: pic})
+	idn := int(atomic.AddUintptr(&p.file.docID, 1))
+	id := strconv.Itoa(int(p.file.IncreaseID("图片")))
+	rid := p.file.addImage(format, pic)
 	w, h := int64(sz.Width), int64(sz.Height)
 	if float64(w)/float64(h) > 1.2 {
 		h = A4_EMU_MAX_WIDTH * h / w
@@ -61,7 +61,7 @@ func (p *Paragraph) AddInlineDrawing(pic []byte) (*Run, error) {
 				Name: "图片 " + id,
 			},
 			CNvGraphicFramePr: &WPCNvGraphicFramePr{
-				Locks: &AGraphicFrameLocks{
+				Locks: AGraphicFrameLocks{
 					NoChangeAspect: 1,
 				},
 			},
@@ -136,9 +136,9 @@ func (p *Paragraph) AddAnchorDrawing(pic []byte) (*Run, error) {
 	if err != nil {
 		return nil, err
 	}
-	idn := int(atomic.AddUintptr(&p.file.imageID, 1))
-	id := strconv.Itoa(idn)
-	rid := p.file.addImage(Media{Name: "image" + id + "." + format, Data: pic})
+	idn := int(atomic.AddUintptr(&p.file.docID, 1))
+	id := strconv.Itoa(int(p.file.IncreaseID("图片")))
+	rid := p.file.addImage(format, pic)
 	w, h := int64(sz.Width), int64(sz.Height)
 	if float64(w)/float64(h) > 1.2 {
 		h = A4_EMU_MAX_WIDTH * h / w
@@ -171,7 +171,7 @@ func (p *Paragraph) AddAnchorDrawing(pic []byte) (*Run, error) {
 				Name: "图片 " + id,
 			},
 			CNvGraphicFramePr: &WPCNvGraphicFramePr{
-				Locks: &AGraphicFrameLocks{
+				Locks: AGraphicFrameLocks{
 					NoChangeAspect: 1,
 				},
 			},

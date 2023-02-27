@@ -123,6 +123,18 @@ func main() {
 		}
 		tbl2.TableRows[0].TableCells[0].Shade("clear", "auto", "E7E6E6")
 
+		p := w.AddParagraph().Justification("center")
+		p.AddText("测试 AutoShape w:ln").Size("44")
+		p.AddShape(808355, 238760, "AutoShape", "auto", "straightConnector1", []interface{}{
+			&docx.ALine{
+				W:         9525,
+				SolidFill: &docx.ASolidFill{SrgbClr: &docx.ASrgbClr{Val: "000000"}},
+				Round:     &struct{}{},
+				HeadEnd:   &struct{}{},
+				TailEnd:   &struct{}{},
+			},
+		})
+
 		f, err := os.Create(*fileLocation)
 		if err != nil {
 			panic(err)

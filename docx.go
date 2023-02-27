@@ -27,6 +27,7 @@ import (
 	"bytes"
 	"io"
 	"io/fs"
+	"sync"
 )
 
 // Docx is the structure that allow to access the internal represntation
@@ -39,8 +40,11 @@ type Docx struct {
 	media        []Media
 	mediaNameIdx map[string]int
 
-	rID     uintptr
-	imageID uintptr
+	rID       uintptr
+	imageID   uintptr
+	docID     uintptr
+	slowIDs   map[string]uintptr
+	slowIDsMu sync.Mutex
 
 	template string
 	tmplfs   fs.FS
