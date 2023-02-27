@@ -23,6 +23,7 @@ package docx
 import (
 	"encoding/xml"
 	"io"
+	"strconv"
 	"strings"
 )
 
@@ -148,6 +149,7 @@ type RunProperties struct {
 	RunStyle  *RunStyle
 	Style     *Style
 	Shade     *Shade
+	Kern      *Kern
 }
 
 // UnmarshalXML ...
@@ -205,6 +207,17 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 					return err
 				}
 				r.Shade = &value
+			case "kern":
+				var value Kern
+				v := getAtt(tt.Attr, "val")
+				if v == "" {
+					continue
+				}
+				value.Val, err = strconv.ParseInt(v, 10, 64)
+				if err != nil {
+					return err
+				}
+				r.Kern = &value
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {

@@ -49,6 +49,12 @@ type Highlight struct {
 	Val     string   `xml:"w:val,attr,omitempty"`
 }
 
+// Kern ...
+type Kern struct {
+	XMLName xml.Name `xml:"w:kern,omitempty"`
+	Val     int64    `xml:"w:val,attr,omitempty"`
+}
+
 // Justification contains the way of the horizonal alignment
 //
 //	w:jc 属性的取值可以是以下之一：

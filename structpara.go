@@ -25,6 +25,7 @@ import (
 	"encoding/hex"
 	"encoding/xml"
 	"io"
+	"strconv"
 	"strings"
 )
 
@@ -33,6 +34,7 @@ type ParagraphProperties struct {
 	XMLName       xml.Name `xml:"w:pPr,omitempty"`
 	Justification *Justification
 	Shade         *Shade
+	Kern          *Kern
 }
 
 // UnmarshalXML ...
@@ -56,6 +58,17 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 					return err
 				}
 				p.Shade = &value
+			case "kern":
+				var value Kern
+				v := getAtt(tt.Attr, "val")
+				if v == "" {
+					continue
+				}
+				value.Val, err = strconv.ParseInt(v, 10, 64)
+				if err != nil {
+					return err
+				}
+				p.Kern = &value
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {
