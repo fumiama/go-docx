@@ -19,8 +19,8 @@ func TestShapeStructure(t *testing.T) {
 			W:         9525,
 			SolidFill: &ASolidFill{SrgbClr: &ASrgbClr{Val: "000000"}},
 			Round:     &struct{}{},
-			HeadEnd:   &struct{}{},
-			TailEnd:   &struct{}{},
+			HeadEnd:   &AHeadEnd{},
+			TailEnd:   &ATailEnd{},
 		},
 	})
 

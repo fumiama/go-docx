@@ -152,13 +152,18 @@ func (w *WPSSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 // ALine represents a line element in a Word document.
 type ALine struct {
-	XMLName xml.Name `xml:"a:ln,omitempty"`
-	W       int64    `xml:"w,attr"`
+	XMLName  xml.Name `xml:"a:ln,omitempty"`
+	W        int64    `xml:"w,attr"`
+	Cap      string   `xml:"cap,attr,omitempty"`
+	Compound string   `xml:"cmpd,attr,omitempty"`
+	Align    string   `xml:"algn,attr,omitempty"`
 
 	SolidFill *ASolidFill
+	PrstDash  *APrstDash
+	Miter     *AMiter
 	Round     *struct{} `xml:"a:round,omitempty"`
-	HeadEnd   *struct{} `xml:"a:headEnd,omitempty"`
-	TailEnd   *struct{} `xml:"a:tailEnd,omitempty"`
+	HeadEnd   *AHeadEnd
+	TailEnd   *ATailEnd
 }
 
 // UnmarshalXML ...
@@ -170,6 +175,12 @@ func (l *ALine) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error)
 			if err != nil {
 				return err
 			}
+		case "cap":
+			l.Cap = attr.Value
+		case "cmpd":
+			l.Compound = attr.Value
+		case "algn":
+			l.Align = attr.Value
 		default:
 			// ignore other attributes
 		}
@@ -191,12 +202,28 @@ func (l *ALine) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
+			case "prstDash":
+				var value APrstDash
+				value.Val = getAtt(tt.Attr, "val")
+				l.PrstDash = &value
+			case "miter":
+				var value AMiter
+				value.Limit = getAtt(tt.Attr, "lim")
+				l.Miter = &value
 			case "round":
 				l.Round = &struct{}{}
 			case "headEnd":
-				l.HeadEnd = &struct{}{}
+				l.HeadEnd = new(AHeadEnd)
+				err = d.DecodeElement(l.HeadEnd, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 			case "tailEnd":
-				l.TailEnd = &struct{}{}
+				l.TailEnd = new(ATailEnd)
+				err = d.DecodeElement(l.TailEnd, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {
@@ -256,6 +283,72 @@ func (s *ASolidFill) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 type ASrgbClr struct {
 	XMLName xml.Name `xml:"a:srgbClr,omitempty"`
 	Val     string   `xml:"val,attr"`
+}
+
+// APrstDash ...
+type APrstDash struct {
+	XMLName xml.Name `xml:"a:prstDash,omitempty"`
+	Val     string   `xml:"val,attr"`
+}
+
+// AMiter ...
+type AMiter struct {
+	XMLName xml.Name `xml:"a:miter,omitempty"`
+	Limit   string   `xml:"lim,attr"`
+}
+
+// AHeadEnd ...
+type AHeadEnd struct {
+	XMLName xml.Name `xml:"a:headEnd,omitempty"`
+	Type    string   `xml:"type,attr,omitempty"`
+	W       string   `xml:"w,attr,omitempty"`
+	Len     string   `xml:"len,attr,omitempty"`
+}
+
+// UnmarshalXML ...
+func (r *AHeadEnd) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "type":
+			r.Type = attr.Value
+		case "w":
+			r.W = attr.Value
+		case "len":
+			r.Len = attr.Value
+		default:
+			// ignore other attributes
+		}
+	}
+	// Consume the end element
+	_, err := d.Token()
+	return err
+}
+
+// ATailEnd ...
+type ATailEnd struct {
+	XMLName xml.Name `xml:"a:tailEnd,omitempty"`
+	Type    string   `xml:"type,attr,omitempty"`
+	W       string   `xml:"w,attr,omitempty"`
+	Len     string   `xml:"len,attr,omitempty"`
+}
+
+// UnmarshalXML ...
+func (r *ATailEnd) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "type":
+			r.Type = attr.Value
+		case "w":
+			r.W = attr.Value
+		case "len":
+			r.Len = attr.Value
+		default:
+			// ignore other attributes
+		}
+	}
+	// Consume the end element
+	_, err := d.Token()
+	return err
 }
 
 // WPSBodyPr represents the body properties for a WordprocessingML DrawingML shape.

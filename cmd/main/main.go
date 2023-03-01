@@ -130,8 +130,8 @@ func main() {
 				W:         9525,
 				SolidFill: &docx.ASolidFill{SrgbClr: &docx.ASrgbClr{Val: "000000"}},
 				Round:     &struct{}{},
-				HeadEnd:   &struct{}{},
-				TailEnd:   &struct{}{},
+				HeadEnd:   &docx.AHeadEnd{},
+				TailEnd:   &docx.ATailEnd{},
 			},
 		})
 
