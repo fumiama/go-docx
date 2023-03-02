@@ -124,3 +124,10 @@ func (f *Docx) Read(p []byte) (n int, err error) {
 	f.isbufempty = false
 	return f.buf.Read(p)
 }
+
+// UseTemplate will replace template files
+func (f *Docx) UseTemplate(template string, tmpfslst []string, tmplfs fs.FS) {
+	f.template = template
+	f.tmplfs = tmplfs
+	f.tmpfslst = tmpfslst
+}

@@ -67,16 +67,8 @@ func newEmptyA4File() *Docx {
 		rID:          3,
 		slowIDs:      make(map[string]uintptr, 64),
 		template:     "a4",
-		tmpfslst: []string{
-			"_rels/.rels",
-			"docProps/app.xml",
-			"docProps/core.xml",
-			"word/theme/theme1.xml",
-			"word/fontTable.xml",
-			"word/styles.xml",
-			"[Content_Types].xml",
-		},
-		buf: bytes.NewBuffer(make([]byte, 0, 1024*1024)),
+		tmpfslst:     A4TemplateFilesList,
+		buf:          bytes.NewBuffer(make([]byte, 0, 1024*1024)),
 	}
 	docx.Document.Body.file = docx
 	return docx

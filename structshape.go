@@ -230,8 +230,8 @@ type WPSSpPr struct {
 	NoFill    *struct{} `xml:"a:noFill,omitempty"`
 	Line      *ALine
 
-	EffectList struct{} `xml:"a:effectLst"`
-	ExtList    struct{} `xml:"a:extLst"`
+	// EffectList struct{} `xml:"a:effectLst"`
+	// ExtList    struct{} `xml:"a:extLst"`
 }
 
 // UnmarshalXML ...

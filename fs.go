@@ -27,4 +27,15 @@ var (
 	//go:embed xml
 	//go:embed xml/a4/_rels/*
 	TemplateXMLFS embed.FS
+
+	// A4TemplateFileList is the files list under TemplateXMLFS/xml/a4
+	A4TemplateFilesList = []string{
+		"_rels/.rels",
+		"docProps/app.xml",
+		"docProps/core.xml",
+		"word/theme/theme1.xml",
+		"word/fontTable.xml",
+		"word/styles.xml",
+		"[Content_Types].xml",
+	}
 )
