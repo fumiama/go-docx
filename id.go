@@ -20,6 +20,7 @@
 
 package docx
 
+// IncreaseID by name
 func (f *Docx) IncreaseID(name string) (n uintptr) {
 	f.slowIDsMu.Lock()
 	n = f.slowIDs[name]

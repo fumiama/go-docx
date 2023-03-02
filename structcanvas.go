@@ -26,6 +26,7 @@ import (
 	"strings"
 )
 
+// WordprocessingCanvas ...
 type WordprocessingCanvas struct {
 	XMLName    xml.Name `xml:"wpc:wpc,omitempty"`
 	Background *WPCBackground
@@ -81,6 +82,7 @@ func (c *WordprocessingCanvas) UnmarshalXML(d *xml.Decoder, start xml.StartEleme
 	return nil
 }
 
+// WPCBackground ...
 type WPCBackground struct {
 	XMLName xml.Name  `xml:"wpc:bg,omitempty"`
 	NoFill  *struct{} `xml:"a:noFill,omitempty"`
@@ -113,6 +115,7 @@ func (b *WPCBackground) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (er
 	return nil
 }
 
+// WPCWhole ...
 type WPCWhole struct {
 	XMLName xml.Name `xml:"wpc:whole,omitempty"`
 	Line    *ALine

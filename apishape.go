@@ -26,7 +26,7 @@ import (
 )
 
 // AddInlineShape adds wsp named drawing to paragraph
-func (p *Paragraph) AddInlineShape(w, h int64, name, bwMode, prst string, ln *ALine) (*Run, error) {
+func (p *Paragraph) AddInlineShape(w, h int64, name, bwMode, prst string, ln *ALine) *Run {
 	idn := int(atomic.AddUintptr(&p.file.docID, 1))
 	id := strconv.Itoa(int(p.file.IncreaseID(name)))
 	d := &Drawing{
@@ -77,11 +77,11 @@ func (p *Paragraph) AddInlineShape(w, h int64, name, bwMode, prst string, ln *AL
 		Children:      c,
 	}
 	p.Children = append(p.Children, run)
-	return run, nil
+	return run
 }
 
 // AddAnchorShape adds wsp named drawing to paragraph
-func (p *Paragraph) AddAnchorShape(w, h int64, name, bwMode, prst string, ln *ALine) (*Run, error) {
+func (p *Paragraph) AddAnchorShape(w, h int64, name, bwMode, prst string, ln *ALine) *Run {
 	idn := int(atomic.AddUintptr(&p.file.docID, 1))
 	id := strconv.Itoa(int(p.file.IncreaseID(name)))
 	d := &Drawing{
@@ -144,5 +144,5 @@ func (p *Paragraph) AddAnchorShape(w, h int64, name, bwMode, prst string, ln *AL
 		Children:      c,
 	}
 	p.Children = append(p.Children, run)
-	return run, nil
+	return run
 }
