@@ -44,6 +44,8 @@ type Drawing struct {
 	XMLName xml.Name `xml:"w:drawing,omitempty"`
 	Inline  *WPInline
 	Anchor  *WPAnchor
+
+	file *Docx
 }
 
 // UnmarshalXML ...
@@ -61,12 +63,14 @@ func (r *Drawing) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			switch tt.Name.Local {
 			case "inline":
 				r.Inline = new(WPInline)
+				r.Inline.file = r.file
 				err = d.DecodeElement(r.Inline, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
 			case "anchor":
 				r.Anchor = new(WPAnchor)
+				r.Anchor.file = r.file
 				err = d.DecodeElement(r.Anchor, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
@@ -105,6 +109,8 @@ type WPInline struct {
 	DocPr             *WPDocPr
 	CNvGraphicFramePr *WPCNvGraphicFramePr
 	Graphic           *AGraphic
+
+	file *Docx
 }
 
 // UnmarshalXML ...
@@ -191,6 +197,7 @@ func (r *WPInline) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 				r.CNvGraphicFramePr = &value
 			case "graphic":
 				var value AGraphic
+				value.file = r.file
 				err = d.DecodeElement(&value, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
@@ -360,6 +367,8 @@ type AGraphic struct {
 	XMLName     xml.Name `xml:"a:graphic,omitempty"`
 	XMLA        string   `xml:"xmlns:a,attr,omitempty"`
 	GraphicData *AGraphicData
+
+	file *Docx
 }
 
 // UnmarshalXML ...
@@ -385,6 +394,7 @@ func (a *AGraphic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			switch tt.Name.Local {
 			case "graphicData":
 				var value AGraphicData
+				value.file = a.file
 				err = d.DecodeElement(&value, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
@@ -407,8 +417,11 @@ func (a *AGraphic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 type AGraphicData struct {
 	XMLName xml.Name `xml:"a:graphicData,omitempty"`
 	URI     string   `xml:"uri,attr"`
-	Pic     *PICPic
-	Shape   *WPSWordprocessingShape
+	Pic     *Picture
+	Shape   *WordprocessingShape
+	Canvas  *WordprocessingCanvas
+
+	file *Docx
 }
 
 // UnmarshalXML ...
@@ -425,7 +438,7 @@ func (a *AGraphicData) UnmarshalXML(d *xml.Decoder, start xml.StartElement) erro
 		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "pic":
-				var value PICPic
+				var value Picture
 				err = d.DecodeElement(&value, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
@@ -433,12 +446,21 @@ func (a *AGraphicData) UnmarshalXML(d *xml.Decoder, start xml.StartElement) erro
 				value.XMLPIC = getAtt(tt.Attr, "pic")
 				a.Pic = &value
 			case "wsp":
-				var value WPSWordprocessingShape
+				var value WordprocessingShape
+				value.file = a.file
 				err = d.DecodeElement(&value, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
 				a.Shape = &value
+			case "wpc":
+				var value WordprocessingCanvas
+				value.file = a.file
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				a.Canvas = &value
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {
@@ -451,8 +473,8 @@ func (a *AGraphicData) UnmarshalXML(d *xml.Decoder, start xml.StartElement) erro
 	return nil
 }
 
-// PICPic represents a picture in a Word document.
-type PICPic struct {
+// Picture represents a picture in a Word document.
+type Picture struct {
 	XMLName                xml.Name `xml:"pic:pic,omitempty"`
 	XMLPIC                 string   `xml:"xmlns:pic,attr,omitempty"`
 	NonVisualPicProperties *PICNonVisualPicProperties
@@ -461,7 +483,7 @@ type PICPic struct {
 }
 
 // UnmarshalXML ...
-func (p *PICPic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (p *Picture) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -649,7 +671,7 @@ func (p *PICBlipFill) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 type ABlip struct {
 	XMLName     xml.Name `xml:"a:blip,omitempty"`
 	Embed       string   `xml:"r:embed,attr"`
-	Cstate      string   `xml:"cstate,attr"`
+	Cstate      string   `xml:"cstate,attr,omitempty"`
 	AlphaModFix *AAlphaModFix
 }
 
@@ -934,6 +956,8 @@ type WPAnchor struct {
 	DocPr             *WPDocPr
 	CNvGraphicFramePr *WPCNvGraphicFramePr
 	Graphic           *AGraphic
+
+	file *Docx
 }
 
 // UnmarshalXML ...
@@ -1061,6 +1085,7 @@ func (r *WPAnchor) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 				}
 			case "graphic":
 				r.Graphic = new(AGraphic)
+				r.Graphic.file = r.file
 				err = d.DecodeElement(&r.Graphic, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err

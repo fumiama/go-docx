@@ -1,3 +1,23 @@
+/*
+   Copyright (c) 2020 gingfrederik
+   Copyright (c) 2021 Gonzalo Fernandez-Victorio
+   Copyright (c) 2021 Basement Crowd Ltd (https://www.basementcrowd.com)
+   Copyright (c) 2023 Fumiama Minamoto (源文雨)
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
+
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 package docx
 
 import (
@@ -7,16 +27,21 @@ import (
 	"strings"
 )
 
-// WPSWordprocessingShape is a container for a WordprocessingML DrawingML shape.
-type WPSWordprocessingShape struct {
+// WordprocessingShape is a container for a WordprocessingML DrawingML shape.
+type WordprocessingShape struct {
 	XMLName xml.Name `xml:"wps:wsp,omitempty"`
+	CNvPr   *WPSCNvPr
 	CNvCnPr *WPSCNvCnPr
+	CNvSpPr *WPSCNvSpPr
 	SpPr    *WPSSpPr
+	TextBox *WPSTextBox
 	BodyPr  *WPSBodyPr
+
+	file *Docx
 }
 
 // UnmarshalXML ...
-func (w *WPSWordprocessingShape) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (w *WordprocessingShape) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -28,9 +53,21 @@ func (w *WPSWordprocessingShape) UnmarshalXML(d *xml.Decoder, start xml.StartEle
 
 		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
+			case "cNvPr":
+				w.CNvPr = new(WPSCNvPr)
+				err = d.DecodeElement(w.CNvPr, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
 			case "cNvCnPr":
 				w.CNvCnPr = new(WPSCNvCnPr)
 				err = d.DecodeElement(w.CNvCnPr, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+			case "cNvSpPr":
+				w.CNvSpPr = new(WPSCNvSpPr)
+				err = d.DecodeElement(w.CNvSpPr, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
@@ -40,6 +77,14 @@ func (w *WPSWordprocessingShape) UnmarshalXML(d *xml.Decoder, start xml.StartEle
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
+			case "txbx":
+				var value WPSTextBox
+				value.file = w.file
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.TextBox = &value
 			case "bodyPr":
 				w.BodyPr = new(WPSBodyPr)
 				err = d.DecodeElement(w.BodyPr, &tt)
@@ -55,6 +100,33 @@ func (w *WPSWordprocessingShape) UnmarshalXML(d *xml.Decoder, start xml.StartEle
 		}
 	}
 	return nil
+}
+
+// WPSCNvPr is an element that represents the non-visual properties of a content control.
+type WPSCNvPr struct {
+	XMLName xml.Name `xml:"wps:cNvPr,omitempty"`
+	ID      int      `xml:"id,attr"`
+	Name    string   `xml:"name,attr"`
+}
+
+// UnmarshalXML ...
+func (r *WPSCNvPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "id":
+			r.ID, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return
+			}
+		case "name":
+			r.Name = attr.Value
+		default:
+			// ignore other attributes
+		}
+	}
+	// Consume the end element
+	_, err = d.Token()
+	return
 }
 
 // WPSCNvCnPr represents the non-visual drawing properties of a connector.
@@ -90,15 +162,76 @@ func (w *WPSCNvCnPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 	return nil
 }
 
+// WPSCNvSpPr represents the non-visual properties of a WordArt object.
+type WPSCNvSpPr struct {
+	XMLName xml.Name `xml:"wps:cNvSpPr,omitempty"`
+	TxBox   int      `xml:"txBox,attr,omitempty"`
+
+	SPLocks *ASPLocks
+}
+
+// UnmarshalXML ...
+func (w *WPSCNvSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "txBox":
+			w.TxBox, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return err
+			}
+		default:
+			// ignore other attributes
+		}
+	}
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		if tt, ok := t.(xml.StartElement); ok {
+			switch tt.Name.Local {
+			case "spLocks":
+				var value ASPLocks
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.SPLocks = &value
+			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
+				continue
+			}
+		}
+	}
+	return nil
+}
+
+// ASPLocks represents the locks applied to a shape.
+type ASPLocks struct {
+	XMLName xml.Name `xml:"a:spLocks,omitempty"`
+}
+
 // WPSSpPr is a container element that represents the visual properties of a shape.
 type WPSSpPr struct {
 	XMLName xml.Name `xml:"wps:spPr,omitempty"`
 	BWMode  string   `xml:"bwMode,attr"`
 
-	Xfrm     AXfrm
-	PrstGeom APrstGeom
-	NoFill   *struct{} `xml:"a:noFill,omitempty"`
-	Elems    []interface{}
+	Xfrm      AXfrm
+	PrstGeom  APrstGeom
+	SolidFill *ASolidFill
+	BlipFill  *ABlipFill
+	NoFill    *struct{} `xml:"a:noFill,omitempty"`
+	Line      *ALine
+
+	EffectList struct{} `xml:"a:effectLst"`
+	ExtList    struct{} `xml:"a:extLst"`
 }
 
 // UnmarshalXML ...
@@ -129,6 +262,20 @@ func (w *WPSSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				}
 			case "prstGeom":
 				w.PrstGeom.Prst = getAtt(tt.Attr, "prst")
+			case "solidFill":
+				var value ASolidFill
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.SolidFill = &value
+			case "blipFill":
+				var value ABlipFill
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.BlipFill = &value
 			case "noFill":
 				w.NoFill = &struct{}{}
 			case "ln":
@@ -137,7 +284,7 @@ func (w *WPSSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
-				w.Elems = append(w.Elems, &ln)
+				w.Line = &ln
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {
@@ -150,14 +297,137 @@ func (w *WPSSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	return nil
 }
 
+// ABlipFill represents a fill that contains a reference to an image.
+type ABlipFill struct {
+	XMLName      xml.Name `xml:"a:blipFill,omitempty"`
+	DPI          int      `xml:"dpi,attr"`
+	RotWithShape int      `xml:"rotWithShape,attr"`
+
+	Blip    *ABlip
+	SrcRect *ASrcRect
+	Tile    *ATile
+}
+
+// UnmarshalXML ...
+func (r *ABlipFill) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "dpi":
+			r.DPI, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return err
+			}
+		case "rotWithShape":
+			r.RotWithShape, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return err
+			}
+		default:
+			// ignore other attributes
+		}
+	}
+
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		if tt, ok := t.(xml.StartElement); ok {
+			switch tt.Name.Local {
+			case "blip":
+				var value ABlip
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				r.Blip = &value
+			case "srcRect":
+				r.SrcRect = new(ASrcRect)
+			case "tile":
+				var value ATile
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				r.Tile = &value
+			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
+				continue
+			}
+		}
+	}
+	return nil
+}
+
+// ASrcRect represents the source rectangle of a tiled image fill.
+type ASrcRect struct {
+	XMLName xml.Name `xml:"a:srcRect,omitempty"`
+}
+
+// ATile represents the tiling information of a fill or border
+type ATile struct {
+	XMLName xml.Name `xml:"a:tile,omitempty"`
+	TX      int64    `xml:"tx,attr"`
+	TY      int64    `xml:"ty,attr"`
+	SX      int64    `xml:"sx,attr"`
+	SY      int64    `xml:"sy,attr"`
+	Flip    string   `xml:"flip,attr"`
+	Algn    string   `xml:"algn,attr"`
+}
+
+// UnmarshalXML ...
+func (t *ATile) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "tx":
+			t.TX, err = strconv.ParseInt(attr.Value, 10, 64)
+			if err != nil {
+				return err
+			}
+		case "ty":
+			t.TY, err = strconv.ParseInt(attr.Value, 10, 64)
+			if err != nil {
+				return err
+			}
+		case "sx":
+			t.SX, err = strconv.ParseInt(attr.Value, 10, 64)
+			if err != nil {
+				return err
+			}
+		case "sy":
+			t.SY, err = strconv.ParseInt(attr.Value, 10, 64)
+			if err != nil {
+				return err
+			}
+		case "flip":
+			t.Flip = attr.Value
+		case "algn":
+			t.Algn = attr.Value
+		default:
+			// ignore other attributes
+		}
+	}
+	// Consume the end element
+	_, err = d.Token()
+	return err
+}
+
 // ALine represents a line element in a Word document.
 type ALine struct {
 	XMLName  xml.Name `xml:"a:ln,omitempty"`
-	W        int64    `xml:"w,attr"`
+	W        int64    `xml:"w,attr,omitempty"`
 	Cap      string   `xml:"cap,attr,omitempty"`
 	Compound string   `xml:"cmpd,attr,omitempty"`
 	Align    string   `xml:"algn,attr,omitempty"`
 
+	NoFill    *struct{} `xml:"a:noFill,omitempty"`
 	SolidFill *ASolidFill
 	PrstDash  *APrstDash
 	Miter     *AMiter
@@ -196,6 +466,8 @@ func (l *ALine) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error)
 
 		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
+			case "noFill":
+				l.NoFill = &struct{}{}
 			case "solidFill":
 				l.SolidFill = new(ASolidFill)
 				err = d.DecodeElement(l.SolidFill, &tt)
@@ -351,7 +623,156 @@ func (r *ATailEnd) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	return err
 }
 
+// WPSTextBox ...
+type WPSTextBox struct {
+	XMLName xml.Name `xml:"wps:txbx,omitempty"`
+	Content *WTextBoxContent
+
+	file *Docx
+}
+
+// UnmarshalXML ...
+func (b *WPSTextBox) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		if tt, ok := t.(xml.StartElement); ok {
+			switch tt.Name.Local {
+			case "txbxContent":
+				var value WTextBoxContent
+				value.file = b.file
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				b.Content = &value
+			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
+				continue
+			}
+		}
+	}
+	return nil
+}
+
+// WTextBoxContent ...
+type WTextBoxContent struct {
+	XMLName    xml.Name    `xml:"w:txbxContent,omitempty"`
+	Paragraphs []Paragraph `xml:"w:p,omitempty"`
+
+	file *Docx
+}
+
+// UnmarshalXML ...
+func (c *WTextBoxContent) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		if tt, ok := t.(xml.StartElement); ok {
+			switch tt.Name.Local {
+			case "p":
+				var value Paragraph
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				if len(value.Children) > 0 {
+					value.file = c.file
+					c.Paragraphs = append(c.Paragraphs, value)
+				}
+			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
+				continue
+			}
+		}
+	}
+	return nil
+}
+
 // WPSBodyPr represents the body properties for a WordprocessingML DrawingML shape.
 type WPSBodyPr struct {
-	XMLName xml.Name `xml:"wps:bodyPr,omitempty"`
+	XMLName   xml.Name `xml:"wps:bodyPr,omitempty"`
+	Rot       int      `xml:"rot,attr,omitempty"`
+	Vert      string   `xml:"vert,attr,omitempty"`
+	Wrap      string   `xml:"wrap,attr,omitempty"`
+	LIns      int64    `xml:"lIns,attr,omitempty"`
+	TIns      int64    `xml:"tIns,attr,omitempty"`
+	RIns      int64    `xml:"rIns,attr,omitempty"`
+	BIns      int64    `xml:"bIns,attr,omitempty"`
+	Anchor    string   `xml:"anchor,attr,omitempty"`
+	AnchorCtr int      `xml:"anchorCtr,attr,omitempty"`
+	Upright   int      `xml:"upright,attr,omitempty"`
+
+	NoAutofit *struct{} `xml:"a:noAutofit,omitempty"`
+}
+
+// UnmarshalXML ...
+func (r *WPSBodyPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "rot":
+			r.Rot, _ = strconv.Atoi(attr.Value)
+		case "vert":
+			r.Vert = attr.Value
+		case "wrap":
+			r.Wrap = attr.Value
+		case "lIns":
+			r.LIns, _ = strconv.ParseInt(attr.Value, 10, 64)
+		case "tIns":
+			r.TIns, _ = strconv.ParseInt(attr.Value, 10, 64)
+		case "rIns":
+			r.RIns, _ = strconv.ParseInt(attr.Value, 10, 64)
+		case "bIns":
+			r.BIns, _ = strconv.ParseInt(attr.Value, 10, 64)
+		case "anchor":
+			r.Anchor = attr.Value
+		case "anchorCtr":
+			r.AnchorCtr, _ = strconv.Atoi(attr.Value)
+		case "upright":
+			r.Upright, _ = strconv.Atoi(attr.Value)
+		default:
+			// ignore other attributes
+		}
+	}
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		if tt, ok := t.(xml.StartElement); ok {
+			switch tt.Name.Local {
+			case "noAutofit":
+				r.NoAutofit = &struct{}{}
+			default:
+				err = d.Skip() // skip unsupported elements
+				if err != nil {
+					return err
+				}
+				continue
+			}
+		}
+	}
+	return nil
 }

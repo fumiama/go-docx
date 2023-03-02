@@ -31,16 +31,27 @@ import (
 // a piece of text in bold, or a link
 type Run struct {
 	XMLName xml.Name `xml:"w:r,omitempty"`
+	RsidRPr string   `xml:"w:rsidRPr,attr,omitempty"`
 
 	RunProperties *RunProperties `xml:"w:rPr,omitempty"`
 
 	InstrText string `xml:"w:instrText,omitempty"`
 
 	Children []interface{}
+
+	file *Docx
 }
 
 // UnmarshalXML ...
 func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "rsidRPr":
+			r.RsidRPr = attr.Value
+		default:
+			// ignore other attributes
+		}
+	}
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -91,6 +102,7 @@ func (r *Run) parse(d *xml.Decoder, tt xml.StartElement) (child interface{}, err
 		child = &value
 	case "drawing":
 		var value Drawing
+		value.file = r.file
 		err = d.DecodeElement(&value, &tt)
 		if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 			return nil, err
@@ -112,8 +124,14 @@ func (r *Run) parse(d *xml.Decoder, tt xml.StartElement) (child interface{}, err
 			if ttt, ok := tok.(xml.StartElement); ok && ttt.Name.Local == "Choice" {
 				for _, attr := range ttt.Attr {
 					if attr.Name.Local == "Requires" {
-						if attr.Value == "wps" {
-							child, err = r.parse(d, ttt)
+						if attr.Value == "wps" || attr.Value == "wpc" {
+							tok, err = d.Token() // go into choice
+							if err != nil {
+								return nil, err
+							}
+							if ttt, ok := tok.(xml.StartElement); ok {
+								child, err = r.parse(d, ttt)
+							}
 							break altcont
 						}
 						break
@@ -141,15 +159,18 @@ type RunProperties struct {
 	XMLName   xml.Name `xml:"w:rPr,omitempty"`
 	Fonts     *RunFonts
 	Bold      *Bold
+	ICs       *struct{} `xml:"w:iCs,omitempty"`
 	Italic    *Italic
 	Underline *Underline
 	Highlight *Highlight
 	Color     *Color
 	Size      *Size
+	SizeCs    *SizeCs
 	RunStyle  *RunStyle
 	Style     *Style
 	Shade     *Shade
 	Kern      *Kern
+	VertAlign *VertAlign
 }
 
 // UnmarshalXML ...
@@ -174,6 +195,8 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 				r.Fonts = &value
 			case "b":
 				r.Bold = &Bold{}
+			case "iCs":
+				r.ICs = &struct{}{}
 			case "i":
 				r.Italic = &Italic{}
 			case "u":
@@ -192,6 +215,10 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 				var value Size
 				value.Val = getAtt(tt.Attr, "val")
 				r.Size = &value
+			case "szCs":
+				var value SizeCs
+				value.Val = getAtt(tt.Attr, "val")
+				r.SizeCs = &value
 			case "rStyle":
 				var value RunStyle
 				value.Val = getAtt(tt.Attr, "val")
@@ -218,6 +245,10 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 					return err
 				}
 				r.Kern = &value
+			case "vertAlign":
+				var value VertAlign
+				value.Val = getAtt(tt.Attr, "val")
+				r.VertAlign = &value
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {

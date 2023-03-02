@@ -125,7 +125,7 @@ func main() {
 
 		p := w.AddParagraph().Justification("center")
 		p.AddText("测试 AutoShape w:ln").Size("44")
-		p.AddShape(808355, 238760, "AutoShape", "auto", "straightConnector1", []interface{}{
+		p.AddAnchorShape(808355, 238760, "AutoShape", "auto", "straightConnector1",
 			&docx.ALine{
 				W:         9525,
 				SolidFill: &docx.ASolidFill{SrgbClr: &docx.ASrgbClr{Val: "000000"}},
@@ -133,7 +133,16 @@ func main() {
 				HeadEnd:   &docx.AHeadEnd{},
 				TailEnd:   &docx.ATailEnd{},
 			},
-		})
+		)
+		p.AddInlineShape(808355, 238760, "AutoShape", "auto", "straightConnector1",
+			&docx.ALine{
+				W:         9525,
+				SolidFill: &docx.ASolidFill{SrgbClr: &docx.ASrgbClr{Val: "000000"}},
+				Round:     &struct{}{},
+				HeadEnd:   &docx.AHeadEnd{},
+				TailEnd:   &docx.ATailEnd{},
+			},
+		)
 
 		f, err := os.Create(*fileLocation)
 		if err != nil {
@@ -193,7 +202,7 @@ func main() {
 					if len(c.Paragraphs) > 0 && len(c.Paragraphs[0].Children) > 0 {
 						fmt.Printf("<%d> %v\t", y, &c.Paragraphs[0])
 					} else {
-						fmt.Print("\t")
+						fmt.Printf("<%d> \t\t", y)
 					}
 				}
 				fmt.Print("\n")

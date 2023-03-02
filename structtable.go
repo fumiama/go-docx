@@ -51,11 +51,11 @@ func (t *WTable) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			switch tt.Name.Local {
 			case "tr":
 				var value WTableRow
+				value.file = t.file
 				err = d.DecodeElement(&value, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
-				value.file = t.file
 				t.TableRows = append(t.TableRows, &value)
 			case "tblPr":
 				t.TableProperties = new(WTableProperties)
@@ -421,11 +421,11 @@ func (w *WTableRow) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				}
 			case "tc":
 				var value WTableCell
+				value.file = w.file
 				err = d.DecodeElement(&value, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
-				value.file = w.file
 				w.TableCells = append(w.TableCells, &value)
 			default:
 				err = d.Skip() // skip unsupported tags
@@ -504,7 +504,7 @@ func (t *WTableRowProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 // WTableRowHeight represents the height of a row within a table.
 type WTableRowHeight struct {
 	XMLName xml.Name `xml:"w:trHeight,omitempty"`
-	Rule    string   `xml:"w:hRule,omitempty"`
+	Rule    string   `xml:"w:hRule,attr,omitempty"`
 	Val     int64    `xml:"w:val,attr"`
 }
 
@@ -565,9 +565,9 @@ type WTableCellProperties struct {
 	TableCellWidth *WTableCellWidth
 	VMerge         *WvMerge
 	GridSpan       *WGridSpan
-	VAlign         *WVerticalAlignment
 	TableBorders   *WTableBorders `xml:"w:tcBorders"`
 	Shade          *Shade
+	VAlign         *WVerticalAlignment
 }
 
 // UnmarshalXML ...

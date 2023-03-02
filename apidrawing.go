@@ -69,7 +69,7 @@ func (p *Paragraph) AddInlineDrawing(pic []byte) (*Run, error) {
 				XMLA: XMLNS_DRAWINGML_MAIN,
 				GraphicData: &AGraphicData{
 					URI: XMLNS_PICTURE,
-					Pic: &PICPic{
+					Pic: &Picture{
 						XMLPIC: XMLNS_DRAWINGML_PICTURE,
 						NonVisualPicProperties: &PICNonVisualPicProperties{
 							NonVisualDrawingProperties: PICNonVisualDrawingProperties{
@@ -179,7 +179,7 @@ func (p *Paragraph) AddAnchorDrawing(pic []byte) (*Run, error) {
 				XMLA: XMLNS_DRAWINGML_MAIN,
 				GraphicData: &AGraphicData{
 					URI: XMLNS_PICTURE,
-					Pic: &PICPic{
+					Pic: &Picture{
 						XMLPIC: XMLNS_DRAWINGML_PICTURE,
 						NonVisualPicProperties: &PICNonVisualPicProperties{
 							NonVisualDrawingProperties: PICNonVisualDrawingProperties{

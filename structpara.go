@@ -31,10 +31,18 @@ import (
 
 // ParagraphProperties <w:pPr>
 type ParagraphProperties struct {
-	XMLName       xml.Name `xml:"w:pPr,omitempty"`
-	Justification *Justification
-	Shade         *Shade
-	Kern          *Kern
+	XMLName        xml.Name `xml:"w:pPr,omitempty"`
+	Justification  *Justification
+	Shade          *Shade
+	Kern           *Kern
+	Style          *Style
+	TextAlignment  *TextAlignment
+	AdjustRightInd *AdjustRightInd
+	SnapToGrid     *SnapToGrid
+	Kinsoku        *Kinsoku
+	OverflowPunct  *OverflowPunct
+
+	RunProperties *RunProperties
 }
 
 // UnmarshalXML ...
@@ -69,6 +77,61 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 					return err
 				}
 				p.Kern = &value
+			case "rPr":
+				var value RunProperties
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				p.RunProperties = &value
+			case "pStyle":
+				p.Style = &Style{Val: getAtt(tt.Attr, "val")}
+			case "textAlignment":
+				p.TextAlignment = &TextAlignment{Val: getAtt(tt.Attr, "val")}
+			case "adjustRightInd":
+				var value AdjustRightInd
+				v := getAtt(tt.Attr, "val")
+				if v == "" {
+					continue
+				}
+				value.Val, err = strconv.Atoi(v)
+				if err != nil {
+					return err
+				}
+				p.AdjustRightInd = &value
+			case "snapToGrid":
+				var value SnapToGrid
+				v := getAtt(tt.Attr, "val")
+				if v == "" {
+					continue
+				}
+				value.Val, err = strconv.Atoi(v)
+				if err != nil {
+					return err
+				}
+				p.SnapToGrid = &value
+			case "kinsoku":
+				var value Kinsoku
+				v := getAtt(tt.Attr, "val")
+				if v == "" {
+					continue
+				}
+				value.Val, err = strconv.Atoi(v)
+				if err != nil {
+					return err
+				}
+				p.Kinsoku = &value
+			case "overflowPunct":
+				var value OverflowPunct
+				v := getAtt(tt.Attr, "val")
+				if v == "" {
+					continue
+				}
+				value.Val, err = strconv.Atoi(v)
+				if err != nil {
+					return err
+				}
+				p.OverflowPunct = &value
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {
@@ -177,27 +240,6 @@ func (p *Paragraph) String() string {
 	return sb.String()
 }
 
-// MarshalXML ...
-func (p *Paragraph) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	err := e.EncodeToken(start)
-	if err != nil {
-		return err
-	}
-	if p.Properties != nil {
-		err = e.Encode(p.Properties)
-		if err != nil {
-			return err
-		}
-	}
-	for _, c := range p.Children {
-		err = e.Encode(c)
-		if err != nil {
-			return err
-		}
-	}
-	return e.EncodeToken(start.End())
-}
-
 // UnmarshalXML ...
 func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for _, attr := range start.Attr {
@@ -243,6 +285,7 @@ func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				elem = &value
 			case "r":
 				var value Run
+				value.file = p.file
 				err = d.DecodeElement(&value, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err

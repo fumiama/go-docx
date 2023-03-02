@@ -1,3 +1,23 @@
+/*
+   Copyright (c) 2020 gingfrederik
+   Copyright (c) 2021 Gonzalo Fernandez-Victorio
+   Copyright (c) 2021 Basement Crowd Ltd (https://www.basementcrowd.com)
+   Copyright (c) 2023 Fumiama Minamoto (源文雨)
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
+
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 package docx
 
 import (
@@ -13,8 +33,8 @@ func TestShapeStructure(t *testing.T) {
 	// add new paragraph
 	para1 := w.AddParagraph()
 	// add text
-	para1.AddText("test shape")
-	para1.AddShape(808355, 238760, "AutoShape", "auto", "straightConnector1", []interface{}{
+	para1.AddText("test anchor shape")
+	para1.AddAnchorShape(808355, 238760, "AutoShape", "auto", "straightConnector1",
 		&ALine{
 			W:         9525,
 			SolidFill: &ASolidFill{SrgbClr: &ASrgbClr{Val: "000000"}},
@@ -22,7 +42,19 @@ func TestShapeStructure(t *testing.T) {
 			HeadEnd:   &AHeadEnd{},
 			TailEnd:   &ATailEnd{},
 		},
-	})
+	)
+
+	para2 := w.AddParagraph()
+	para2.AddText("test inline shape")
+	para2.AddInlineShape(808355, 238760, "AutoShape", "auto", "straightConnector1",
+		&ALine{
+			W:         9525,
+			SolidFill: &ASolidFill{SrgbClr: &ASrgbClr{Val: "000000"}},
+			Round:     &struct{}{},
+			HeadEnd:   &AHeadEnd{},
+			TailEnd:   &ATailEnd{},
+		},
+	)
 
 	f, err := os.Create("TestMarshalShapeStructure.xml")
 	if err != nil {

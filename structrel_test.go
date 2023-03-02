@@ -47,16 +47,6 @@ func TestRelationships(t *testing.T) {
 				Type:   `http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable`,
 				Target: "fontTable.xml",
 			},
-			{
-				ID:     "rId4",
-				Type:   `http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings`,
-				Target: "settings.xml",
-			},
-			{
-				ID:     "rId5",
-				Type:   `http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings`,
-				Target: "webSettings.xml",
-			},
 		},
 	}
 	f, err := os.Create("TestRelationships.xml")
@@ -69,7 +59,7 @@ func TestRelationships(t *testing.T) {
 		t.Fatal(err)
 	}
 	m := hex.EncodeToString(h.Sum(make([]byte, 0, 16)))
-	if m != "c75af73ef6cc9536a193669c4a3605c3" {
+	if m != "62c753dc14365fce007fc4c7c3bd0c82" {
 		t.Fatal("real md5:", m)
 	}
 }
