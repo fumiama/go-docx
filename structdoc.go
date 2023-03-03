@@ -33,6 +33,7 @@ const (
 	XMLNS_WP  = `http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing`
 	XMLNS_WPS = `http://schemas.microsoft.com/office/word/2010/wordprocessingShape`
 	XMLNS_WPC = `http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas`
+	XMLNS_WPG = `http://schemas.microsoft.com/office/word/2010/wordprocessingGroup`
 	// XMLNS_MC  = `http://schemas.openxmlformats.org/markup-compatibility/2006`
 	// XMLNS_WP14 = `http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing`
 
@@ -103,6 +104,7 @@ type Document struct {
 	XMLWP   string   `xml:"xmlns:wp,attr,omitempty"`  // cannot be unmarshalled in
 	XMLWPS  string   `xml:"xmlns:wps,attr,omitempty"` // cannot be unmarshalled in
 	XMLWPC  string   `xml:"xmlns:wpc,attr,omitempty"` // cannot be unmarshalled in
+	XMLWPG  string   `xml:"xmlns:wpg,attr,omitempty"` // cannot be unmarshalled in
 	// XMLMC   string   `xml:"xmlns:mc,attr,omitempty"`  // cannot be unmarshalled in
 	// XMLWP14 string   `xml:"xmlns:wp14,attr,omitempty"` // cannot be unmarshalled in
 

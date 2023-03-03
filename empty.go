@@ -36,6 +36,7 @@ func newEmptyA4File() *Docx {
 			XMLWP:  XMLNS_WP,
 			XMLWPS: XMLNS_WPS,
 			XMLWPC: XMLNS_WPC,
+			XMLWPG: XMLNS_WPG,
 			// XMLMC:  XMLNS_MC,
 			// XMLWP14: XMLNS_WP14,
 			Body: Body{

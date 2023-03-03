@@ -85,6 +85,7 @@ func (f *Docx) parseDocument(file *zip.File) error {
 	// f.Document.XMLMC = XMLNS_MC
 	f.Document.XMLWPS = XMLNS_WPS
 	f.Document.XMLWPC = XMLNS_WPC
+	f.Document.XMLWPG = XMLNS_WPG
 	// f.Document.XMLWP14 = XMLNS_WP14
 	f.Document.XMLName.Space = XMLNS_W
 	f.Document.XMLName.Local = "document"
