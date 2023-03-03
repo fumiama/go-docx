@@ -730,7 +730,44 @@ type AAlphaModFix struct {
 // AStretch ...
 type AStretch struct {
 	XMLName  xml.Name `xml:"a:stretch,omitempty"`
-	FillRect AFillRect
+	FillRect *AFillRect
+}
+
+// UnmarshalXML ...
+func (s *AStretch) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		if tt, ok := t.(xml.StartElement); ok {
+			switch tt.Name.Local {
+			case "fillRect":
+				var value AFillRect
+				/*err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}*/
+				s.FillRect = &value
+				err = d.Skip() // skip unparsed innerxml
+				if err != nil {
+					return err
+				}
+			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
+				continue
+			}
+		}
+
+	}
+	return nil
 }
 
 // AFillRect ...
@@ -743,7 +780,7 @@ type AFillRect struct {
 type PICSpPr struct {
 	XMLName  xml.Name `xml:"pic:spPr,omitempty"`
 	Xfrm     AXfrm
-	PrstGeom APrstGeom
+	PrstGeom *APrstGeom
 }
 
 // UnmarshalXML ...
@@ -765,7 +802,12 @@ func (p *PICSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 					return err
 				}
 			case "prstGeom":
-				p.PrstGeom.Prst = getAtt(tt.Attr, "prst")
+				var value APrstGeom
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				p.PrstGeom = &value
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {
@@ -785,8 +827,10 @@ type AXfrm struct {
 	Rot     int64    `xml:"rot,attr,omitempty"`
 	FlipH   int      `xml:"flipH,attr,omitempty"`
 	FlipV   int      `xml:"flipV,attr,omitempty"`
-	Off     AOff
-	Ext     AExt
+	Off     AOff     `xml:"a:off,omitempty"`
+	Ext     AExt     `xml:"a:ext,omitempty"`
+	ChOff   *AOff    `xml:"a:chOff,omitempty"`
+	ChExt   *AExt    `xml:"a:chExt,omitempty"`
 }
 
 // UnmarshalXML ...
@@ -847,6 +891,34 @@ func (a *AXfrm) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error)
 						return err
 					}
 				}
+			case "chOff":
+				var value AOff
+				for _, v := range tt.Attr {
+					switch v.Name.Local {
+					case "x":
+						value.X, err = strconv.ParseInt(v.Value, 10, 64)
+					case "y":
+						value.Y, err = strconv.ParseInt(v.Value, 10, 64)
+					}
+					if err != nil {
+						return err
+					}
+				}
+				a.ChOff = &value
+			case "chExt":
+				var value AExt
+				for _, v := range tt.Attr {
+					switch v.Name.Local {
+					case "cx":
+						value.CX, err = strconv.ParseInt(v.Value, 10, 64)
+					case "cy":
+						value.CY, err = strconv.ParseInt(v.Value, 10, 64)
+					}
+					if err != nil {
+						return err
+					}
+				}
+				a.ChExt = &value
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {
@@ -859,30 +931,69 @@ func (a *AXfrm) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error)
 	return nil
 }
 
-// AOff is a struct representing the <a:off> element in OpenXML,
+// AOff is a struct representing the <a:off> / <a:chOff> element in OpenXML,
 // which describes the offset of a shape from its original position.
 type AOff struct {
-	XMLName xml.Name `xml:"a:off,omitempty"`
-	X       int64    `xml:"x,attr"`
-	Y       int64    `xml:"y,attr"`
+	X int64 `xml:"x,attr"`
+	Y int64 `xml:"y,attr"`
 }
 
-// AExt is a struct representing the <a:ext> element in OpenXML,
+// AExt is a struct representing the <a:ext> / <a:chExt> element in OpenXML,
 // which describes the size of a shape.
 type AExt struct {
-	XMLName xml.Name `xml:"a:ext,omitempty"`
-	CX      int64    `xml:"cx,attr"`
-	CY      int64    `xml:"cy,attr"`
+	CX int64 `xml:"cx,attr"`
+	CY int64 `xml:"cy,attr"`
 }
 
 // APrstGeom is a struct representing the <a:prstGeom> element in OpenXML,
 // which describes the preset shape geometry for a shape.
 type APrstGeom struct {
-	XMLName xml.Name `xml:"a:prstGeom,omitempty"`
-	Prst    string   `xml:"prst,attr"`
-	AvLst   AAvLst
+	XMLName xml.Name  `xml:"a:prstGeom,omitempty"`
+	Prst    string    `xml:"prst,attr"`
+	AvLst   *struct{} `xml:"a:avLst,omitempty"`
 }
 
+// UnmarshalXML ...
+func (a *APrstGeom) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "prst":
+			a.Prst = attr.Value
+		default:
+			// ignore other attributes
+		}
+	}
+
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		if tt, ok := t.(xml.StartElement); ok {
+			switch tt.Name.Local {
+			case "avLst":
+				a.AvLst = &struct{}{}
+				err = d.Skip() // skip innerxml
+				if err != nil {
+					return err
+				}
+			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
+				continue
+			}
+		}
+	}
+	return nil
+}
+
+/*
 // AAvLst is a struct representing the <a:avLst> element in OpenXML,
 // which describes the adjustments to the shape's preset geometry.
 type AAvLst struct {
@@ -922,7 +1033,7 @@ func (a *AAvLst) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error
 	a.RawXML = BytesToString(content)
 
 	return nil
-}
+}*/
 
 // WPAnchor is an element that represents an anchored object in a Word document.
 //

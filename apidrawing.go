@@ -90,7 +90,7 @@ func (p *Paragraph) AddInlineDrawing(pic []byte) (*Run, error) {
 									CY: h,
 								},
 							},
-							PrstGeom: APrstGeom{
+							PrstGeom: &APrstGeom{
 								Prst: "rect",
 							},
 						},
@@ -200,7 +200,7 @@ func (p *Paragraph) AddAnchorDrawing(pic []byte) (*Run, error) {
 									CY: h,
 								},
 							},
-							PrstGeom: APrstGeom{
+							PrstGeom: &APrstGeom{
 								Prst: "rect",
 							},
 						},

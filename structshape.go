@@ -215,7 +215,26 @@ func (w *WPSCNvSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err e
 
 // ASPLocks represents the locks applied to a shape.
 type ASPLocks struct {
-	XMLName xml.Name `xml:"a:spLocks,omitempty"`
+	XMLName            xml.Name `xml:"a:spLocks,omitempty"`
+	NoChangeArrowheads int      `xml:"noChangeArrowheads,attr,omitempty"`
+}
+
+// UnmarshalXML ...
+func (l *ASPLocks) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "noChangeArrowheads":
+			l.NoChangeArrowheads, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return err
+			}
+		default:
+			// ignore other attributes
+		}
+	}
+	// Consume the end element
+	_, err = d.Token()
+	return err
 }
 
 // WPSSpPr is a container element that represents the visual properties of a shape.

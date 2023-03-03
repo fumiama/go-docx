@@ -19,3 +19,118 @@
 */
 
 package docx
+
+import (
+	"encoding/xml"
+	"io"
+	"strings"
+)
+
+// WordprocessingGroup represents a group of drawing objects or pictures
+type WordprocessingGroup struct {
+	XMLName              xml.Name `xml:"wpg:wgp,omitempty"`
+	CNvGrpSpPr           *WPGcNvGrpSpPr
+	GroupShapeProperties *WPGGroupShapeProperties
+	Elems                []interface{}
+}
+
+// UnmarshalXML ...
+func (w *WordprocessingGroup) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		if tt, ok := t.(xml.StartElement); ok {
+			switch tt.Name.Local {
+			case "cNvGrpSpPr":
+				var value WPGcNvGrpSpPr
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.CNvGrpSpPr = &value
+			case "grpSpPr":
+				var value WPGGroupShapeProperties
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.GroupShapeProperties = &value
+			case "pic":
+				var value Picture
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.Elems = append(w.Elems, &value)
+			case "wsp":
+				var value WordprocessingShape
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.Elems = append(w.Elems, &value)
+			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
+				continue
+			}
+		}
+	}
+	return nil
+}
+
+// WPGcNvGrpSpPr represents the non-visual properties of a group shape.
+type WPGcNvGrpSpPr struct {
+	XMLName xml.Name `xml:"wpg:cNvGrpSpPr,omitempty"`
+	Locks   *AGroupShapeLocks
+}
+
+// UnmarshalXML ...
+func (w *WPGcNvGrpSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		if tt, ok := t.(xml.StartElement); ok {
+			switch tt.Name.Local {
+			case "grpSpLocks":
+				w.Locks = new(AGroupShapeLocks)
+				err = d.Skip() // skip innerxml
+				if err != nil {
+					return err
+				}
+			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
+				continue
+			}
+		}
+	}
+	return nil
+}
+
+// AGroupShapeLocks represents the locks applied to a group shape.
+type AGroupShapeLocks struct {
+	XMLName xml.Name `xml:"a:grpSpLocks,omitempty"`
+}
+
+// WPGGroupShapeProperties represents the properties applied to a group shape.
+type WPGGroupShapeProperties struct {
+	XMLName xml.Name `xml:"wpg:grpSpPr,omitempty"`
+	Xfrm    *AXfrm
+}
