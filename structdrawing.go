@@ -765,7 +765,6 @@ func (s *AStretch) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				continue
 			}
 		}
-
 	}
 	return nil
 }
