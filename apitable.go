@@ -42,7 +42,7 @@ func (f *Docx) AddTable(row int, col int) *WTable {
 			TableCells:         cells,
 		}
 	}
-	f.Document.Body.Items = append(f.Document.Body.Items, WTable{
+	f.Document.Body.Items = append(f.Document.Body.Items, &WTable{
 		TableProperties: &WTableProperties{
 			Width: &WTableWidth{Type: "auto"},
 			TableBorders: &WTableBorders{
@@ -99,7 +99,7 @@ func (f *Docx) AddTableTwips(rowHeights []int64, colWidths []int64) *WTable {
 			}
 		}
 	}
-	f.Document.Body.Items = append(f.Document.Body.Items, WTable{
+	f.Document.Body.Items = append(f.Document.Body.Items, &WTable{
 		TableProperties: &WTableProperties{
 			Width: &WTableWidth{Type: "auto"},
 			TableBorders: &WTableBorders{

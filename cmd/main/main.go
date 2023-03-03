@@ -191,23 +191,9 @@ func main() {
 	}
 	fmt.Println("Plain text:")
 	for _, it := range doc.Document.Body.Items {
-		switch para := it.(type) {
-		case docx.Paragraph:
-			fmt.Println(para.String())
-		case docx.WTable:
-			fmt.Println("------------------------------")
-			for x, r := range para.TableRows {
-				fmt.Printf("[%d] ", x)
-				for y, c := range r.TableCells {
-					if len(c.Paragraphs) > 0 && len(c.Paragraphs[0].Children) > 0 {
-						fmt.Printf("<%d> %v\t", y, &c.Paragraphs[0])
-					} else {
-						fmt.Printf("<%d> \t\t", y)
-					}
-				}
-				fmt.Print("\n")
-			}
-			fmt.Println("------------------------------")
+		switch it.(type) {
+		case *docx.Paragraph, *docx.WTable: // printable
+			fmt.Println(it)
 		}
 	}
 	fmt.Println("End of main")

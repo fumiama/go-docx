@@ -37,6 +37,30 @@ type WTable struct {
 	file *Docx
 }
 
+func (t *WTable) String() string {
+	if len(t.TableRows) == 0 || len(t.TableRows[0].TableCells) == 0 {
+		return ""
+	}
+	sb := strings.Builder{}
+	sb.WriteString("| ")
+	for i := 0; i < len(t.TableRows[0].TableCells); i++ {
+		sb.WriteString(" :----: |")
+	}
+	for _, r := range t.TableRows {
+		sb.WriteString("\n|")
+		for _, c := range r.TableCells {
+			if len(c.Paragraphs) > 0 && len(c.Paragraphs[0].Children) > 0 {
+				sb.WriteByte(' ')
+				sb.WriteString(c.Paragraphs[0].String())
+			} else {
+				sb.WriteString("       ")
+			}
+			sb.WriteString(" |")
+		}
+	}
+	return sb.String()
+}
+
 // UnmarshalXML implements the xml.Unmarshaler interface.
 func (t *WTable) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {

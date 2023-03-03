@@ -75,7 +75,7 @@ func (b *Body) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 					return err
 				}
 				value.file = b.file
-				b.Items = append(b.Items, value)
+				b.Items = append(b.Items, &value)
 			case "tbl":
 				var value WTable
 				err = d.DecodeElement(&value, &tt)
@@ -83,7 +83,7 @@ func (b *Body) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 					return err
 				}
 				value.file = b.file
-				b.Items = append(b.Items, value)
+				b.Items = append(b.Items, &value)
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {

@@ -184,55 +184,116 @@ func (p *Paragraph) String() string {
 				case *Tab:
 					sb.WriteByte('\t')
 				case *Drawing:
-					if x.Inline != nil && x.Inline.Graphic != nil && x.Inline.Graphic.GraphicData != nil && x.Inline.Graphic.GraphicData.Pic != nil {
-						sb.WriteString("![inlnim ")
-						switch {
-						case x.Inline.DocPr != nil:
-							sb.WriteString(x.Inline.DocPr.Name)
-						case x.Inline.Graphic.GraphicData.Pic.NonVisualPicProperties != nil:
-							sb.WriteString(x.Inline.Graphic.GraphicData.Pic.NonVisualPicProperties.NonVisualDrawingProperties.Name)
-						default:
-							sb.WriteString(x.Inline.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
-						}
-						sb.WriteString("](")
-						if x.Inline.Graphic.GraphicData.Pic.BlipFill != nil {
-							tgt, err := p.file.ReferTarget(x.Inline.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
-							if err != nil {
-								sb.WriteString(err.Error())
-							} else {
-								h := md5.Sum(p.file.Media(tgt[6:]).Data)
-								sb.WriteString(hex.EncodeToString(h[:]))
+					if x.Inline != nil && x.Inline.Graphic != nil && x.Inline.Graphic.GraphicData != nil {
+						if x.Inline.Graphic.GraphicData.Pic != nil {
+							sb.WriteString("![inlnim ")
+							switch {
+							case x.Inline.DocPr != nil:
+								sb.WriteString(x.Inline.DocPr.Name)
+							case x.Inline.Graphic.GraphicData.Pic.NonVisualPicProperties != nil:
+								sb.WriteString(x.Inline.Graphic.GraphicData.Pic.NonVisualPicProperties.NonVisualDrawingProperties.Name)
+							default:
+								sb.WriteString(x.Inline.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
 							}
+							sb.WriteString("](")
+							if x.Inline.Graphic.GraphicData.Pic.BlipFill != nil {
+								tgt, err := p.file.ReferTarget(x.Inline.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
+								if err != nil {
+									sb.WriteString(err.Error())
+								} else {
+									h := md5.Sum(p.file.Media(tgt[6:]).Data)
+									sb.WriteString(hex.EncodeToString(h[:]))
+								}
+							}
+							sb.WriteByte(')')
+							continue
 						}
-						sb.WriteByte(')')
-						continue
+						if x.Inline.Graphic.GraphicData.Shape != nil {
+							sb.WriteString("![inlnsp ")
+							switch {
+							case x.Inline.DocPr != nil:
+								sb.WriteString(x.Inline.DocPr.Name)
+							case x.Inline.Graphic.GraphicData.Shape.CNvPr != nil:
+								sb.WriteString(x.Inline.Graphic.GraphicData.Shape.CNvPr.Name)
+							case x.Inline.Graphic.GraphicData.Shape.SpPr != nil:
+								sb.WriteString(x.Inline.Graphic.GraphicData.Shape.SpPr.PrstGeom.Prst)
+							default:
+								sb.WriteString("nil")
+							}
+							sb.WriteString("](")
+							if x.Inline.Graphic.GraphicData.Shape.SpPr != nil {
+								sb.WriteString(x.Inline.Graphic.GraphicData.Shape.SpPr.PrstGeom.Prst)
+							}
+							sb.WriteByte(')')
+							continue
+						}
+						if x.Inline.Graphic.GraphicData.Canvas != nil {
+							sb.WriteString("![inlncv ")
+							if x.Inline.DocPr != nil {
+								sb.WriteString(x.Inline.DocPr.Name)
+							} else {
+								sb.WriteString("nil")
+							}
+							sb.WriteString("]()")
+							continue
+						}
 					}
-					if x.Anchor != nil && x.Anchor.Graphic != nil && x.Anchor.Graphic.GraphicData != nil && x.Anchor.Graphic.GraphicData.Pic != nil {
-						sb.WriteString("![anchim ")
-						switch {
-						case x.Anchor.DocPr != nil:
-							sb.WriteString(x.Anchor.DocPr.Name)
-						case x.Anchor.Graphic.GraphicData.Pic.NonVisualPicProperties != nil:
-							sb.WriteString(x.Anchor.Graphic.GraphicData.Pic.NonVisualPicProperties.NonVisualDrawingProperties.Name)
-						default:
-							sb.WriteString(x.Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
-						}
-						sb.WriteString("](")
-						if x.Anchor.Graphic.GraphicData.Pic.BlipFill != nil {
-							tgt, err := p.file.ReferTarget(x.Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
-							if err != nil {
-								sb.WriteString(err.Error())
-							} else {
-								h := md5.Sum(p.file.Media(tgt[6:]).Data)
-								sb.WriteString(hex.EncodeToString(h[:]))
+					if x.Anchor != nil && x.Anchor.Graphic != nil && x.Anchor.Graphic.GraphicData != nil {
+						if x.Anchor.Graphic.GraphicData.Pic != nil {
+							sb.WriteString("![anchim ")
+							switch {
+							case x.Anchor.DocPr != nil:
+								sb.WriteString(x.Anchor.DocPr.Name)
+							case x.Anchor.Graphic.GraphicData.Pic.NonVisualPicProperties != nil:
+								sb.WriteString(x.Anchor.Graphic.GraphicData.Pic.NonVisualPicProperties.NonVisualDrawingProperties.Name)
+							default:
+								sb.WriteString(x.Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
 							}
+							sb.WriteString("](")
+							if x.Anchor.Graphic.GraphicData.Pic.BlipFill != nil {
+								tgt, err := p.file.ReferTarget(x.Anchor.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
+								if err != nil {
+									sb.WriteString(err.Error())
+								} else {
+									h := md5.Sum(p.file.Media(tgt[6:]).Data)
+									sb.WriteString(hex.EncodeToString(h[:]))
+								}
+							}
+							sb.WriteByte(')')
+							continue
 						}
-						sb.WriteByte(')')
+						if x.Anchor.Graphic.GraphicData.Shape != nil {
+							sb.WriteString("![anchsp ")
+							switch {
+							case x.Anchor.DocPr != nil:
+								sb.WriteString(x.Anchor.DocPr.Name)
+							case x.Anchor.Graphic.GraphicData.Shape.CNvPr != nil:
+								sb.WriteString(x.Anchor.Graphic.GraphicData.Shape.CNvPr.Name)
+							case x.Anchor.Graphic.GraphicData.Shape.SpPr != nil:
+								sb.WriteString(x.Anchor.Graphic.GraphicData.Shape.SpPr.PrstGeom.Prst)
+							default:
+								sb.WriteString("nil")
+							}
+							sb.WriteString("](")
+							if x.Anchor.Graphic.GraphicData.Shape.SpPr != nil {
+								sb.WriteString(x.Anchor.Graphic.GraphicData.Shape.SpPr.PrstGeom.Prst)
+							}
+							sb.WriteByte(')')
+							continue
+						}
+						if x.Anchor.Graphic.GraphicData.Canvas != nil {
+							sb.WriteString("![anchcv ")
+							if x.Anchor.DocPr != nil {
+								sb.WriteString(x.Anchor.DocPr.Name)
+							} else {
+								sb.WriteString("nil")
+							}
+							sb.WriteString("]()")
+							continue
+						}
 					}
 				}
 			}
-		case *RunProperties:
-			sb.WriteString("<prop>") //TODO: implement
 		default:
 			continue
 		}

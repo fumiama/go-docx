@@ -24,7 +24,7 @@ import "unsafe"
 
 // AddParagraph adds a new paragraph
 func (f *Docx) AddParagraph() *Paragraph {
-	f.Document.Body.Items = append(f.Document.Body.Items, Paragraph{
+	f.Document.Body.Items = append(f.Document.Body.Items, &Paragraph{
 		Children: make([]interface{}, 0, 64),
 		file:     f,
 	})
