@@ -20,8 +20,6 @@
 
 package docx
 
-import "unsafe"
-
 // AddTable add a new table to body by col*row
 //
 // unit: twips (1/20 point)
@@ -42,7 +40,7 @@ func (f *Docx) AddTable(row int, col int) *WTable {
 			TableCells:         cells,
 		}
 	}
-	f.Document.Body.Items = append(f.Document.Body.Items, &WTable{
+	tbl := &WTable{
 		TableProperties: &WTableProperties{
 			Width: &WTableWidth{Type: "auto"},
 			TableBorders: &WTableBorders{
@@ -59,11 +57,9 @@ func (f *Docx) AddTable(row int, col int) *WTable {
 		},
 		TableGrid: &WTableGrid{},
 		TableRows: trs,
-	})
-
-	t := f.Document.Body.Items[len(f.Document.Body.Items)-1]
-
-	return *(**WTable)(unsafe.Add(unsafe.Pointer(&t), unsafe.Sizeof(uintptr(0))))
+	}
+	f.Document.Body.Items = append(f.Document.Body.Items, tbl)
+	return tbl
 }
 
 // AddTableTwips add a new table to body by height and width
@@ -99,7 +95,7 @@ func (f *Docx) AddTableTwips(rowHeights []int64, colWidths []int64) *WTable {
 			}
 		}
 	}
-	f.Document.Body.Items = append(f.Document.Body.Items, &WTable{
+	tbl := &WTable{
 		TableProperties: &WTableProperties{
 			Width: &WTableWidth{Type: "auto"},
 			TableBorders: &WTableBorders{
@@ -118,11 +114,9 @@ func (f *Docx) AddTableTwips(rowHeights []int64, colWidths []int64) *WTable {
 			GridCols: grids,
 		},
 		TableRows: trs,
-	})
-
-	t := f.Document.Body.Items[len(f.Document.Body.Items)-1]
-
-	return *(**WTable)(unsafe.Add(unsafe.Pointer(&t), unsafe.Sizeof(uintptr(0))))
+	}
+	f.Document.Body.Items = append(f.Document.Body.Items, tbl)
+	return tbl
 }
 
 // Justification allows to set table's horizonal alignment

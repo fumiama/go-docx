@@ -20,18 +20,14 @@
 
 package docx
 
-import "unsafe"
-
 // AddParagraph adds a new paragraph
 func (f *Docx) AddParagraph() *Paragraph {
-	f.Document.Body.Items = append(f.Document.Body.Items, &Paragraph{
+	p := &Paragraph{
 		Children: make([]interface{}, 0, 64),
 		file:     f,
-	})
-
-	p := f.Document.Body.Items[len(f.Document.Body.Items)-1]
-
-	return *(**Paragraph)(unsafe.Add(unsafe.Pointer(&p), unsafe.Sizeof(uintptr(0))))
+	}
+	f.Document.Body.Items = append(f.Document.Body.Items, p)
+	return p
 }
 
 // AddParagraph adds a new paragraph
