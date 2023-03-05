@@ -417,15 +417,25 @@ func (a *AGraphic) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 type AGraphicData struct {
 	XMLName xml.Name `xml:"a:graphicData,omitempty"`
 	URI     string   `xml:"uri,attr"`
-	Pic     *Picture
-	Shape   *WordprocessingShape
-	Canvas  *WordprocessingCanvas
+
+	Pic    *Picture
+	Shape  *WordprocessingShape
+	Canvas *WordprocessingCanvas
+	Group  *WordprocessingGroup
 
 	file *Docx
 }
 
 // UnmarshalXML ...
 func (a *AGraphicData) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "uri":
+			a.URI = attr.Value
+		default:
+			// ignore other attributes
+		}
+	}
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -461,6 +471,14 @@ func (a *AGraphicData) UnmarshalXML(d *xml.Decoder, start xml.StartElement) erro
 					return err
 				}
 				a.Canvas = &value
+			case "wgp":
+				var value WordprocessingGroup
+				value.file = a.file
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				a.Group = &value
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {
@@ -530,8 +548,8 @@ func (p *Picture) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 // PICNonVisualPicProperties represents the non-visual properties of a picture in a Word document.
 type PICNonVisualPicProperties struct {
-	XMLName                    xml.Name `xml:"pic:nvPicPr,omitempty"`
-	NonVisualDrawingProperties PICNonVisualDrawingProperties
+	XMLName                    xml.Name            `xml:"pic:nvPicPr,omitempty"`
+	NonVisualDrawingProperties NonVisualProperties `xml:"pic:cNvPr,omitempty"`
 	CNvPicPr                   PicCNvPicPr
 }
 
@@ -549,7 +567,14 @@ func (p *PICNonVisualPicProperties) UnmarshalXML(d *xml.Decoder, start xml.Start
 		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "cNvPr":
-				p.NonVisualDrawingProperties.ID = getAtt(tt.Attr, "id")
+				v := getAtt(tt.Attr, "id")
+				if v == "" {
+					continue
+				}
+				p.NonVisualDrawingProperties.ID, err = strconv.Atoi(v)
+				if err != nil {
+					return err
+				}
 				p.NonVisualDrawingProperties.Name = getAtt(tt.Attr, "name")
 			case "cNvPicPr":
 				err = d.DecodeElement(&p.CNvPicPr, &tt)
@@ -616,13 +641,6 @@ func (p *PicCNvPicPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 type APicLocks struct {
 	XMLName        xml.Name `xml:"a:picLocks,omitempty"`
 	NoChangeAspect int      `xml:"noChangeAspect,attr"`
-}
-
-// PICNonVisualDrawingProperties represents the non-visual drawing properties of a picture in a Word document.
-type PICNonVisualDrawingProperties struct {
-	XMLName xml.Name `xml:"pic:cNvPr,omitempty"`
-	ID      string   `xml:"id,attr"`
-	Name    string   `xml:"name,attr"`
 }
 
 // PICBlipFill represents the blip fill of a picture in a Word document.

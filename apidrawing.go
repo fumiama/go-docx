@@ -36,7 +36,8 @@ func (p *Paragraph) AddInlineDrawing(pic []byte) (*Run, error) {
 		return nil, err
 	}
 	idn := int(atomic.AddUintptr(&p.file.docID, 1))
-	id := strconv.Itoa(int(p.file.IncreaseID("图片")))
+	id := int(p.file.IncreaseID("图片"))
+	ids := strconv.Itoa(id)
 	rid := p.file.addImage(format, pic)
 	w, h := int64(sz.Width), int64(sz.Height)
 	if float64(w)/float64(h) > 1.2 {
@@ -58,7 +59,7 @@ func (p *Paragraph) AddInlineDrawing(pic []byte) (*Run, error) {
 			EffectExtent: &WPEffectExtent{},
 			DocPr: &WPDocPr{
 				ID:   idn,
-				Name: "图片 " + id,
+				Name: "图片 " + ids,
 			},
 			CNvGraphicFramePr: &WPCNvGraphicFramePr{
 				Locks: AGraphicFrameLocks{
@@ -72,9 +73,9 @@ func (p *Paragraph) AddInlineDrawing(pic []byte) (*Run, error) {
 					Pic: &Picture{
 						XMLPIC: XMLNS_DRAWINGML_PICTURE,
 						NonVisualPicProperties: &PICNonVisualPicProperties{
-							NonVisualDrawingProperties: PICNonVisualDrawingProperties{
+							NonVisualDrawingProperties: NonVisualProperties{
 								ID:   id,
-								Name: "图片 " + id,
+								Name: "图片 " + ids,
 							},
 						},
 						BlipFill: &PICBlipFill{
@@ -137,7 +138,8 @@ func (p *Paragraph) AddAnchorDrawing(pic []byte) (*Run, error) {
 		return nil, err
 	}
 	idn := int(atomic.AddUintptr(&p.file.docID, 1))
-	id := strconv.Itoa(int(p.file.IncreaseID("图片")))
+	id := int(p.file.IncreaseID("图片"))
+	ids := strconv.Itoa(id)
 	rid := p.file.addImage(format, pic)
 	w, h := int64(sz.Width), int64(sz.Height)
 	if float64(w)/float64(h) > 1.2 {
@@ -168,7 +170,7 @@ func (p *Paragraph) AddAnchorDrawing(pic []byte) (*Run, error) {
 			WrapNone:     &struct{}{},
 			DocPr: &WPDocPr{
 				ID:   idn,
-				Name: "图片 " + id,
+				Name: "图片 " + ids,
 			},
 			CNvGraphicFramePr: &WPCNvGraphicFramePr{
 				Locks: AGraphicFrameLocks{
@@ -182,9 +184,9 @@ func (p *Paragraph) AddAnchorDrawing(pic []byte) (*Run, error) {
 					Pic: &Picture{
 						XMLPIC: XMLNS_DRAWINGML_PICTURE,
 						NonVisualPicProperties: &PICNonVisualPicProperties{
-							NonVisualDrawingProperties: PICNonVisualDrawingProperties{
+							NonVisualDrawingProperties: NonVisualProperties{
 								ID:   id,
-								Name: "图片 " + id,
+								Name: "图片 " + ids,
 							},
 						},
 						BlipFill: &PICBlipFill{

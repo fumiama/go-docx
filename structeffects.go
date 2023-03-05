@@ -20,7 +20,12 @@
 
 package docx
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"io"
+	"strconv"
+	"strings"
+)
 
 // RunStyle contains styling for a run
 type RunStyle struct {
@@ -161,4 +166,108 @@ type Kinsoku struct {
 type OverflowPunct struct {
 	XMLName xml.Name `xml:"w:overflowPunct,omitempty"`
 	Val     int      `xml:"w:val,attr"`
+}
+
+// ShapeProperties is a container element that represents the visual properties of a shape.
+type ShapeProperties struct {
+	BWMode string `xml:"bwMode,attr"`
+
+	Xfrm      AXfrm
+	PrstGeom  APrstGeom
+	SolidFill *ASolidFill
+	BlipFill  *ABlipFill
+	NoFill    *struct{} `xml:"a:noFill,omitempty"`
+	Line      *ALine
+
+	// EffectList struct{} `xml:"a:effectLst"`
+	// ExtList    struct{} `xml:"a:extLst"`
+}
+
+// UnmarshalXML ...
+func (w *ShapeProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "bwMode":
+			w.BWMode = attr.Value
+		default:
+			// ignore other attributes
+		}
+	}
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		if tt, ok := t.(xml.StartElement); ok {
+			switch tt.Name.Local {
+			case "xfrm":
+				err = d.DecodeElement(&w.Xfrm, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+			case "prstGeom":
+				w.PrstGeom.Prst = getAtt(tt.Attr, "prst")
+			case "solidFill":
+				var value ASolidFill
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.SolidFill = &value
+			case "blipFill":
+				var value ABlipFill
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.BlipFill = &value
+			case "noFill":
+				w.NoFill = &struct{}{}
+			case "ln":
+				var ln ALine
+				err = d.DecodeElement(&ln, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.Line = &ln
+			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
+				continue
+			}
+		}
+	}
+	return nil
+}
+
+// NonVisualProperties is an element that represents the non-visual properties of a content control.
+type NonVisualProperties struct {
+	ID   int    `xml:"id,attr"`
+	Name string `xml:"name,attr"`
+}
+
+// UnmarshalXML ...
+func (r *NonVisualProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "id":
+			r.ID, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return
+			}
+		case "name":
+			r.Name = attr.Value
+		default:
+			// ignore other attributes
+		}
+	}
+	// Consume the end element
+	_, err = d.Token()
+	return
 }

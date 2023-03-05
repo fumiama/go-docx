@@ -30,8 +30,10 @@ import (
 type WordprocessingGroup struct {
 	XMLName              xml.Name `xml:"wpg:wgp,omitempty"`
 	CNvGrpSpPr           *WPGcNvGrpSpPr
-	GroupShapeProperties *WPGGroupShapeProperties
+	GroupShapeProperties *ShapeProperties `xml:"wpg:grpSpPr,omitempty"`
 	Elems                []interface{}
+
+	file *Docx
 }
 
 // UnmarshalXML ...
@@ -55,7 +57,7 @@ func (w *WordprocessingGroup) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 				}
 				w.CNvGrpSpPr = &value
 			case "grpSpPr":
-				var value WPGGroupShapeProperties
+				var value ShapeProperties
 				err = d.DecodeElement(&value, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
@@ -70,6 +72,23 @@ func (w *WordprocessingGroup) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 				w.Elems = append(w.Elems, &value)
 			case "wsp":
 				var value WordprocessingShape
+				value.file = w.file
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.Elems = append(w.Elems, &value)
+			case "wpc":
+				var value WordprocessingCanvas
+				value.file = w.file
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.Elems = append(w.Elems, &value)
+			case "grpSp":
+				var value WPGGroupShape
+				value.file = w.file
 				err = d.DecodeElement(&value, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
@@ -129,8 +148,82 @@ type AGroupShapeLocks struct {
 	XMLName xml.Name `xml:"a:grpSpLocks,omitempty"`
 }
 
-// WPGGroupShapeProperties represents the properties applied to a group shape.
-type WPGGroupShapeProperties struct {
-	XMLName xml.Name `xml:"wpg:grpSpPr,omitempty"`
-	Xfrm    *AXfrm
+// WPGGroupShape ...
+type WPGGroupShape struct {
+	XMLName              xml.Name             `xml:"wpg:grpSp,omitempty"`
+	CNvPr                *NonVisualProperties `xml:"wpg:cNvPr,omitempty"`
+	CNvGrpSpPr           *WPGcNvGrpSpPr
+	GroupShapeProperties *ShapeProperties `xml:"wpg:grpSpPr,omitempty"`
+	Elems                []interface{}
+
+	file *Docx
+}
+
+// UnmarshalXML ...
+func (w *WPGGroupShape) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		if tt, ok := t.(xml.StartElement); ok {
+			switch tt.Name.Local {
+			case "cNvPr":
+				var value NonVisualProperties
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.CNvPr = &value
+			case "cNvGrpSpPr":
+				var value WPGcNvGrpSpPr
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.CNvGrpSpPr = &value
+			case "grpSpPr":
+				var value ShapeProperties
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.GroupShapeProperties = &value
+			case "pic":
+				var value Picture
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.Elems = append(w.Elems, &value)
+			case "wsp":
+				var value WordprocessingShape
+				value.file = w.file
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.Elems = append(w.Elems, &value)
+			case "wpc":
+				var value WordprocessingCanvas
+				value.file = w.file
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				w.Elems = append(w.Elems, &value)
+			default:
+				err = d.Skip() // skip unsupported tags
+				if err != nil {
+					return err
+				}
+				continue
+			}
+		}
+	}
+	return nil
 }

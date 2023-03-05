@@ -29,11 +29,11 @@ import (
 
 // WordprocessingShape is a container for a WordprocessingML DrawingML shape.
 type WordprocessingShape struct {
-	XMLName xml.Name `xml:"wps:wsp,omitempty"`
-	CNvPr   *WPSCNvPr
+	XMLName xml.Name             `xml:"wps:wsp,omitempty"`
+	CNvPr   *NonVisualProperties `xml:"wps:cNvPr,omitempty"`
 	CNvCnPr *WPSCNvCnPr
 	CNvSpPr *WPSCNvSpPr
-	SpPr    *WPSSpPr
+	SpPr    *ShapeProperties `xml:"wps:spPr,omitempty"`
 	TextBox *WPSTextBox
 	BodyPr  *WPSBodyPr
 
@@ -54,7 +54,7 @@ func (w *WordprocessingShape) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "cNvPr":
-				w.CNvPr = new(WPSCNvPr)
+				w.CNvPr = new(NonVisualProperties)
 				err = d.DecodeElement(w.CNvPr, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
@@ -72,7 +72,7 @@ func (w *WordprocessingShape) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 					return err
 				}
 			case "spPr":
-				w.SpPr = new(WPSSpPr)
+				w.SpPr = new(ShapeProperties)
 				err = d.DecodeElement(w.SpPr, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
@@ -100,33 +100,6 @@ func (w *WordprocessingShape) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 		}
 	}
 	return nil
-}
-
-// WPSCNvPr is an element that represents the non-visual properties of a content control.
-type WPSCNvPr struct {
-	XMLName xml.Name `xml:"wps:cNvPr,omitempty"`
-	ID      int      `xml:"id,attr"`
-	Name    string   `xml:"name,attr"`
-}
-
-// UnmarshalXML ...
-func (r *WPSCNvPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
-	for _, attr := range start.Attr {
-		switch attr.Name.Local {
-		case "id":
-			r.ID, err = strconv.Atoi(attr.Value)
-			if err != nil {
-				return
-			}
-		case "name":
-			r.Name = attr.Value
-		default:
-			// ignore other attributes
-		}
-	}
-	// Consume the end element
-	_, err = d.Token()
-	return
 }
 
 // WPSCNvCnPr represents the non-visual drawing properties of a connector.
@@ -235,85 +208,6 @@ func (l *ASPLocks) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 	// Consume the end element
 	_, err = d.Token()
 	return err
-}
-
-// WPSSpPr is a container element that represents the visual properties of a shape.
-type WPSSpPr struct {
-	XMLName xml.Name `xml:"wps:spPr,omitempty"`
-	BWMode  string   `xml:"bwMode,attr"`
-
-	Xfrm      AXfrm
-	PrstGeom  APrstGeom
-	SolidFill *ASolidFill
-	BlipFill  *ABlipFill
-	NoFill    *struct{} `xml:"a:noFill,omitempty"`
-	Line      *ALine
-
-	// EffectList struct{} `xml:"a:effectLst"`
-	// ExtList    struct{} `xml:"a:extLst"`
-}
-
-// UnmarshalXML ...
-func (w *WPSSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	for _, attr := range start.Attr {
-		switch attr.Name.Local {
-		case "bwMode":
-			w.BWMode = attr.Value
-		default:
-			// ignore other attributes
-		}
-	}
-	for {
-		t, err := d.Token()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return err
-		}
-
-		if tt, ok := t.(xml.StartElement); ok {
-			switch tt.Name.Local {
-			case "xfrm":
-				err = d.DecodeElement(&w.Xfrm, &tt)
-				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
-					return err
-				}
-			case "prstGeom":
-				w.PrstGeom.Prst = getAtt(tt.Attr, "prst")
-			case "solidFill":
-				var value ASolidFill
-				err = d.DecodeElement(&value, &tt)
-				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
-					return err
-				}
-				w.SolidFill = &value
-			case "blipFill":
-				var value ABlipFill
-				err = d.DecodeElement(&value, &tt)
-				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
-					return err
-				}
-				w.BlipFill = &value
-			case "noFill":
-				w.NoFill = &struct{}{}
-			case "ln":
-				var ln ALine
-				err = d.DecodeElement(&ln, &tt)
-				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
-					return err
-				}
-				w.Line = &ln
-			default:
-				err = d.Skip() // skip unsupported tags
-				if err != nil {
-					return err
-				}
-				continue
-			}
-		}
-	}
-	return nil
 }
 
 // ABlipFill represents a fill that contains a reference to an image.

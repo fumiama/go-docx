@@ -49,7 +49,7 @@ func (p *Paragraph) AddInlineShape(w, h int64, name, bwMode, prst string, ln *AL
 						CNvCnPr: &WPSCNvCnPr{
 							ConnShapeLocks: &struct{}{},
 						},
-						SpPr: &WPSSpPr{
+						SpPr: &ShapeProperties{
 							BWMode: bwMode,
 
 							Xfrm: AXfrm{
@@ -116,7 +116,7 @@ func (p *Paragraph) AddAnchorShape(w, h int64, name, bwMode, prst string, ln *AL
 						CNvCnPr: &WPSCNvCnPr{
 							ConnShapeLocks: &struct{}{},
 						},
-						SpPr: &WPSSpPr{
+						SpPr: &ShapeProperties{
 							BWMode: bwMode,
 
 							Xfrm: AXfrm{
