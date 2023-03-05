@@ -124,7 +124,7 @@ func (r *Run) parse(d *xml.Decoder, tt xml.StartElement) (child interface{}, err
 			if ttt, ok := tok.(xml.StartElement); ok && ttt.Name.Local == "Choice" {
 				for _, attr := range ttt.Attr {
 					if attr.Name.Local == "Requires" {
-						if attr.Value == "wps" || attr.Value == "wpc" {
+						if attr.Value == "wps" || attr.Value == "wpc" || attr.Value == "wpg" {
 							tok, err = d.Token() // go into choice
 							if err != nil {
 								return nil, err
