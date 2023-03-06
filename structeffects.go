@@ -271,3 +271,68 @@ func (r *NonVisualProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 	_, err = d.Token()
 	return
 }
+
+// Spacing ...
+type Spacing struct {
+	XMLName xml.Name `xml:"w:spacing,omitempty"`
+
+	Line     int    `xml:"w:line,attr"`
+	LineRule string `xml:"w:lineRule,attr"`
+}
+
+// UnmarshalXML ...
+func (s *Spacing) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "line":
+			s.Line, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return
+			}
+		case "lineRule":
+			s.LineRule = attr.Value
+		default:
+			// ignore other attributes
+		}
+	}
+	// Consume the end element
+	_, err = d.Token()
+	return
+}
+
+// Ind ...
+type Ind struct {
+	XMLName xml.Name `xml:"w:ind,omitempty"`
+
+	FirstLineChars int `xml:"w:firstLineChars,attr"`
+	FirstLine      int `xml:"w:firstLine,attr"`
+}
+
+// UnmarshalXML ...
+func (i *Ind) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "firstLineChars":
+			if attr.Value == "" {
+				continue
+			}
+			i.FirstLineChars, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return
+			}
+		case "firstLine":
+			if attr.Value == "" {
+				continue
+			}
+			i.FirstLine, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return
+			}
+		default:
+			// ignore other attributes
+		}
+	}
+	// Consume the end element
+	_, err = d.Token()
+	return
+}

@@ -70,6 +70,22 @@ func (c *WordprocessingCanvas) UnmarshalXML(d *xml.Decoder, start xml.StartEleme
 					return err
 				}
 				c.Items = append(c.Items, &value)
+			case "pic":
+				var value Picture
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				value.XMLPIC = getAtt(tt.Attr, "pic")
+				c.Items = append(c.Items, &value)
+			case "wgp":
+				var value WordprocessingGroup
+				value.file = c.file
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				c.Items = append(c.Items, &value)
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {

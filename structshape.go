@@ -621,16 +621,16 @@ func (c *WTextBoxContent) UnmarshalXML(d *xml.Decoder, start xml.StartElement) e
 // WPSBodyPr represents the body properties for a WordprocessingML DrawingML shape.
 type WPSBodyPr struct {
 	XMLName   xml.Name `xml:"wps:bodyPr,omitempty"`
-	Rot       int      `xml:"rot,attr,omitempty"`
+	Rot       int      `xml:"rot,attr"`
 	Vert      string   `xml:"vert,attr,omitempty"`
 	Wrap      string   `xml:"wrap,attr,omitempty"`
-	LIns      int64    `xml:"lIns,attr,omitempty"`
-	TIns      int64    `xml:"tIns,attr,omitempty"`
-	RIns      int64    `xml:"rIns,attr,omitempty"`
-	BIns      int64    `xml:"bIns,attr,omitempty"`
+	LIns      int64    `xml:"lIns,attr"`
+	TIns      int64    `xml:"tIns,attr"`
+	RIns      int64    `xml:"rIns,attr"`
+	BIns      int64    `xml:"bIns,attr"`
 	Anchor    string   `xml:"anchor,attr,omitempty"`
-	AnchorCtr int      `xml:"anchorCtr,attr,omitempty"`
-	Upright   int      `xml:"upright,attr,omitempty"`
+	AnchorCtr int      `xml:"anchorCtr,attr"`
+	Upright   int      `xml:"upright,attr"`
 
 	NoAutofit *struct{} `xml:"a:noAutofit,omitempty"`
 }

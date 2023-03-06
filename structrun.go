@@ -31,6 +31,8 @@ import (
 // a piece of text in bold, or a link
 type Run struct {
 	XMLName xml.Name `xml:"w:r,omitempty"`
+	Space   string   `xml:"xml:space,attr,omitempty"`
+	RsidR   string   `xml:"w:rsidR,attr,omitempty"`
 	RsidRPr string   `xml:"w:rsidRPr,attr,omitempty"`
 
 	RunProperties *RunProperties `xml:"w:rPr,omitempty"`
@@ -46,6 +48,10 @@ type Run struct {
 func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
+		case "space":
+			r.Space = attr.Value
+		case "rsidR":
+			r.RsidR = attr.Value
 		case "rsidRPr":
 			r.RsidRPr = attr.Value
 		default:
@@ -110,6 +116,8 @@ func (r *Run) parse(d *xml.Decoder, tt xml.StartElement) (child interface{}, err
 		child = &value
 	case "tab":
 		child = &Tab{}
+	case "br":
+		child = &BarterRabbet{}
 	case "AlternateContent":
 		/*var value AlternateContent
 		value.file = r.file
@@ -174,7 +182,6 @@ type RunProperties struct {
 	Bold      *Bold
 	ICs       *struct{} `xml:"w:iCs,omitempty"`
 	Italic    *Italic
-	Underline *Underline
 	Highlight *Highlight
 	Color     *Color
 	Size      *Size
@@ -183,6 +190,7 @@ type RunProperties struct {
 	Style     *Style
 	Shade     *Shade
 	Kern      *Kern
+	Underline *Underline
 	VertAlign *VertAlign
 }
 
@@ -277,10 +285,11 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 
 // RunFonts specifies the fonts used in the text of a run.
 type RunFonts struct {
-	XMLName xml.Name `xml:"w:rFonts,omitempty"`
-	ASCII   string   `xml:"w:ascii,attr,omitempty"`
-	HAnsi   string   `xml:"w:hAnsi,attr,omitempty"`
-	Hint    string   `xml:"w:hint,attr,omitempty"`
+	XMLName  xml.Name `xml:"w:rFonts,omitempty"`
+	ASCII    string   `xml:"w:ascii,attr,omitempty"`
+	EastAsia string   `xml:"w:eastAsia,attr,omitempty"`
+	HAnsi    string   `xml:"w:hAnsi,attr,omitempty"`
+	Hint     string   `xml:"w:hint,attr,omitempty"`
 }
 
 // UnmarshalXML ...
@@ -289,6 +298,8 @@ func (f *RunFonts) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		switch attr.Name.Local {
 		case "ascii":
 			f.ASCII = attr.Value
+		case "eastAsia":
+			f.EastAsia = attr.Value
 		case "hAnsi":
 			f.HAnsi = attr.Value
 		case "hint":

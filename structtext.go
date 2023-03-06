@@ -30,17 +30,30 @@ type Tab struct {
 	XMLName xml.Name `xml:"w:tab,omitempty"`
 }
 
+// BarterRabbet is <br>
+type BarterRabbet struct {
+	XMLName xml.Name `xml:"w:br,omitempty"`
+}
+
 // Text object contains the actual text
 type Text struct {
 	XMLName xml.Name `xml:"w:t,omitempty"`
 
-	// XMLSpace string   `xml:"xml:space,attr,omitempty"`
+	XMLSpace string `xml:"xml:space,attr,omitempty"`
 
 	Text string `xml:",chardata"`
 }
 
 // UnmarshalXML ...
 func (r *Text) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "space":
+			r.XMLSpace = attr.Value
+		default:
+			// ignore other attributes
+		}
+	}
 	for {
 		t, err := d.Token()
 		if err == io.EOF {

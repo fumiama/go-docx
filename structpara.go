@@ -32,6 +32,8 @@ import (
 // ParagraphProperties <w:pPr>
 type ParagraphProperties struct {
 	XMLName        xml.Name `xml:"w:pPr,omitempty"`
+	Spacing        *Spacing
+	Ind            *Ind
 	Justification  *Justification
 	Shade          *Shade
 	Kern           *Kern
@@ -57,6 +59,20 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 		}
 		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
+			case "spacing":
+				var value Spacing
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				p.Spacing = &value
+			case "ind":
+				var value Ind
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				p.Ind = &value
 			case "jc":
 				p.Justification = &Justification{Val: getAtt(tt.Attr, "val")}
 			case "shd":
@@ -183,6 +199,8 @@ func (p *Paragraph) String() string {
 					sb.WriteString(x.Text)
 				case *Tab:
 					sb.WriteByte('\t')
+				case *BarterRabbet:
+					sb.WriteByte('\n')
 				case *Drawing:
 					if x.Inline != nil && x.Inline.Graphic != nil && x.Inline.Graphic.GraphicData != nil {
 						if x.Inline.Graphic.GraphicData.Pic != nil {
