@@ -7,16 +7,15 @@
     xmlns:w16cex="http://schemas.microsoft.com/office/word/2018/wordml/cex"
     xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid"
     xmlns:w16="http://schemas.microsoft.com/office/word/2018/wordml"
-    xmlns:w16sdtdh="http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash"
-    xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" mc:Ignorable="w14 w15 w16se w16cid w16 w16cex w16sdtdh">
+    xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" mc:Ignorable="w14 w15 w16se w16cid w16 w16cex">
     <w:docDefaults>
         <w:rPrDefault>
             <w:rPr>
                 <w:rFonts w:asciiTheme="minorHAnsi" w:eastAsiaTheme="minorEastAsia" w:hAnsiTheme="minorHAnsi" w:cstheme="minorBidi"/>
                 <w:kern w:val="2"/>
-                <w:sz w:val="24"/>
+                <w:sz w:val="21"/>
                 <w:szCs w:val="24"/>
-                <w:lang w:val="en-US" w:eastAsia="zh-TW" w:bidi="ar-SA"/>
+                <w:lang w:val="en-US" w:eastAsia="zh-CN" w:bidi="ar-SA"/>
             </w:rPr>
         </w:rPrDefault>
         <w:pPrDefault/>
@@ -116,7 +115,7 @@
         <w:lsdException w:name="E-mail Signature" w:semiHidden="1" w:unhideWhenUsed="1"/>
         <w:lsdException w:name="HTML Top of Form" w:semiHidden="1" w:unhideWhenUsed="1"/>
         <w:lsdException w:name="HTML Bottom of Form" w:semiHidden="1" w:unhideWhenUsed="1"/>
-        <w:lsdException w:name="Normal (Web)" w:semiHidden="1" w:unhideWhenUsed="1"/>
+        <w:lsdException w:name="Normal (Web)" w:semiHidden="1" w:uiPriority="0" w:unhideWhenUsed="1"/>
         <w:lsdException w:name="HTML Acronym" w:semiHidden="1" w:unhideWhenUsed="1"/>
         <w:lsdException w:name="HTML Address" w:semiHidden="1" w:unhideWhenUsed="1"/>
         <w:lsdException w:name="HTML Cite" w:semiHidden="1" w:unhideWhenUsed="1"/>
@@ -402,12 +401,13 @@
     <w:style w:type="paragraph" w:default="1" w:styleId="a">
         <w:name w:val="Normal"/>
         <w:qFormat/>
-        <w:rsid w:val="00A955DD"/>
+        <w:rsid w:val="006F4226"/>
         <w:pPr>
             <w:widowControl w:val="0"/>
+            <w:jc w:val="both"/>
         </w:pPr>
         <w:rPr>
-            <w:szCs w:val="22"/>
+            <w:rFonts w:ascii="Times New Roman" w:eastAsia="宋体" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
         </w:rPr>
     </w:style>
     <w:style w:type="character" w:default="1" w:styleId="a0">
@@ -437,15 +437,28 @@
         <w:semiHidden/>
         <w:unhideWhenUsed/>
     </w:style>
-    <w:style w:type="character" w:styleId="a3">
-        <w:name w:val="Hyperlink"/>
-        <w:basedOn w:val="a0"/>
-        <w:uiPriority w:val="99"/>
-        <w:unhideWhenUsed/>
-        <w:rsid w:val="003B745A"/>
+    <w:style w:type="table" w:styleId="a3">
+        <w:name w:val="Table Grid"/>
+        <w:basedOn w:val="a1"/>
+        <w:uiPriority w:val="39"/>
+        <w:rsid w:val="008E76B5"/>
+        <w:tblPr>
+            <w:tblBorders>
+                <w:top w:val="single" w:sz="4" w:space="0" w:color="auto"/>
+                <w:left w:val="single" w:sz="4" w:space="0" w:color="auto"/>
+                <w:bottom w:val="single" w:sz="4" w:space="0" w:color="auto"/>
+                <w:right w:val="single" w:sz="4" w:space="0" w:color="auto"/>
+                <w:insideH w:val="single" w:sz="4" w:space="0" w:color="auto"/>
+                <w:insideV w:val="single" w:sz="4" w:space="0" w:color="auto"/>
+            </w:tblBorders>
+        </w:tblPr>
+    </w:style>
+    <w:style w:type="paragraph" w:styleId="a4">
+        <w:name w:val="Normal (Web)"/>
+        <w:basedOn w:val="a"/>
+        <w:rsid w:val="006F4226"/>
         <w:rPr>
-            <w:color w:val="0000FF" w:themeColor="hyperlink"/>
-            <w:u w:val="single"/>
+            <w:sz w:val="24"/>
         </w:rPr>
     </w:style>
 </w:styles>

@@ -604,10 +604,8 @@ func (c *WTextBoxContent) UnmarshalXML(d *xml.Decoder, start xml.StartElement) e
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
-				if len(value.Children) > 0 {
-					value.file = c.file
-					c.Paragraphs = append(c.Paragraphs, value)
-				}
+				value.file = c.file
+				c.Paragraphs = append(c.Paragraphs, value)
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {

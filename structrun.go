@@ -111,6 +111,19 @@ func (r *Run) parse(d *xml.Decoder, tt xml.StartElement) (child interface{}, err
 	case "tab":
 		child = &Tab{}
 	case "AlternateContent":
+		/*var value AlternateContent
+		value.file = r.file
+		err = d.DecodeElement(&value, &tt)
+		if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+			return nil, err
+		}
+		if value.Choice == nil {
+			return nil, nil
+		}
+		if value.Choice.Requires != "wps" && value.Choice.Requires != "wpc" && value.Choice.Requires != "wpg" {
+			return nil, nil
+		}
+		child = &value*/
 	altcont:
 		for {
 			tok, err1 := d.Token()

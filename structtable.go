@@ -560,10 +560,8 @@ func (c *WTableCell) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
-				if len(value.Children) > 0 {
-					value.file = c.file
-					c.Paragraphs = append(c.Paragraphs, value)
-				}
+				value.file = c.file
+				c.Paragraphs = append(c.Paragraphs, value)
 			case "tcPr":
 				var value WTableCellProperties
 				err = d.DecodeElement(&value, &tt)
@@ -776,8 +774,8 @@ func (w *WTableBorders) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 // WTableBorder is a structure representing a single border of a Word table.
 type WTableBorder struct {
 	Val   string `xml:"w:val,attr"`
-	Size  int    `xml:"w:sz,attr,omitempty"`
-	Space int    `xml:"w:space,attr,omitempty"`
+	Size  int    `xml:"w:sz,attr"`
+	Space int    `xml:"w:space,attr"`
 	Color string `xml:"w:color,attr,omitempty"`
 }
 

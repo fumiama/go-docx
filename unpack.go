@@ -83,6 +83,8 @@ func (f *Docx) parseDocument(file *zip.File) error {
 	f.Document.XMLR = XMLNS_R
 	f.Document.XMLWP = XMLNS_WP
 	// f.Document.XMLMC = XMLNS_MC
+	// f.Document.XMLO = XMLNS_O
+	// f.Document.XMLV = XMLNS_V
 	f.Document.XMLWPS = XMLNS_WPS
 	f.Document.XMLWPC = XMLNS_WPC
 	f.Document.XMLWPG = XMLNS_WPG

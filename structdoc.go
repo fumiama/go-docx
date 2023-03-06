@@ -34,8 +34,11 @@ const (
 	XMLNS_WPS = `http://schemas.microsoft.com/office/word/2010/wordprocessingShape`
 	XMLNS_WPC = `http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas`
 	XMLNS_WPG = `http://schemas.microsoft.com/office/word/2010/wordprocessingGroup`
-	// XMLNS_MC  = `http://schemas.openxmlformats.org/markup-compatibility/2006`
+	XMLNS_MC  = `http://schemas.openxmlformats.org/markup-compatibility/2006`
 	// XMLNS_WP14 = `http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing`
+
+	XMLNS_O = `urn:schemas-microsoft-com:office:office`
+	XMLNS_V = `urn:schemas-microsoft-com:vml`
 
 	XMLNS_PICTURE = `http://schemas.openxmlformats.org/drawingml/2006/picture`
 )
@@ -107,6 +110,11 @@ type Document struct {
 	XMLWPG  string   `xml:"xmlns:wpg,attr,omitempty"` // cannot be unmarshalled in
 	// XMLMC   string   `xml:"xmlns:mc,attr,omitempty"`  // cannot be unmarshalled in
 	// XMLWP14 string   `xml:"xmlns:wp14,attr,omitempty"` // cannot be unmarshalled in
+
+	// XMLO string `xml:"xmlns:o,attr,omitempty"` // cannot be unmarshalled in
+	// XMLV string `xml:"xmlns:v,attr,omitempty"` // cannot be unmarshalled in
+
+	// MCIgnorable string `xml:"mc:Ignorable,attr,omitempty"`
 
 	Body Body `xml:"w:body"`
 }
