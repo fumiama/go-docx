@@ -23,6 +23,7 @@ package docx
 import (
 	"encoding/xml"
 	"io"
+	"reflect"
 )
 
 // Tab is the literal tab
@@ -69,4 +70,130 @@ func (r *Text) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	return nil
+}
+
+// RunMergeRule compares two runs and decides whether they can be merged
+type RunMergeRule func(r1, r2 *Run) bool
+
+// MergeAllRuns ...
+func MergeAllRuns(r1, r2 *Run) bool {
+	return true
+}
+
+// MergeSamePropRuns merges runs with the same properties
+func MergeSamePropRuns(r1, r2 *Run) bool {
+	if r1 == nil || r2 == nil {
+		return false
+	}
+	if r1.RunProperties == r2.RunProperties {
+		return true
+	}
+	if r1.RunProperties == nil && r2.RunProperties != nil {
+		return false
+	}
+	if r1.RunProperties != nil && r2.RunProperties == nil {
+		return false
+	}
+	rr1 := reflect.ValueOf(r1.RunProperties).Elem()
+	rr2 := reflect.ValueOf(r2.RunProperties).Elem()
+	for i := 1; i < rr1.NumField(); i++ {
+		x1 := rr1.Field(i)
+		x2 := rr2.Field(i)
+		if x1.IsZero() && x2.IsZero() {
+			continue
+		}
+		if x1.IsZero() && !x2.IsZero() {
+			return false
+		}
+		if !x1.IsZero() && x2.IsZero() {
+			return false
+		}
+		xx1 := x1.Elem()
+		if xx1.NumField() <= 1 {
+			continue
+		}
+		xx2 := x2.Elem()
+		for j := 1; j < xx1.NumField(); j++ {
+			if !xx1.Field(j).Equal(xx2.Field(j)) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// MergeText will merge contiguous run texts in a paragraph into one run
+//
+//	note: np is not a deep-copy
+func (p *Paragraph) MergeText(canmerge RunMergeRule) (np Paragraph) {
+	var prevrun *Run
+	np = *p
+	np.Children = make([]interface{}, 0, 64)
+	for _, c := range p.Children {
+		switch o := c.(type) {
+		case *Run:
+			r := *o
+			r.Children = make([]interface{}, 0, 16)
+			t := &Text{}
+			for _, c := range o.Children {
+				switch x := c.(type) {
+				case *Text:
+					if x.Text != "" {
+						t.Text += x.Text
+					}
+				default:
+					if t.Text != "" {
+						r.Children = append(r.Children, t)
+						t = &Text{}
+					}
+					r.Children = append(r.Children, x)
+				}
+			}
+			if t.Text != "" {
+				r.Children = append(r.Children, t)
+			}
+			if prevrun != nil && canmerge(prevrun, &r) {
+				var prevtext *Text
+				noappend := false
+				if len(prevrun.Children) == 0 {
+					prevtext = &Text{}
+				} else {
+					i := len(prevrun.Children) - 1
+					if t, ok := prevrun.Children[i].(*Text); ok {
+						prevtext = t
+						noappend = true
+					} else {
+						prevtext = &Text{}
+					}
+				}
+				for _, c := range r.Children {
+					switch x := c.(type) {
+					case *Text:
+						if x.Text != "" {
+							prevtext.Text += x.Text
+						}
+					default:
+						if prevtext.Text != "" {
+							if noappend {
+								noappend = false
+							} else {
+								prevrun.Children = append(prevrun.Children, t)
+							}
+							prevtext = &Text{}
+						}
+						prevrun.Children = append(prevrun.Children, x)
+					}
+				}
+				if prevtext.Text != "" && !noappend {
+					prevrun.Children = append(prevrun.Children, t)
+				}
+			} else {
+				prevrun = &r
+				np.Children = append(np.Children, &r)
+			}
+		default:
+			np.Children = append(np.Children, o)
+		}
+	}
+	return
 }
