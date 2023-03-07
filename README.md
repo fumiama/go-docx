@@ -40,6 +40,49 @@ go run cmd/main/main.go -u
 ```
 And you will see two files generated under `pwd` with the same contents as below.
 
+
+<center>
+<img width="566" alt="p1" src="https://user-images.githubusercontent.com/41315874/223348099-4a6099d2-0fec-4e13-92a7-152c00bc6f6b.png">
+<img width="566" alt="p2" src="https://user-images.githubusercontent.com/41315874/223348157-a66fee27-313c-4fdb-b17d-b45032accdbd.png">
+</center>
+
+## Use Package in your Project
+```bash
+go get -d github.com/fumiama/go-docx@latest
+```
+```go
+package main
+
+import (
+	"os"
+	"strings"
+
+	"github.com/fumiama/go-docx"
+)
+
+func main() {
+		w := docx.NewA4()
+		// add new paragraph
+		para1 := w.AddParagraph()
+    // add text
+		para1.AddText("test").AddTab()
+    para1.AddText("size").Size("44").AddTab()
+    f, err := os.Create("generated.docx")
+    // save to file
+		if err != nil {
+			panic(err)
+		}
+		_, err = w.WriteTo(f)
+		if err != nil {
+			panic(err)
+		}
+		err = f.Close()
+		if err != nil {
+			panic(err)
+		}
+}
+```
+
 ## License
 
 AGPL-3.0. See [LICENSE](LICENSE)
