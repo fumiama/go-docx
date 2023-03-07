@@ -101,7 +101,7 @@ func (b *Body) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 // Document <w:document>
 type Document struct {
-	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/wordprocessingml/2006/main document"`
+	XMLName xml.Name `xml:"w:document"`
 	XMLW    string   `xml:"xmlns:w,attr"`             // cannot be unmarshalled in
 	XMLR    string   `xml:"xmlns:r,attr,omitempty"`   // cannot be unmarshalled in
 	XMLWP   string   `xml:"xmlns:wp,attr,omitempty"`  // cannot be unmarshalled in

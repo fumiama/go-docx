@@ -27,9 +27,18 @@ This is a variant optimized and expanded by fumiama. The original repo is [gonfv
 The Introduction above is copied from the original repo. I had evolved that repo again to fit my needs. Here are the supported functions now.
 
 - [x] Parse and save document
-- [x] Edit simple text (color, size, alignment, ...)
+- [x] Edit text (color, size, alignment, link, ...)
 - [x] Edit picture
 - [x] Edit table
+- [x] Edit shape
+- [x] Edit canvas
+- [x] Edit group
+
+## Quick Start
+```bash
+go run cmd/main/main.go -u
+```
+And you will see two files generated under `pwd` with the same contents as below.
 
 ## License
 
