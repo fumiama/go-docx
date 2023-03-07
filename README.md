@@ -55,6 +55,7 @@ And you will see two files generated under `pwd` with the same contents as below
 ```bash
 go get -d github.com/fumiama/go-docx@latest
 ```
+### Generate Document
 ```go
 package main
 
@@ -66,25 +67,60 @@ import (
 )
 
 func main() {
-		w := docx.NewA4()
-		// add new paragraph
-		para1 := w.AddParagraph()
-		// add text
-		para1.AddText("test").AddTab()
-		para1.AddText("size").Size("44").AddTab()
-		f, err := os.Create("generated.docx")
-		// save to file
-		if err != nil {
-			panic(err)
+	w := docx.NewA4()
+	// add new paragraph
+	para1 := w.AddParagraph()
+	// add text
+	para1.AddText("test").AddTab()
+	para1.AddText("size").Size("44").AddTab()
+	f, err := os.Create("generated.docx")
+	// save to file
+	if err != nil {
+		panic(err)
+	}
+	_, err = w.WriteTo(f)
+	if err != nil {
+		panic(err)
+	}
+	err = f.Close()
+	if err != nil {
+		panic(err)
+	}
+}
+```
+### Parse Document
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+	"strings"
+
+	"github.com/fumiama/go-docx"
+)
+
+func main() {
+	readFile, err := os.Open("file2parse.docx")
+	if err != nil {
+		panic(err)
+	}
+	fileinfo, err := readFile.Stat()
+	if err != nil {
+		panic(err)
+	}
+	size := fileinfo.Size()
+	doc, err := docx.Parse(readFile, size)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Plain text:")
+	for _, it := range doc.Document.Body.Items {
+		switch it.(type) {
+		case *docx.Paragraph, *docx.WTable: // printable
+			fmt.Println(it)
 		}
-		_, err = w.WriteTo(f)
-		if err != nil {
-			panic(err)
-		}
-		err = f.Close()
-		if err != nil {
-			panic(err)
-		}
+	}
 }
 ```
 
