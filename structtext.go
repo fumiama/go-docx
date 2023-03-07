@@ -122,6 +122,50 @@ func MergeSamePropRuns(r1, r2 *Run) bool {
 	return true
 }
 
+// MergeSamePropRunsOf merges runs with the same properties of names
+func MergeSamePropRunsOf(name ...string) RunMergeRule {
+	return func(r1, r2 *Run) bool {
+		if r1 == nil || r2 == nil {
+			return false
+		}
+		if r1.RunProperties == r2.RunProperties {
+			return true
+		}
+		if r1.RunProperties == nil && r2.RunProperties != nil {
+			return false
+		}
+		if r1.RunProperties != nil && r2.RunProperties == nil {
+			return false
+		}
+		rr1 := reflect.ValueOf(r1.RunProperties).Elem()
+		rr2 := reflect.ValueOf(r2.RunProperties).Elem()
+		for _, n := range name {
+			x1 := rr1.FieldByName(n)
+			x2 := rr2.FieldByName(n)
+			if x1.IsZero() && x2.IsZero() {
+				continue
+			}
+			if x1.IsZero() && !x2.IsZero() {
+				return false
+			}
+			if !x1.IsZero() && x2.IsZero() {
+				return false
+			}
+			xx1 := x1.Elem()
+			if xx1.NumField() <= 1 {
+				continue
+			}
+			xx2 := x2.Elem()
+			for j := 1; j < xx1.NumField(); j++ {
+				if !xx1.Field(j).Equal(xx2.Field(j)) {
+					return false
+				}
+			}
+		}
+		return true
+	}
+}
+
 // MergeText will merge contiguous run texts in a paragraph into one run
 //
 //	note: np is not a deep-copy

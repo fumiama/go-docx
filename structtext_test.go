@@ -187,8 +187,9 @@ const xml2merge = `<w:p w14:paraId="343EA723" w14:textId="17A5316C" w:rsidR="00B
 </w:p>`
 
 const (
-	allmergedtext  = `某某某大学2016-2017学年第1学期期末考试A卷`
-	propmergedtext = `某某某大学201|6|-201|7|学年第|1|学期期|末|考试||A||卷|`
+	allmergedtext      = `某某某大学2016-2017学年第1学期期末考试A卷`
+	propmergedtext     = `某某某大学201|6|-201|7|学年第|1|学期期|末|考试||A||卷|`
+	namedpropmergdtext = `某某某大学2016-2017学年第|1|学期期|末|考试|A|卷|`
 )
 
 func TestMergeText(t *testing.T) {
@@ -223,5 +224,22 @@ func TestMergeText(t *testing.T) {
 	}
 	if sb.String() != propmergedtext {
 		t.Fatal("expected merged text [", propmergedtext, "] but has [", sb.String(), "]")
+	}
+	np = p.MergeText(MergeSamePropRunsOf("Bold", "Size", "Underline"))
+	if len(np.Children) != 7 {
+		t.Fatal("expected 7 runs but has", len(np.Children))
+	}
+	sb.Reset()
+	for _, r := range np.Children {
+		if len(r.(*Run).Children) > 1 {
+			t.Fatal("expected 0/1 run.child but has", len(r.(*Run).Children))
+		}
+		if len(r.(*Run).Children) == 1 {
+			sb.WriteString(r.(*Run).Children[0].(*Text).Text)
+		}
+		sb.WriteString("|")
+	}
+	if sb.String() != namedpropmergdtext {
+		t.Fatal("expected merged text [", namedpropmergdtext, "] but has [", sb.String(), "]")
 	}
 }
