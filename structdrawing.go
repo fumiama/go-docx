@@ -21,6 +21,8 @@
 package docx
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/xml"
 	"io"
 	"strconv"
@@ -213,6 +215,64 @@ func (r *WPInline) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 		}
 	}
 	return nil
+}
+
+// String ...
+func (r *WPInline) String() string {
+	sb := strings.Builder{}
+	if r.Graphic.GraphicData.Pic != nil {
+		sb.WriteString("![inlnim ")
+		switch {
+		case r.DocPr != nil:
+			sb.WriteString(r.DocPr.Name)
+		case r.Graphic.GraphicData.Pic.NonVisualPicProperties != nil:
+			sb.WriteString(r.Graphic.GraphicData.Pic.NonVisualPicProperties.NonVisualDrawingProperties.Name)
+		default:
+			sb.WriteString(r.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
+		}
+		sb.WriteString("](")
+		if r.Graphic.GraphicData.Pic.BlipFill != nil {
+			tgt, err := r.file.ReferTarget(r.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
+			if err != nil {
+				sb.WriteString(err.Error())
+			} else {
+				h := md5.Sum(r.file.Media(tgt[6:]).Data)
+				sb.WriteString(hex.EncodeToString(h[:]))
+			}
+		}
+		sb.WriteByte(')')
+		return sb.String()
+	}
+	if r.Graphic.GraphicData.Shape != nil {
+		sb.WriteString("![inlnsp ")
+		switch {
+		case r.DocPr != nil:
+			sb.WriteString(r.DocPr.Name)
+		case r.Graphic.GraphicData.Shape.CNvPr != nil:
+			sb.WriteString(r.Graphic.GraphicData.Shape.CNvPr.Name)
+		case r.Graphic.GraphicData.Shape.SpPr != nil:
+			sb.WriteString(r.Graphic.GraphicData.Shape.SpPr.PrstGeom.Prst)
+		default:
+			sb.WriteString("nil")
+		}
+		sb.WriteString("](")
+		if r.Graphic.GraphicData.Shape.SpPr != nil {
+			sb.WriteString(r.Graphic.GraphicData.Shape.SpPr.PrstGeom.Prst)
+		}
+		sb.WriteByte(')')
+		return sb.String()
+	}
+	if r.Graphic.GraphicData.Canvas != nil {
+		sb.WriteString("![inlncv ")
+		if r.DocPr != nil {
+			sb.WriteString(r.DocPr.Name)
+		} else {
+			sb.WriteString("nil")
+		}
+		sb.WriteString("]()")
+		return sb.String()
+	}
+	return "![inln?](unknown)"
 }
 
 // WPExtent represents the extent of a drawing in a Word document.
@@ -1228,6 +1288,66 @@ func (r *WPAnchor) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 		}
 	}
 	return nil
+}
+
+// String ...
+func (r *WPAnchor) String() string {
+	sb := strings.Builder{}
+	if r.Graphic != nil && r.Graphic.GraphicData != nil {
+		if r.Graphic.GraphicData.Pic != nil {
+			sb.WriteString("![anchim ")
+			switch {
+			case r.DocPr != nil:
+				sb.WriteString(r.DocPr.Name)
+			case r.Graphic.GraphicData.Pic.NonVisualPicProperties != nil:
+				sb.WriteString(r.Graphic.GraphicData.Pic.NonVisualPicProperties.NonVisualDrawingProperties.Name)
+			default:
+				sb.WriteString(r.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
+			}
+			sb.WriteString("](")
+			if r.Graphic.GraphicData.Pic.BlipFill != nil {
+				tgt, err := r.file.ReferTarget(r.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
+				if err != nil {
+					sb.WriteString(err.Error())
+				} else {
+					h := md5.Sum(r.file.Media(tgt[6:]).Data)
+					sb.WriteString(hex.EncodeToString(h[:]))
+				}
+			}
+			sb.WriteByte(')')
+			return sb.String()
+		}
+		if r.Graphic.GraphicData.Shape != nil {
+			sb.WriteString("![anchsp ")
+			switch {
+			case r.DocPr != nil:
+				sb.WriteString(r.DocPr.Name)
+			case r.Graphic.GraphicData.Shape.CNvPr != nil:
+				sb.WriteString(r.Graphic.GraphicData.Shape.CNvPr.Name)
+			case r.Graphic.GraphicData.Shape.SpPr != nil:
+				sb.WriteString(r.Graphic.GraphicData.Shape.SpPr.PrstGeom.Prst)
+			default:
+				sb.WriteString("nil")
+			}
+			sb.WriteString("](")
+			if r.Graphic.GraphicData.Shape.SpPr != nil {
+				sb.WriteString(r.Graphic.GraphicData.Shape.SpPr.PrstGeom.Prst)
+			}
+			sb.WriteByte(')')
+			return sb.String()
+		}
+		if r.Graphic.GraphicData.Canvas != nil {
+			sb.WriteString("![anchcv ")
+			if r.DocPr != nil {
+				sb.WriteString(r.DocPr.Name)
+			} else {
+				sb.WriteString("nil")
+			}
+			sb.WriteString("]()")
+			return sb.String()
+		}
+	}
+	return "![anch?](unknown)"
 }
 
 // WPSimplePos represents the position of an object in a Word document.
