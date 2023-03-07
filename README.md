@@ -40,11 +40,16 @@ go run cmd/main/main.go -u
 ```
 And you will see two files generated under `pwd` with the same contents as below.
 
-
-<center>
-<img width="566" alt="p1" src="https://user-images.githubusercontent.com/41315874/223348099-4a6099d2-0fec-4e13-92a7-152c00bc6f6b.png">
-<img width="566" alt="p2" src="https://user-images.githubusercontent.com/41315874/223348157-a66fee27-313c-4fdb-b17d-b45032accdbd.png">
-</center>
+<table>
+	<tr>
+		<td align="center"><img src="https://user-images.githubusercontent.com/41315874/223348099-4a6099d2-0fec-4e13-92a7-152c00bc6f6b.png"></td>
+		<td align="center"><img src="https://user-images.githubusercontent.com/41315874/223349486-e78ac0f1-c879-4888-9110-ea4db2590241.png"></td>
+	</tr>
+	<tr>
+		<td align="center">p1</td>
+		<td align="center">p2</td>
+	</tr>
+</table>
 
 ## Use Package in your Project
 ```bash
@@ -64,11 +69,11 @@ func main() {
 		w := docx.NewA4()
 		// add new paragraph
 		para1 := w.AddParagraph()
-    // add text
+		// add text
 		para1.AddText("test").AddTab()
-    para1.AddText("size").Size("44").AddTab()
-    f, err := os.Create("generated.docx")
-    // save to file
+		para1.AddText("size").Size("44").AddTab()
+		f, err := os.Create("generated.docx")
+		// save to file
 		if err != nil {
 			panic(err)
 		}
