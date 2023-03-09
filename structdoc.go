@@ -81,7 +81,7 @@ func (b *Body) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				value.file = b.file
 				b.Items = append(b.Items, &value)
 			case "tbl":
-				var value WTable
+				var value Table
 				err = d.DecodeElement(&value, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
@@ -145,4 +145,132 @@ func (doc *Document) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 		}
 	}
 	return nil
+}
+
+// ParagraphSplitRule check whether the paragraph is a separator or not
+type ParagraphSplitRule func(*Paragraph) bool
+
+// SplitByParagraph splits a doc to many docs by using a matched paragraph
+// as the separator.
+//
+// The separator will be placed to the first doc item
+func (doc *Docx) SplitByParagraph(separator ParagraphSplitRule) (docs []*Docx) {
+	items := doc.Document.Body.Items
+newdoclop:
+	for len(items) > 0 {
+		ndoc := new(Docx)
+
+		// migrate base data
+		ndoc.mediaNameIdx = make(map[string]int, 64)
+		ndoc.slowIDs = make(map[string]uintptr, 64)
+		ndoc.template = doc.template
+		ndoc.tmplfs = doc.tmplfs
+		ndoc.tmpfslst = doc.tmpfslst
+
+		ndoc.Document.XMLW = XMLNS_W
+		ndoc.Document.XMLR = XMLNS_R
+		ndoc.Document.XMLWP = XMLNS_WP
+		// ndoc.Document.XMLMC = XMLNS_MC
+		// ndoc.Document.XMLO = XMLNS_O
+		// ndoc.Document.XMLV = XMLNS_V
+		ndoc.Document.XMLWPS = XMLNS_WPS
+		ndoc.Document.XMLWPC = XMLNS_WPC
+		ndoc.Document.XMLWPG = XMLNS_WPG
+		// ndoc.Document.XMLWP14 = XMLNS_WP14
+		ndoc.Document.XMLName.Space = XMLNS_W
+		ndoc.Document.XMLName.Local = "document"
+		ndoc.Document.Body.file = ndoc
+
+		ndoc.docRelation = Relationships{
+			Xmlns: XMLNS_REL,
+			Relationship: []Relationship{
+				{
+					ID:     "rId1",
+					Type:   `http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles`,
+					Target: "styles.xml",
+				},
+				{
+					ID:     "rId2",
+					Type:   `http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme`,
+					Target: "theme/theme1.xml",
+				},
+				{
+					ID:     "rId3",
+					Type:   `http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable`,
+					Target: "fontTable.xml",
+				},
+			},
+		}
+
+		ndoc.rID = 3
+
+		for i, item := range items {
+			switch o := item.(type) {
+			case *Paragraph:
+				if separator(o) && len(ndoc.Document.Body.Items) > 0 {
+					items = items[i:]
+					docs = append(docs, ndoc)
+					continue newdoclop
+				}
+				np := o.copymedia(ndoc)
+				ndoc.Document.Body.Items = append(ndoc.Document.Body.Items, &np)
+			case *Table:
+				nt := o.copymedia(ndoc)
+				ndoc.Document.Body.Items = append(ndoc.Document.Body.Items, &nt)
+			default:
+				ndoc.Document.Body.Items = append(ndoc.Document.Body.Items, o)
+			}
+		}
+
+		if len(ndoc.Document.Body.Items) > 0 {
+			docs = append(docs, ndoc)
+		}
+		break
+	}
+	return
+}
+
+func (p *Paragraph) copymedia(to *Docx) (np Paragraph) {
+	np = *p
+	np.Children = make([]interface{}, 0, len(p.Children))
+	np.file = to
+	for _, pc := range p.Children {
+		if r, ok := pc.(*Run); ok {
+			nr := *r
+			nr.Children = make([]interface{}, 0, len(r.Children))
+			nr.file = to
+			for _, rc := range r.Children {
+				if d, ok := rc.(*Drawing); ok {
+					nr.Children = append(nr.Children, d.copymedia(to))
+					continue
+				}
+				nr.Children = append(nr.Children, rc)
+			}
+			continue
+		}
+		np.Children = append(np.Children, pc)
+	}
+	return
+}
+
+func (t *Table) copymedia(to *Docx) (nt Table) {
+	nt = *t
+	nt.TableRows = make([]*WTableRow, 0, len(t.TableRows))
+	nt.file = to
+	for _, tr := range t.TableRows {
+		ntr := *tr
+		ntr.TableCells = make([]*WTableCell, 0, len(tr.TableCells))
+		ntr.file = to
+		for _, tc := range tr.TableCells {
+			ntc := *tc
+			ntc.Paragraphs = make([]Paragraph, 0, len(tc.Paragraphs))
+			ntc.file = to
+			for _, p := range tc.Paragraphs {
+				ntc.Paragraphs = append(ntc.Paragraphs, p.copymedia(to))
+			}
+			ntr.TableCells = append(ntr.TableCells, &ntc)
+		}
+		nt.TableRows = append(nt.TableRows, &ntr)
+	}
+	return
 }

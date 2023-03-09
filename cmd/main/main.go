@@ -192,7 +192,7 @@ func main() {
 	fmt.Println("Plain text:")
 	for _, it := range doc.Document.Body.Items {
 		switch it.(type) {
-		case *docx.Paragraph, *docx.WTable: // printable
+		case *docx.Paragraph, *docx.Table: // printable
 			fmt.Println(it)
 		}
 	}

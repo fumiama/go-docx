@@ -22,7 +22,6 @@ package docx
 
 import (
 	"archive/zip"
-	"bytes"
 	"encoding/xml"
 	"io"
 	"strings"
@@ -67,7 +66,8 @@ func unpack(zipReader *zip.Reader) (docx *Docx, err error) {
 		// fill remaining files into tmpfslst
 		docx.tmpfslst = append(docx.tmpfslst, f.Name)
 	}
-	docx.buf = bytes.NewBuffer(make([]byte, 0, 1024*1024))
+	//TODO: find last imageID
+	docx.imageID = 100000
 	return
 }
 
@@ -94,6 +94,7 @@ func (f *Docx) parseDocument(file *zip.File) error {
 
 	f.Document.Body.file = f
 	//TODO: find last docID
+	f.docID = 100000
 	err = xml.NewDecoder(zf).Decode(&f.Document)
 	return err
 }
@@ -108,12 +109,12 @@ func (f *Docx) parseDocRelation(file *zip.File) error {
 
 	f.docRelation.Xmlns = XMLNS_R
 	//TODO: find last rID
+	f.rID = 100000
 	return xml.NewDecoder(zf).Decode(&f.docRelation)
 }
 
 // parseMedia add the media into Docx struct
 func (f *Docx) parseMedia(file *zip.File) error {
-	//TODO: find last imageID
 	name := file.Name[len(MEDIA_FOLDER):]
 	zf, err := file.Open()
 	if err != nil {

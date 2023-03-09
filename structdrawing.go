@@ -27,6 +27,7 @@ import (
 	"io"
 	"strconv"
 	"strings"
+	"sync/atomic"
 )
 
 //nolint:revive,stylecheck
@@ -87,6 +88,22 @@ func (r *Drawing) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		}
 	}
 	return nil
+}
+
+func (r *Drawing) copymedia(to *Docx) *Drawing {
+	if r.Inline != nil {
+		return &Drawing{
+			Inline: r.Inline.copymedia(to),
+			file:   to,
+		}
+	}
+	if r.Anchor != nil {
+		return &Drawing{
+			Anchor: r.Anchor.copymedia(to),
+			file:   to,
+		}
+	}
+	return &Drawing{file: to}
 }
 
 // WPInline is an element that represents an inline image within a text paragraph.
@@ -273,6 +290,64 @@ func (r *WPInline) String() string {
 		return sb.String()
 	}
 	return "![inln?](unknown)"
+}
+
+func (r *WPInline) copymedia(to *Docx) *WPInline {
+	if r.Graphic.GraphicData.Pic != nil {
+		if r.Graphic.GraphicData.Pic.BlipFill != nil {
+			tgt, err := r.file.ReferTarget(r.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
+			if err != nil {
+				return nil
+			}
+			format := tgt[strings.LastIndex(tgt, ".")+1:]
+			idn := int(atomic.AddUintptr(&to.docID, 1))
+			id := int(to.IncreaseID("图片"))
+			ids := strconv.Itoa(id)
+			m := r.file.Media(tgt[6:])
+			if m == nil {
+				return nil
+			}
+			rid := to.addImage(format, m.Data)
+			inln := *r
+			grph := *r.Graphic
+			inln.Graphic = &grph
+			grphdata := *r.Graphic.GraphicData
+			grph.GraphicData = &grphdata
+			pic := *r.Graphic.GraphicData.Pic
+			grphdata.Pic = &pic
+			grphdata.file = to
+			grph.file = to
+			inln.file = to
+
+			inln.DocPr = &WPDocPr{
+				ID:   idn,
+				Name: "图片 " + ids,
+			}
+			pic.NonVisualPicProperties = &PICNonVisualPicProperties{
+				NonVisualDrawingProperties: NonVisualProperties{
+					ID:   id,
+					Name: "图片 " + ids,
+				},
+				CNvPicPr: r.Graphic.GraphicData.Pic.NonVisualPicProperties.CNvPicPr,
+			}
+			pic.BlipFill = &PICBlipFill{
+				Blip: ABlip{
+					Embed:  rid,
+					Cstate: r.Graphic.GraphicData.Pic.BlipFill.Blip.Cstate,
+				},
+				Stretch: r.Graphic.GraphicData.Pic.BlipFill.Stretch,
+			}
+			return &inln
+		}
+		return nil
+	}
+	if r.Graphic.GraphicData.Shape != nil { // shape has no media
+		return r
+	}
+	if r.Graphic.GraphicData.Canvas != nil { //TODO: copy canvas media
+		return r
+	}
+	return nil
 }
 
 // WPExtent represents the extent of a drawing in a Word document.
@@ -1348,6 +1423,64 @@ func (r *WPAnchor) String() string {
 		}
 	}
 	return "![anch?](unknown)"
+}
+
+func (r *WPAnchor) copymedia(to *Docx) *WPAnchor {
+	if r.Graphic.GraphicData.Pic != nil {
+		if r.Graphic.GraphicData.Pic.BlipFill != nil {
+			tgt, err := r.file.ReferTarget(r.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
+			if err != nil {
+				return nil
+			}
+			format := tgt[strings.LastIndex(tgt, ".")+1:]
+			idn := int(atomic.AddUintptr(&to.docID, 1))
+			id := int(to.IncreaseID("图片"))
+			ids := strconv.Itoa(id)
+			m := r.file.Media(tgt[6:])
+			if m == nil {
+				return nil
+			}
+			rid := to.addImage(format, m.Data)
+			anch := *r
+			grph := *r.Graphic
+			anch.Graphic = &grph
+			grphdata := *r.Graphic.GraphicData
+			grph.GraphicData = &grphdata
+			pic := *r.Graphic.GraphicData.Pic
+			grphdata.Pic = &pic
+			grphdata.file = to
+			grph.file = to
+			anch.file = to
+
+			anch.DocPr = &WPDocPr{
+				ID:   idn,
+				Name: "图片 " + ids,
+			}
+			pic.NonVisualPicProperties = &PICNonVisualPicProperties{
+				NonVisualDrawingProperties: NonVisualProperties{
+					ID:   id,
+					Name: "图片 " + ids,
+				},
+				CNvPicPr: r.Graphic.GraphicData.Pic.NonVisualPicProperties.CNvPicPr,
+			}
+			pic.BlipFill = &PICBlipFill{
+				Blip: ABlip{
+					Embed:  rid,
+					Cstate: r.Graphic.GraphicData.Pic.BlipFill.Blip.Cstate,
+				},
+				Stretch: r.Graphic.GraphicData.Pic.BlipFill.Stretch,
+			}
+			return &anch
+		}
+		return nil
+	}
+	if r.Graphic.GraphicData.Shape != nil { // shape has no media
+		return r
+	}
+	if r.Graphic.GraphicData.Canvas != nil { //TODO: copy canvas media
+		return r
+	}
+	return nil
 }
 
 // WPSimplePos represents the position of an object in a Word document.

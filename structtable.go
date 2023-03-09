@@ -27,8 +27,8 @@ import (
 	"strings"
 )
 
-// WTable represents a table within a Word document.
-type WTable struct {
+// Table represents a table within a Word document.
+type Table struct {
 	XMLName         xml.Name `xml:"w:tbl,omitempty"`
 	TableProperties *WTableProperties
 	TableGrid       *WTableGrid
@@ -37,7 +37,7 @@ type WTable struct {
 	file *Docx
 }
 
-func (t *WTable) String() string {
+func (t *Table) String() string {
 	if len(t.TableRows) == 0 || len(t.TableRows[0].TableCells) == 0 {
 		return ""
 	}
@@ -62,7 +62,7 @@ func (t *WTable) String() string {
 }
 
 // UnmarshalXML implements the xml.Unmarshaler interface.
-func (t *WTable) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (t *Table) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for {
 		token, err := d.Token()
 		if err == io.EOF {

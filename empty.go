@@ -21,7 +21,6 @@
 package docx
 
 import (
-	"bytes"
 	"encoding/xml"
 )
 
@@ -71,7 +70,6 @@ func newEmptyA4File() *Docx {
 		slowIDs:      make(map[string]uintptr, 64),
 		template:     "a4",
 		tmpfslst:     A4TemplateFilesList,
-		buf:          bytes.NewBuffer(make([]byte, 0, 1024*1024)),
 	}
 	docx.Document.Body.file = docx
 	return docx

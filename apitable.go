@@ -23,7 +23,7 @@ package docx
 // AddTable add a new table to body by col*row
 //
 // unit: twips (1/20 point)
-func (f *Docx) AddTable(row int, col int) *WTable {
+func (f *Docx) AddTable(row int, col int) *Table {
 	trs := make([]*WTableRow, row)
 	for i := 0; i < row; i++ {
 		cells := make([]*WTableCell, col)
@@ -40,7 +40,7 @@ func (f *Docx) AddTable(row int, col int) *WTable {
 			TableCells:         cells,
 		}
 	}
-	tbl := &WTable{
+	tbl := &Table{
 		TableProperties: &WTableProperties{
 			Width: &WTableWidth{Type: "auto"},
 			TableBorders: &WTableBorders{
@@ -65,7 +65,7 @@ func (f *Docx) AddTable(row int, col int) *WTable {
 // AddTableTwips add a new table to body by height and width
 //
 // unit: twips (1/20 point)
-func (f *Docx) AddTableTwips(rowHeights []int64, colWidths []int64) *WTable {
+func (f *Docx) AddTableTwips(rowHeights []int64, colWidths []int64) *Table {
 	grids := make([]*WGridCol, len(colWidths))
 	trs := make([]*WTableRow, len(rowHeights))
 	for i, w := range colWidths {
@@ -95,7 +95,7 @@ func (f *Docx) AddTableTwips(rowHeights []int64, colWidths []int64) *WTable {
 			}
 		}
 	}
-	tbl := &WTable{
+	tbl := &Table{
 		TableProperties: &WTableProperties{
 			Width: &WTableWidth{Type: "auto"},
 			TableBorders: &WTableBorders{
@@ -127,7 +127,7 @@ func (f *Docx) AddTableTwips(rowHeights []int64, colWidths []int64) *WTable {
 //		end：右对齐。
 //		both：两端对齐。
 //		distribute：分散对齐。
-func (t *WTable) Justification(val string) *WTable {
+func (t *Table) Justification(val string) *Table {
 	if t.TableProperties.Justification == nil {
 		t.TableProperties.Justification = &Justification{Val: val}
 		return t

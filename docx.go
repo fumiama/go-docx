@@ -24,7 +24,6 @@ package docx
 
 import (
 	"archive/zip"
-	"bytes"
 	"io"
 	"io/fs"
 	"sync"
@@ -49,9 +48,6 @@ type Docx struct {
 	template string
 	tmplfs   fs.FS
 	tmpfslst []string
-
-	buf        *bytes.Buffer
-	isbufempty bool
 
 	io.Reader
 	io.WriterTo
@@ -109,20 +105,9 @@ func (f *Docx) WriteTo(writer io.Writer) (_ int64, err error) {
 	return 0, f.pack(zipWriter)
 }
 
-// Read allows to save a docx to buf
+// Read is a fake function and cannot be used
 func (f *Docx) Read(p []byte) (n int, err error) {
-	if !f.isbufempty {
-		n, err = f.buf.Read(p)
-		if err == io.EOF {
-			f.buf.Reset()
-			f.isbufempty = true
-			return
-		}
-	}
-	zipWriter := zip.NewWriter(f.buf)
-	defer zipWriter.Close()
-	f.isbufempty = false
-	return f.buf.Read(p)
+	panic("fake stub!")
 }
 
 // UseTemplate will replace template files
