@@ -32,12 +32,12 @@ func (f *Docx) AddParagraph() *Paragraph {
 
 // AddParagraph adds a new paragraph
 func (c *WTableCell) AddParagraph() *Paragraph {
-	c.Paragraphs = append(c.Paragraphs, Paragraph{
+	c.Paragraphs = append(c.Paragraphs, &Paragraph{
 		Children: make([]interface{}, 0, 64),
 		file:     c.file,
 	})
 
-	return &c.Paragraphs[len(c.Paragraphs)-1]
+	return c.Paragraphs[len(c.Paragraphs)-1]
 }
 
 // Justification allows to set para's horizonal alignment

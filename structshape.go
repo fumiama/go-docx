@@ -600,11 +600,11 @@ func (c *WTextBoxContent) UnmarshalXML(d *xml.Decoder, start xml.StartElement) e
 			switch tt.Name.Local {
 			case "p":
 				var value Paragraph
+				value.file = c.file
 				err = d.DecodeElement(&value, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
-				value.file = c.file
 				c.Paragraphs = append(c.Paragraphs, value)
 			default:
 				err = d.Skip() // skip unsupported tags

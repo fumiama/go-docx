@@ -33,6 +33,7 @@ import (
 func main() {
 	fileLocation := flag.String("f", "new-file.docx", "file location")
 	analyzeOnly := flag.Bool("a", false, "analyze file only")
+	clean := flag.Bool("c", false, "clean mode (keep text and picture only)")
 	unm := flag.Bool("u", false, "lease unmarshalled file")
 	flag.Parse()
 	var w *docx.Docx
@@ -173,6 +174,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	if *clean {
+		doc.Document.Body.DropDrawingOf("NilPicture")
+	}
 	if *unm {
 		i := strings.LastIndex(*fileLocation, "/")
 		name := (*fileLocation)[:i+1] + "unmarshal_" + (*fileLocation)[i+1:]
@@ -191,9 +195,11 @@ func main() {
 	}
 	fmt.Println("Plain text:")
 	for _, it := range doc.Document.Body.Items {
-		switch it.(type) {
-		case *docx.Paragraph, *docx.Table: // printable
-			fmt.Println(it)
+		switch o := it.(type) {
+		case *docx.Paragraph: // printable
+			fmt.Println(o.String())
+		case *docx.Table: // printable
+			fmt.Println(o.String())
 		}
 	}
 	fmt.Println("End of main")

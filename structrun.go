@@ -23,6 +23,7 @@ package docx
 import (
 	"encoding/xml"
 	"io"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -173,6 +174,24 @@ func (r *Run) parse(d *xml.Decoder, tt xml.StartElement) (child interface{}, err
 		err = d.Skip() // skip unsupported tags
 	}
 	return
+}
+
+// KeepElements keep named elems amd removes others
+//
+// names: *docx.Text *docx.Drawing *docx.Tab *docx.BarterRabbet
+func (r *Run) KeepElements(name ...string) {
+	items := make([]interface{}, 0, len(r.Children))
+	namemap := make(map[string]struct{}, len(name)*2)
+	for _, n := range name {
+		namemap[n] = struct{}{}
+	}
+	for _, item := range r.Children {
+		_, ok := namemap[reflect.ValueOf(item).Type().String()]
+		if ok {
+			items = append(items, item)
+		}
+	}
+	r.Children = items
 }
 
 // RunProperties encapsulates visual properties of a run

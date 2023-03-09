@@ -23,7 +23,10 @@ package docx
 import (
 	"encoding/xml"
 	"io"
+	"reflect"
+	"regexp"
 	"strings"
+	"unsafe"
 )
 
 //nolint:revive,stylecheck
@@ -74,19 +77,19 @@ func (b *Body) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			switch tt.Name.Local {
 			case "p":
 				var value Paragraph
+				value.file = b.file
 				err = d.DecodeElement(&value, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
-				value.file = b.file
 				b.Items = append(b.Items, &value)
 			case "tbl":
 				var value Table
+				value.file = b.file
 				err = d.DecodeElement(&value, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
-				value.file = b.file
 				b.Items = append(b.Items, &value)
 			default:
 				err = d.Skip() // skip unsupported tags
@@ -97,6 +100,51 @@ func (b *Body) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		}
 	}
 	return nil
+}
+
+// KeepElements keep named elems amd removes others
+//
+// names: *docx.Paragraph *docx.Table
+func (b *Body) KeepElements(name ...string) {
+	items := make([]interface{}, 0, len(b.Items))
+	namemap := make(map[string]struct{}, len(name)*2)
+	for _, n := range name {
+		namemap[n] = struct{}{}
+	}
+	for _, item := range b.Items {
+		_, ok := namemap[reflect.ValueOf(item).Type().String()]
+		if ok {
+			items = append(items, item)
+		}
+	}
+	b.Items = items
+}
+
+// DropDrawingOf drops all matched drawing in body
+// name: Canvas, Shape, Group, ShapeAndCanvas, ShapeAndCanvasAndGroup, NilPicture
+func (b *Body) DropDrawingOf(name string) {
+	for _, item := range b.Items {
+		switch o := item.(type) {
+		case *Paragraph:
+			f := reflect.ValueOf(o).MethodByName("Drop" + name)
+			if *(*uintptr)(unsafe.Pointer(&f)) == 0 {
+				continue
+			}
+			_ = f.Call(nil)
+		case *Table:
+			for _, tr := range o.TableRows {
+				for _, tc := range tr.TableCells {
+					for _, p := range tc.Paragraphs {
+						f := reflect.ValueOf(p).MethodByName("Drop" + name)
+						if *(*uintptr)(unsafe.Pointer(&f)) == 0 {
+							continue
+						}
+						_ = f.Call(nil)
+					}
+				}
+			}
+		}
+	}
 }
 
 // Document <w:document>
@@ -149,6 +197,13 @@ func (doc *Document) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 
 // ParagraphSplitRule check whether the paragraph is a separator or not
 type ParagraphSplitRule func(*Paragraph) bool
+
+// SplitDocxByPlainTextRegex matches p.String()
+func SplitDocxByPlainTextRegex(re *regexp.Regexp) ParagraphSplitRule {
+	return func(p *Paragraph) bool {
+		return re.MatchString(p.String())
+	}
+}
 
 // SplitByParagraph splits a doc to many docs by using a matched paragraph
 // as the separator.
@@ -263,10 +318,11 @@ func (t *Table) copymedia(to *Docx) (nt Table) {
 		ntr.file = to
 		for _, tc := range tr.TableCells {
 			ntc := *tc
-			ntc.Paragraphs = make([]Paragraph, 0, len(tc.Paragraphs))
+			ntc.Paragraphs = make([]*Paragraph, 0, len(tc.Paragraphs))
 			ntc.file = to
 			for _, p := range tc.Paragraphs {
-				ntc.Paragraphs = append(ntc.Paragraphs, p.copymedia(to))
+				np := p.copymedia(to)
+				ntc.Paragraphs = append(ntc.Paragraphs, &np)
 			}
 			ntr.TableCells = append(ntr.TableCells, &ntc)
 		}

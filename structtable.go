@@ -536,7 +536,7 @@ type WTableRowHeight struct {
 type WTableCell struct {
 	XMLName             xml.Name `xml:"w:tc,omitempty"`
 	TableCellProperties *WTableCellProperties
-	Paragraphs          []Paragraph `xml:"w:p,omitempty"`
+	Paragraphs          []*Paragraph `xml:"w:p,omitempty"`
 
 	file *Docx
 }
@@ -556,12 +556,12 @@ func (c *WTableCell) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 			switch tt.Name.Local {
 			case "p":
 				var value Paragraph
+				value.file = c.file
 				err = d.DecodeElement(&value, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
 				}
-				value.file = c.file
-				c.Paragraphs = append(c.Paragraphs, value)
+				c.Paragraphs = append(c.Paragraphs, &value)
 			case "tcPr":
 				var value WTableCellProperties
 				err = d.DecodeElement(&value, &tt)

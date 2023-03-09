@@ -23,6 +23,7 @@ package docx
 import (
 	"encoding/xml"
 	"io"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -295,4 +296,184 @@ func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 	p.Children = children
 	return nil
+}
+
+// KeepElements keep named elems amd removes others
+//
+// names: *docx.Hyperlink *docx.Run *docx.RunProperties
+func (p *Paragraph) KeepElements(name ...string) {
+	items := make([]interface{}, 0, len(p.Children))
+	namemap := make(map[string]struct{}, len(name)*2)
+	for _, n := range name {
+		namemap[n] = struct{}{}
+	}
+	for _, item := range p.Children {
+		_, ok := namemap[reflect.ValueOf(item).Type().String()]
+		if ok {
+			items = append(items, item)
+		}
+	}
+	p.Children = items
+}
+
+// DropCanvas drops all canvases in paragraph
+func (p *Paragraph) DropCanvas() {
+	for _, pc := range p.Children {
+		if r, ok := pc.(*Run); ok {
+			nrc := make([]interface{}, 0, len(r.Children))
+			for _, rc := range r.Children {
+				if d, ok := rc.(*Drawing); ok {
+					if d.Inline != nil && d.Inline.Graphic != nil && d.Inline.Graphic.GraphicData != nil {
+						if d.Inline.Graphic.GraphicData.Canvas != nil {
+							continue
+						}
+					}
+					if d.Anchor != nil && d.Anchor.Graphic != nil && d.Anchor.Graphic.GraphicData != nil {
+						if d.Anchor.Graphic.GraphicData.Canvas != nil {
+							continue
+						}
+					}
+				}
+				nrc = append(nrc, rc)
+			}
+			r.Children = nrc
+		}
+	}
+}
+
+// DropShape drops all shapes in paragraph
+func (p *Paragraph) DropShape() {
+	for _, pc := range p.Children {
+		if r, ok := pc.(*Run); ok {
+			nrc := make([]interface{}, 0, len(r.Children))
+			for _, rc := range r.Children {
+				if d, ok := rc.(*Drawing); ok {
+					if d.Inline != nil && d.Inline.Graphic != nil && d.Inline.Graphic.GraphicData != nil {
+						if d.Inline.Graphic.GraphicData.Shape != nil {
+							continue
+						}
+					}
+					if d.Anchor != nil && d.Anchor.Graphic != nil && d.Anchor.Graphic.GraphicData != nil {
+						if d.Anchor.Graphic.GraphicData.Shape != nil {
+							continue
+						}
+					}
+				}
+				nrc = append(nrc, rc)
+			}
+			r.Children = nrc
+		}
+	}
+}
+
+// DropGroup drops all groups in paragraph
+func (p *Paragraph) DropGroup() {
+	for _, pc := range p.Children {
+		if r, ok := pc.(*Run); ok {
+			nrc := make([]interface{}, 0, len(r.Children))
+			for _, rc := range r.Children {
+				if d, ok := rc.(*Drawing); ok {
+					if d.Inline != nil && d.Inline.Graphic != nil && d.Inline.Graphic.GraphicData != nil {
+						if d.Inline.Graphic.GraphicData.Group != nil {
+							continue
+						}
+					}
+					if d.Anchor != nil && d.Anchor.Graphic != nil && d.Anchor.Graphic.GraphicData != nil {
+						if d.Anchor.Graphic.GraphicData.Group != nil {
+							continue
+						}
+					}
+				}
+				nrc = append(nrc, rc)
+			}
+			r.Children = nrc
+		}
+	}
+}
+
+// DropShapeAndCanvas drops all shapes and canvases in paragraph
+func (p *Paragraph) DropShapeAndCanvas() {
+	for _, pc := range p.Children {
+		if r, ok := pc.(*Run); ok {
+			nrc := make([]interface{}, 0, len(r.Children))
+			for _, rc := range r.Children {
+				if d, ok := rc.(*Drawing); ok {
+					if d.Inline != nil && d.Inline.Graphic != nil && d.Inline.Graphic.GraphicData != nil {
+						if d.Inline.Graphic.GraphicData.Shape != nil || d.Inline.Graphic.GraphicData.Canvas != nil {
+							continue
+						}
+					}
+					if d.Anchor != nil && d.Anchor.Graphic != nil && d.Anchor.Graphic.GraphicData != nil {
+						if d.Anchor.Graphic.GraphicData.Shape != nil || d.Anchor.Graphic.GraphicData.Canvas != nil {
+							continue
+						}
+					}
+				}
+				nrc = append(nrc, rc)
+			}
+			r.Children = nrc
+		}
+	}
+}
+
+// DropShapeAndCanvasAndGroup drops all shapes, canvases and groups in paragraph
+func (p *Paragraph) DropShapeAndCanvasAndGroup() {
+	for _, pc := range p.Children {
+		if r, ok := pc.(*Run); ok {
+			nrc := make([]interface{}, 0, len(r.Children))
+			for _, rc := range r.Children {
+				if d, ok := rc.(*Drawing); ok {
+					if d.Inline != nil && d.Inline.Graphic != nil && d.Inline.Graphic.GraphicData != nil {
+						if d.Inline.Graphic.GraphicData.Shape != nil || d.Inline.Graphic.GraphicData.Canvas != nil || d.Inline.Graphic.GraphicData.Group != nil {
+							continue
+						}
+					}
+					if d.Anchor != nil && d.Anchor.Graphic != nil && d.Anchor.Graphic.GraphicData != nil {
+						if d.Anchor.Graphic.GraphicData.Shape != nil || d.Anchor.Graphic.GraphicData.Canvas != nil || d.Anchor.Graphic.GraphicData.Group != nil {
+							continue
+						}
+					}
+				}
+				nrc = append(nrc, rc)
+			}
+			r.Children = nrc
+		}
+	}
+}
+
+// DropNilPicture drops all drawings with nil picture in paragraph
+func (p *Paragraph) DropNilPicture() {
+	for _, pc := range p.Children {
+		if r, ok := pc.(*Run); ok {
+			nrc := make([]interface{}, 0, len(r.Children))
+			for _, rc := range r.Children {
+				if d, ok := rc.(*Drawing); ok {
+					if d.Inline == nil && d.Anchor == nil {
+						continue
+					}
+					if (d.Inline != nil && d.Inline.Graphic == nil) || (d.Anchor != nil && d.Anchor.Graphic == nil) {
+						continue
+					}
+					if d.Inline != nil && d.Inline.Graphic != nil && d.Inline.Graphic.GraphicData == nil {
+						continue
+					}
+					if d.Anchor != nil && d.Anchor.Graphic != nil && d.Anchor.Graphic.GraphicData == nil {
+						continue
+					}
+					if d.Inline != nil && d.Inline.Graphic != nil && d.Inline.Graphic.GraphicData != nil {
+						if d.Inline.Graphic.GraphicData.Pic == nil {
+							continue
+						}
+					}
+					if d.Anchor != nil && d.Anchor.Graphic != nil && d.Anchor.Graphic.GraphicData != nil {
+						if d.Anchor.Graphic.GraphicData.Pic == nil {
+							continue
+						}
+					}
+				}
+				nrc = append(nrc, rc)
+			}
+			r.Children = nrc
+		}
+	}
 }
