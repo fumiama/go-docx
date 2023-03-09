@@ -33,8 +33,8 @@ import (
 type Run struct {
 	XMLName xml.Name `xml:"w:r,omitempty"`
 	Space   string   `xml:"xml:space,attr,omitempty"`
-	RsidR   string   `xml:"w:rsidR,attr,omitempty"`
-	RsidRPr string   `xml:"w:rsidRPr,attr,omitempty"`
+	// RsidR   string   `xml:"w:rsidR,attr,omitempty"`
+	// RsidRPr string   `xml:"w:rsidRPr,attr,omitempty"`
 
 	RunProperties *RunProperties `xml:"w:rPr,omitempty"`
 
@@ -51,10 +51,10 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		switch attr.Name.Local {
 		case "space":
 			r.Space = attr.Value
-		case "rsidR":
+		/*case "rsidR":
 			r.RsidR = attr.Value
 		case "rsidRPr":
-			r.RsidRPr = attr.Value
+			r.RsidRPr = attr.Value*/
 		default:
 			// ignore other attributes
 		}

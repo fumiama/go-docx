@@ -163,10 +163,10 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 type Paragraph struct {
 	XMLName xml.Name `xml:"w:p,omitempty"`
 
-	RsidR        string `xml:"w:rsidR,attr,omitempty"`
-	RsidRPr      string `xml:"w:rsidRPr,attr,omitempty"`
-	RsidRDefault string `xml:"w:rsidRDefault,attr,omitempty"`
-	RsidP        string `xml:"w:rsidP,attr,omitempty"`
+	// RsidR        string `xml:"w:rsidR,attr,omitempty"`
+	// RsidRPr      string `xml:"w:rsidRPr,attr,omitempty"`
+	// RsidRDefault string `xml:"w:rsidRDefault,attr,omitempty"`
+	// RsidP        string `xml:"w:rsidP,attr,omitempty"`
 
 	Properties *ParagraphProperties
 	Children   []interface{}
@@ -220,7 +220,7 @@ func (p *Paragraph) String() string {
 
 // UnmarshalXML ...
 func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	for _, attr := range start.Attr {
+	/*for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "rsidR":
 			p.RsidR = attr.Value
@@ -233,7 +233,7 @@ func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		default:
 			// ignore other attributes
 		}
-	}
+	}*/
 	children := make([]interface{}, 0, 64)
 	for {
 		t, err := d.Token()

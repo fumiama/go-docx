@@ -401,10 +401,10 @@ func (g *WGridCol) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 
 // WTableRow represents a row within a table.
 type WTableRow struct {
-	XMLName            xml.Name `xml:"w:tr,omitempty"`
-	RsidR              string   `xml:"w:rsidR,attr,omitempty"`
-	RsidRPr            string   `xml:"w:rsidRPr,attr,omitempty"`
-	RsidTr             string   `xml:"w:rsidTr,attr,omitempty"`
+	XMLName xml.Name `xml:"w:tr,omitempty"`
+	// RsidR              string   `xml:"w:rsidR,attr,omitempty"`
+	// RsidRPr            string   `xml:"w:rsidRPr,attr,omitempty"`
+	// RsidTr             string   `xml:"w:rsidTr,attr,omitempty"`
 	TableRowProperties *WTableRowProperties
 	TableCells         []*WTableCell
 
@@ -413,7 +413,7 @@ type WTableRow struct {
 
 // UnmarshalXML ...
 func (w *WTableRow) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	for _, attr := range start.Attr {
+	/*for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "rsidR":
 			w.RsidR = attr.Value
@@ -424,7 +424,7 @@ func (w *WTableRow) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		default:
 			// ignore other attributes
 		}
-	}
+	}*/
 
 	for {
 		t, err := d.Token()
