@@ -154,8 +154,8 @@ type ParagraphSplitRule func(*Paragraph) bool
 // as the separator.
 //
 // The separator will be placed to the first doc item
-func (doc *Docx) SplitByParagraph(separator ParagraphSplitRule) (docs []*Docx) {
-	items := doc.Document.Body.Items
+func (f *Docx) SplitByParagraph(separator ParagraphSplitRule) (docs []*Docx) {
+	items := f.Document.Body.Items
 newdoclop:
 	for len(items) > 0 {
 		ndoc := new(Docx)
@@ -163,9 +163,9 @@ newdoclop:
 		// migrate base data
 		ndoc.mediaNameIdx = make(map[string]int, 64)
 		ndoc.slowIDs = make(map[string]uintptr, 64)
-		ndoc.template = doc.template
-		ndoc.tmplfs = doc.tmplfs
-		ndoc.tmpfslst = doc.tmpfslst
+		ndoc.template = f.template
+		ndoc.tmplfs = f.tmplfs
+		ndoc.tmpfslst = f.tmpfslst
 
 		ndoc.Document.XMLW = XMLNS_W
 		ndoc.Document.XMLR = XMLNS_R
