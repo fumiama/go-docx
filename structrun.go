@@ -205,6 +205,7 @@ type RunProperties struct {
 	Color     *Color
 	Size      *Size
 	SizeCs    *SizeCs
+	Spacing   *Spacing
 	RunStyle  *RunStyle
 	Style     *Style
 	Shade     *Shade
@@ -255,6 +256,13 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 				var value Size
 				value.Val = getAtt(tt.Attr, "val")
 				r.Size = &value
+			case "spacing":
+				var value Spacing
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				r.Spacing = &value
 			case "szCs":
 				var value SizeCs
 				value.Val = getAtt(tt.Attr, "val")

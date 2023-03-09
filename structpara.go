@@ -31,6 +31,7 @@ import (
 // ParagraphProperties <w:pPr>
 type ParagraphProperties struct {
 	XMLName        xml.Name `xml:"w:pPr,omitempty"`
+	Tabs           *Tabs
 	Spacing        *Spacing
 	Ind            *Ind
 	Justification  *Justification
@@ -58,6 +59,13 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 		}
 		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
+			case "tabs":
+				var value Tabs
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				p.Tabs = &value
 			case "spacing":
 				var value Spacing
 				err = d.DecodeElement(&value, &tt)

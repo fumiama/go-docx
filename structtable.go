@@ -773,9 +773,9 @@ func (w *WTableBorders) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 
 // WTableBorder is a structure representing a single border of a Word table.
 type WTableBorder struct {
-	Val   string `xml:"w:val,attr"`
-	Size  int    `xml:"w:sz,attr"`
-	Space int    `xml:"w:space,attr"`
+	Val   string `xml:"w:val,attr,omitempty"`
+	Size  int    `xml:"w:sz,attr,omitempty"`
+	Space int    `xml:"w:space,attr,omitempty"`
 	Color string `xml:"w:color,attr,omitempty"`
 }
 

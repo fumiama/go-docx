@@ -38,6 +38,7 @@ func main() {
 	clean := flag.Bool("c", false, "clean mode (keep text and picture only)")
 	unm := flag.Bool("u", false, "lease unmarshalled file")
 	splitre := flag.String("s", "", "split file into many docxs by matching regex")
+	droppp := flag.Bool("p", false, "drop all paragraph properties")
 	flag.Parse()
 	var w *docx.Docx
 	if !*analyzeOnly {
@@ -179,6 +180,22 @@ func main() {
 	}
 	if *clean {
 		doc.Document.Body.DropDrawingOf("NilPicture")
+	}
+	if *droppp {
+		for _, it := range doc.Document.Body.Items {
+			switch o := it.(type) {
+			case *docx.Paragraph: // printable
+				o.Properties = nil
+			case *docx.Table: // printable
+				for _, tr := range o.TableRows {
+					for _, tc := range tr.TableCells {
+						for _, p := range tc.Paragraphs {
+							p.Properties = nil
+						}
+					}
+				}
+			}
+		}
 	}
 	if *unm {
 		i := strings.LastIndex(*fileLocation, "/")

@@ -276,14 +276,33 @@ func (r *NonVisualProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 type Spacing struct {
 	XMLName xml.Name `xml:"w:spacing,omitempty"`
 
-	Line     int    `xml:"w:line,attr"`
-	LineRule string `xml:"w:lineRule,attr"`
+	Val int `xml:"w:val,attr,omitempty"`
+
+	BeforeLines int    `xml:"w:beforeLines,attr,omitempty"`
+	Before      int    `xml:"w:before,attr,omitempty"`
+	Line        int    `xml:"w:line,attr,omitempty"`
+	LineRule    string `xml:"w:lineRule,attr,omitempty"`
 }
 
 // UnmarshalXML ...
 func (s *Spacing) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
+		case "val":
+			s.Val, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return
+			}
+		case "beforeLines":
+			s.BeforeLines, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return
+			}
+		case "before":
+			s.Before, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return
+			}
 		case "line":
 			s.Line, err = strconv.Atoi(attr.Value)
 			if err != nil {
@@ -304,14 +323,34 @@ func (s *Spacing) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err erro
 type Ind struct {
 	XMLName xml.Name `xml:"w:ind,omitempty"`
 
-	FirstLineChars int `xml:"w:firstLineChars,attr"`
-	FirstLine      int `xml:"w:firstLine,attr"`
+	LeftChars      int `xml:"w:leftChars,attr,omitempty"`
+	Left           int `xml:"w:left,attr,omitempty"`
+	FirstLineChars int `xml:"w:firstLineChars,attr,omitempty"`
+	FirstLine      int `xml:"w:firstLine,attr,omitempty"`
+	HangingChars   int `xml:"w:hangingChars,attr,omitempty"`
+	Hanging        int `xml:"w:hanging,attr,omitempty"`
 }
 
 // UnmarshalXML ...
 func (i *Ind) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
+		case "leftChars":
+			if attr.Value == "" {
+				continue
+			}
+			i.LeftChars, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return
+			}
+		case "left":
+			if attr.Value == "" {
+				continue
+			}
+			i.Left, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return
+			}
 		case "firstLineChars":
 			if attr.Value == "" {
 				continue
@@ -325,6 +364,22 @@ func (i *Ind) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
 				continue
 			}
 			i.FirstLine, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return
+			}
+		case "hangingChars":
+			if attr.Value == "" {
+				continue
+			}
+			i.HangingChars, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return
+			}
+		case "hanging":
+			if attr.Value == "" {
+				continue
+			}
+			i.Hanging, err = strconv.Atoi(attr.Value)
 			if err != nil {
 				return
 			}

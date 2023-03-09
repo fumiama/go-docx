@@ -24,11 +24,69 @@ import (
 	"encoding/xml"
 	"io"
 	"reflect"
+	"strconv"
+	"strings"
 )
+
+// Tabs ...
+type Tabs struct {
+	XMLName xml.Name `xml:"w:tabs,omitempty"`
+	Tabs    []*Tab
+}
+
+// UnmarshalXML ...
+func (tb *Tabs) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		if tt, ok := t.(xml.StartElement); ok {
+			if tt.Name.Local == "tab" {
+				var value Tab
+				err := d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				tb.Tabs = append(tb.Tabs, &value)
+			}
+		}
+	}
+
+	return nil
+}
 
 // Tab is the literal tab
 type Tab struct {
-	XMLName xml.Name `xml:"w:tab,omitempty"`
+	XMLName  xml.Name `xml:"w:tab,omitempty"`
+	Val      string   `xml:"w:val,attr,omitempty"`
+	Position int      `xml:"w:pos,attr,omitempty"`
+}
+
+// UnmarshalXML ...
+func (t *Tab) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var err error
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "val":
+			t.Val = attr.Value
+		case "pos":
+			if attr.Value == "" {
+				continue
+			}
+			t.Position, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	// Consume the end element
+	_, err = d.Token()
+	return err
 }
 
 // BarterRabbet is <br>
