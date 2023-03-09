@@ -26,7 +26,6 @@ import (
 	"reflect"
 	"regexp"
 	"strings"
-	"unsafe"
 )
 
 //nolint:revive,stylecheck
@@ -127,7 +126,7 @@ func (b *Body) DropDrawingOf(name string) {
 		switch o := item.(type) {
 		case *Paragraph:
 			f := reflect.ValueOf(o).MethodByName("Drop" + name)
-			if *(*uintptr)(unsafe.Pointer(&f)) == 0 {
+			if !f.IsValid() {
 				continue
 			}
 			_ = f.Call(nil)
@@ -136,7 +135,7 @@ func (b *Body) DropDrawingOf(name string) {
 				for _, tc := range tr.TableCells {
 					for _, p := range tc.Paragraphs {
 						f := reflect.ValueOf(p).MethodByName("Drop" + name)
-						if *(*uintptr)(unsafe.Pointer(&f)) == 0 {
+						if !f.IsValid() {
 							continue
 						}
 						_ = f.Call(nil)
@@ -301,6 +300,7 @@ func (p *Paragraph) copymedia(to *Docx) (np Paragraph) {
 				}
 				nr.Children = append(nr.Children, rc)
 			}
+			np.Children = append(np.Children, &nr)
 			continue
 		}
 		np.Children = append(np.Children, pc)

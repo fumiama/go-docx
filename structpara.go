@@ -169,7 +169,7 @@ type Paragraph struct {
 	RsidP        string `xml:"w:rsidP,attr,omitempty"`
 
 	Properties *ParagraphProperties
-	Children   []interface{} // Children will generate an unnecessary tag <Children> ... </Children> and we skip it by a self-defined xml.Marshaler
+	Children   []interface{}
 
 	file *Docx
 }

@@ -25,6 +25,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/fumiama/go-docx"
@@ -35,6 +37,7 @@ func main() {
 	analyzeOnly := flag.Bool("a", false, "analyze file only")
 	clean := flag.Bool("c", false, "clean mode (keep text and picture only)")
 	unm := flag.Bool("u", false, "lease unmarshalled file")
+	splitre := flag.String("s", "", "split file into many docxs by matching regex")
 	flag.Parse()
 	var w *docx.Docx
 	if !*analyzeOnly {
@@ -200,6 +203,24 @@ func main() {
 			fmt.Println(o.String())
 		case *docx.Table: // printable
 			fmt.Println(o.String())
+		}
+	}
+	if *splitre != "" {
+		i := strings.LastIndex(*fileLocation, "/")
+		for j, splitteddoc := range doc.SplitByParagraph(docx.SplitDocxByPlainTextRegex(regexp.MustCompile(*splitre))) {
+			name := (*fileLocation)[:i+1] + "unmarshal_split" + strconv.Itoa(j) + "_" + (*fileLocation)[i+1:]
+			f, err := os.Create(name)
+			if err != nil {
+				panic(err)
+			}
+			_, err = splitteddoc.WriteTo(f)
+			if err != nil {
+				panic(err)
+			}
+			err = f.Close()
+			if err != nil {
+				panic(err)
+			}
 		}
 	}
 	fmt.Println("End of main")
