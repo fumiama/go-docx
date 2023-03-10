@@ -223,9 +223,10 @@ func main() {
 		}
 	}
 	if *splitre != "" {
-		i := strings.LastIndex(*fileLocation, "/")
-		for j, splitteddoc := range doc.SplitByParagraph(docx.SplitDocxByPlainTextRegex(regexp.MustCompile(*splitre))) {
-			name := (*fileLocation)[:i+1] + "unmarshal_split" + strconv.Itoa(j) + "_" + (*fileLocation)[i+1:]
+		a := strings.LastIndex(*fileLocation, "/")
+		b := strings.LastIndex(*fileLocation, ".")
+		for i, splitteddoc := range doc.SplitByParagraph(docx.SplitDocxByPlainTextRegex(regexp.MustCompile(*splitre))) {
+			name := (*fileLocation)[:a+1] + "unmarshal_" + (*fileLocation)[a+1:b] + "_split" + strconv.Itoa(i) + (*fileLocation)[b:]
 			f, err := os.Create(name)
 			if err != nil {
 				panic(err)

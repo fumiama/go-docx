@@ -24,6 +24,7 @@ package docx
 
 import (
 	"archive/zip"
+	"encoding/xml"
 	"io"
 	"io/fs"
 	"sync"
@@ -95,6 +96,55 @@ func Parse(reader io.ReaderAt, size int64) (doc *Docx, err error) {
 	}
 	doc, err = unpack(zipReader)
 	return
+}
+
+// LoadBodyItems will load body and media to a new Docx struct.
+// You should call UseTemplate to set a template later.
+func LoadBodyItems(items []interface{}, media []Media) *Docx {
+	doc := &Docx{
+		Document: Document{
+			XMLName: xml.Name{
+				Space: "w",
+			},
+			XMLW:   XMLNS_W,
+			XMLR:   XMLNS_R,
+			XMLWP:  XMLNS_WP,
+			XMLWPS: XMLNS_WPS,
+			XMLWPC: XMLNS_WPC,
+			XMLWPG: XMLNS_WPG,
+			Body:   Body{Items: items},
+		},
+		docRelation: Relationships{
+			Xmlns: XMLNS_REL,
+			Relationship: []Relationship{
+				{
+					ID:     "rId1",
+					Type:   `http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles`,
+					Target: "styles.xml",
+				},
+				{
+					ID:     "rId2",
+					Type:   `http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme`,
+					Target: "theme/theme1.xml",
+				},
+				{
+					ID:     "rId3",
+					Type:   `http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable`,
+					Target: "fontTable.xml",
+				},
+			},
+		},
+		media:        media,
+		mediaNameIdx: make(map[string]int, 64),
+		rID:          3,
+		slowIDs:      make(map[string]uintptr, 64),
+	}
+	doc.Document.Body.file = doc
+	for i, m := range media {
+		doc.mediaNameIdx[m.Name] = i
+	}
+	doc.slowIDs["图片"] = uintptr(len(media) + 1)
+	return doc
 }
 
 // WriteTo allows to save a docx to a writer
