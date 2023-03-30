@@ -62,7 +62,7 @@ type Body struct {
 }
 
 // UnmarshalXML ...
-func (b *Body) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (b *Body) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -167,7 +167,7 @@ type Document struct {
 }
 
 // UnmarshalXML ...
-func (doc *Document) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (doc *Document) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {

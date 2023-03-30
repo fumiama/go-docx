@@ -62,7 +62,7 @@ func (t *Table) String() string {
 }
 
 // UnmarshalXML implements the xml.Unmarshaler interface.
-func (t *Table) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (t *Table) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		token, err := d.Token()
 		if err == io.EOF {
@@ -117,7 +117,7 @@ type WTableProperties struct {
 }
 
 // UnmarshalXML implements the xml.Unmarshaler interface.
-func (t *WTableProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (t *WTableProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		token, err := d.Token()
 		if err == io.EOF {
@@ -341,7 +341,7 @@ type WTableGrid struct {
 }
 
 // UnmarshalXML ...
-func (t *WTableGrid) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (t *WTableGrid) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		tok, err := d.Token()
 		if err == io.EOF {
@@ -412,7 +412,7 @@ type WTableRow struct {
 }
 
 // UnmarshalXML ...
-func (w *WTableRow) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (w *WTableRow) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	/*for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "rsidR":
@@ -471,7 +471,7 @@ type WTableRowProperties struct {
 }
 
 // UnmarshalXML ...
-func (t *WTableRowProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (t *WTableRowProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		tok, err := d.Token()
 		if err == io.EOF {
@@ -542,7 +542,7 @@ type WTableCell struct {
 }
 
 // UnmarshalXML ...
-func (c *WTableCell) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (c *WTableCell) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -593,7 +593,7 @@ type WTableCellProperties struct {
 }
 
 // UnmarshalXML ...
-func (r *WTableCellProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (r *WTableCellProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -705,7 +705,7 @@ type WTableBorders struct {
 }
 
 // UnmarshalXML ...
-func (w *WTableBorders) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (w *WTableBorders) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {

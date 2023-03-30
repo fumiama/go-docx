@@ -215,7 +215,7 @@ type RunProperties struct {
 }
 
 // UnmarshalXML ...
-func (r *RunProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (r *RunProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {

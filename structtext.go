@@ -35,7 +35,7 @@ type Tabs struct {
 }
 
 // UnmarshalXML ...
-func (tb *Tabs) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (tb *Tabs) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {

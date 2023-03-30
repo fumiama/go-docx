@@ -19,7 +19,7 @@ type AlternateContent struct {
 }
 
 // UnmarshalXML ...
-func (a *AlternateContent) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (a *AlternateContent) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -62,7 +62,7 @@ type MCChoice struct {
 }
 
 // UnmarshalXML ...
-func (c *MCChoice) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (c *MCChoice) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "Requires":

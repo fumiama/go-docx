@@ -38,7 +38,7 @@ type WordprocessingCanvas struct {
 }
 
 // UnmarshalXML ...
-func (c *WordprocessingCanvas) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
+func (c *WordprocessingCanvas) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) (err error) {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -105,7 +105,7 @@ type WPCBackground struct {
 }
 
 // UnmarshalXML ...
-func (b *WPCBackground) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
+func (b *WPCBackground) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) (err error) {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -138,7 +138,7 @@ type WPCWhole struct {
 }
 
 // UnmarshalXML ...
-func (w *WPCWhole) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
+func (w *WPCWhole) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) (err error) {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {

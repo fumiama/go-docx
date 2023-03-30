@@ -52,7 +52,7 @@ type Drawing struct {
 }
 
 // UnmarshalXML ...
-func (r *Drawing) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (r *Drawing) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -458,7 +458,7 @@ type WPCNvGraphicFramePr struct {
 }
 
 // UnmarshalXML ...
-func (w *WPCNvGraphicFramePr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (w *WPCNvGraphicFramePr) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -636,7 +636,7 @@ type Picture struct {
 }
 
 // UnmarshalXML ...
-func (p *Picture) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (p *Picture) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -689,7 +689,7 @@ type PICNonVisualPicProperties struct {
 }
 
 // UnmarshalXML ...
-func (p *PICNonVisualPicProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (p *PICNonVisualPicProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -735,7 +735,7 @@ type PicCNvPicPr struct {
 }
 
 // UnmarshalXML ...
-func (p *PicCNvPicPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (p *PicCNvPicPr) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	// Loop through XML tokens
 	for {
 		t, err := d.Token()
@@ -786,7 +786,7 @@ type PICBlipFill struct {
 }
 
 // UnmarshalXML ...
-func (p *PICBlipFill) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (p *PICBlipFill) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -887,7 +887,7 @@ type AStretch struct {
 }
 
 // UnmarshalXML ...
-func (s *AStretch) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (s *AStretch) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -936,7 +936,7 @@ type PICSpPr struct {
 }
 
 // UnmarshalXML ...
-func (p *PICSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (p *PICSpPr) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -1154,7 +1154,7 @@ type AAvLst struct {
 }
 
 // UnmarshalXML ...
-func (a *AAvLst) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
+func (a *AAvLst) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) (err error) {
 	var content []byte
 
 	if content, err = xml.Marshal(start); err != nil {

@@ -48,7 +48,7 @@ type ParagraphProperties struct {
 }
 
 // UnmarshalXML ...
-func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -227,7 +227,7 @@ func (p *Paragraph) String() string {
 }
 
 // UnmarshalXML ...
-func (p *Paragraph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (p *Paragraph) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	/*for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "rsidR":

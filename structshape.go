@@ -41,7 +41,7 @@ type WordprocessingShape struct {
 }
 
 // UnmarshalXML ...
-func (w *WordprocessingShape) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (w *WordprocessingShape) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -109,7 +109,7 @@ type WPSCNvCnPr struct {
 }
 
 // UnmarshalXML ...
-func (w *WPSCNvCnPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (w *WPSCNvCnPr) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -428,7 +428,7 @@ type ASolidFill struct {
 }
 
 // UnmarshalXML ...
-func (s *ASolidFill) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (s *ASolidFill) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -545,7 +545,7 @@ type WPSTextBox struct {
 }
 
 // UnmarshalXML ...
-func (b *WPSTextBox) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (b *WPSTextBox) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -586,7 +586,7 @@ type WTextBoxContent struct {
 }
 
 // UnmarshalXML ...
-func (c *WTextBoxContent) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (c *WTextBoxContent) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {

@@ -34,7 +34,7 @@ type Hyperlink struct {
 }
 
 // UnmarshalXML ...
-func (r *Hyperlink) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (r *Hyperlink) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
