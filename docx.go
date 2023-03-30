@@ -27,6 +27,7 @@ import (
 	"encoding/xml"
 	"io"
 	"io/fs"
+	"os"
 	"sync"
 )
 
@@ -156,8 +157,8 @@ func (f *Docx) WriteTo(writer io.Writer) (_ int64, err error) {
 }
 
 // Read is a fake function and cannot be used
-func (f *Docx) Read(p []byte) (n int, err error) {
-	panic("fake stub!")
+func (f *Docx) Read(_ []byte) (int, error) {
+	return 0, os.ErrInvalid
 }
 
 // UseTemplate will replace template files

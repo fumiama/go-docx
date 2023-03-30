@@ -134,7 +134,7 @@ func (r *Text) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 type RunMergeRule func(r1, r2 *Run) bool
 
 // MergeAllRuns ...
-func MergeAllRuns(r1, r2 *Run) bool {
+func MergeAllRuns(_, _ *Run) bool {
 	return true
 }
 

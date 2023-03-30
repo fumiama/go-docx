@@ -79,7 +79,7 @@ type marshaller struct {
 }
 
 // Read is fake and is to trigger io.WriterTo
-func (m marshaller) Read(p []byte) (n int, err error) {
+func (m marshaller) Read(_ []byte) (int, error) {
 	return 0, os.ErrInvalid
 }
 

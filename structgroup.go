@@ -37,7 +37,7 @@ type WordprocessingGroup struct {
 }
 
 // UnmarshalXML ...
-func (w *WordprocessingGroup) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (w *WordprocessingGroup) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -113,7 +113,7 @@ type WPGcNvGrpSpPr struct {
 }
 
 // UnmarshalXML ...
-func (w *WPGcNvGrpSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (w *WPGcNvGrpSpPr) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
@@ -160,7 +160,7 @@ type WPGGroupShape struct {
 }
 
 // UnmarshalXML ...
-func (w *WPGGroupShape) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (w *WPGGroupShape) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
 		t, err := d.Token()
 		if err == io.EOF {
