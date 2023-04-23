@@ -284,23 +284,39 @@ newdoclop:
 	return
 }
 
+func (r *Run) copymedia(to *Docx) *Run {
+	nr := *r
+	nr.Children = make([]interface{}, 0, len(r.Children))
+	nr.file = to
+	for _, rc := range r.Children {
+		if d, ok := rc.(*Drawing); ok {
+			nr.Children = append(nr.Children, d.copymedia(to))
+			continue
+		}
+		nr.Children = append(nr.Children, rc)
+	}
+	return &nr
+}
+
 func (p *Paragraph) copymedia(to *Docx) (np Paragraph) {
 	np = *p
 	np.Children = make([]interface{}, 0, len(p.Children))
 	np.file = to
 	for _, pc := range p.Children {
 		if r, ok := pc.(*Run); ok {
-			nr := *r
-			nr.Children = make([]interface{}, 0, len(r.Children))
-			nr.file = to
-			for _, rc := range r.Children {
-				if d, ok := rc.(*Drawing); ok {
-					nr.Children = append(nr.Children, d.copymedia(to))
-					continue
-				}
-				nr.Children = append(nr.Children, rc)
+			np.Children = append(np.Children, r.copymedia(to))
+			continue
+		}
+		if h, ok := pc.(*Hyperlink); ok {
+			tgt, err := p.file.ReferTarget(h.ID)
+			if err != nil {
+				continue
 			}
-			np.Children = append(np.Children, &nr)
+			rid := to.addLinkRelation(tgt)
+			np.Children = append(np.Children, &Hyperlink{
+				ID:  rid,
+				Run: *h.Run.copymedia(to),
+			})
 			continue
 		}
 		np.Children = append(np.Children, pc)
@@ -329,4 +345,20 @@ func (t *Table) copymedia(to *Docx) (nt Table) {
 		nt.TableRows = append(nt.TableRows, &ntr)
 	}
 	return
+}
+
+// AppendFile appends all contents in af to f
+func (f *Docx) AppendFile(af *Docx) {
+	for _, item := range af.Document.Body.Items {
+		switch o := item.(type) {
+		case *Paragraph:
+			np := o.copymedia(f)
+			f.Document.Body.Items = append(f.Document.Body.Items, &np)
+		case *Table:
+			nt := o.copymedia(f)
+			f.Document.Body.Items = append(f.Document.Body.Items, &nt)
+		default:
+			f.Document.Body.Items = append(f.Document.Body.Items, o)
+		}
+	}
 }

@@ -23,7 +23,9 @@ package docx
 import (
 	"archive/zip"
 	"encoding/xml"
+	"errors"
 	"io"
+	"strconv"
 	"strings"
 )
 
@@ -108,9 +110,23 @@ func (f *Docx) parseDocRelation(file *zip.File) error {
 	defer zf.Close()
 
 	f.docRelation.Xmlns = XMLNS_R
-	//TODO: find last rID
-	f.rID = 100000
-	return xml.NewDecoder(zf).Decode(&f.docRelation)
+	err = xml.NewDecoder(zf).Decode(&f.docRelation)
+	if err != nil {
+		return err
+	}
+	for _, r := range f.docRelation.Relationship {
+		if !strings.HasPrefix(r.ID, "rId") {
+			return errors.New("invalid rel ID: " + r.ID)
+		}
+		id, err := strconv.ParseUint(r.ID[3:], 10, 64)
+		if err != nil {
+			return err
+		}
+		if f.rID < uintptr(id) {
+			f.rID = uintptr(id)
+		}
+	}
+	return nil
 }
 
 // parseMedia add the media into Docx struct
