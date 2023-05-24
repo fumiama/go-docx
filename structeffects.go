@@ -111,6 +111,12 @@ type VertAlign struct {
 	Val     string   `xml:"w:val,attr"`
 }
 
+// Strike ...
+type Strike struct {
+	XMLName xml.Name `xml:"w:strike,omitempty"`
+	Val     string   `xml:"w:val,attr"`
+}
+
 // Shade is an element that represents a shading pattern applied to a document element.
 type Shade struct {
 	XMLName       xml.Name `xml:"w:shd,omitempty"`
