@@ -279,7 +279,11 @@ func (t *WTableWidth) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err 
 		case "w":
 			t.W, err = strconv.ParseInt(attr.Value, 10, 64)
 			if err != nil {
-				return
+				w, err := strconv.ParseFloat(attr.Value, 64)
+				if err != nil {
+					return err
+				}
+				t.W = int64(w)
 			}
 		case "type":
 			t.Type = attr.Value
