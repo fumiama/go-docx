@@ -392,7 +392,11 @@ func (g *WGridCol) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 		case "w":
 			g.W, err = strconv.ParseInt(attr.Value, 10, 64)
 			if err != nil {
-				return
+				w, err := strconv.ParseFloat(attr.Value, 64)
+				if err != nil {
+					return err
+				}
+				g.W = int64(w)
 			}
 		default:
 			// ignore other attributes
@@ -494,7 +498,11 @@ func (t *WTableRowProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) e
 					case "val":
 						th.Val, err = strconv.ParseInt(attr.Value, 10, 64)
 						if err != nil {
-							return err
+							w, err := strconv.ParseFloat(attr.Value, 64)
+							if err != nil {
+								return err
+							}
+							th.Val = int64(w)
 						}
 					case "hRule":
 						th.Rule = attr.Value
@@ -617,7 +625,11 @@ func (r *WTableCellProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) 
 				}
 				r.TableCellWidth.W, err = strconv.ParseInt(v, 10, 64)
 				if err != nil {
-					return err
+					w, err := strconv.ParseFloat(v, 64)
+					if err != nil {
+						return err
+					}
+					r.TableCellWidth.W = int64(w)
 				}
 				r.TableCellWidth.Type = getAtt(tt.Attr, "type")
 			case "vMerge":
