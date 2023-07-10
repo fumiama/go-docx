@@ -24,7 +24,6 @@ import (
 	"encoding/xml"
 	"io"
 	"reflect"
-	"strconv"
 	"strings"
 )
 
@@ -95,7 +94,7 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) e
 				if v == "" {
 					continue
 				}
-				value.Val, err = strconv.ParseInt(v, 10, 64)
+				value.Val, err = GetInt64(v)
 				if err != nil {
 					return err
 				}
@@ -117,7 +116,7 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) e
 				if v == "" {
 					continue
 				}
-				value.Val, err = strconv.Atoi(v)
+				value.Val, err = GetInt(v)
 				if err != nil {
 					return err
 				}
@@ -128,7 +127,7 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) e
 				if v == "" {
 					continue
 				}
-				value.Val, err = strconv.Atoi(v)
+				value.Val, err = GetInt(v)
 				if err != nil {
 					return err
 				}
@@ -139,7 +138,7 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) e
 				if v == "" {
 					continue
 				}
-				value.Val, err = strconv.Atoi(v)
+				value.Val, err = GetInt(v)
 				if err != nil {
 					return err
 				}
@@ -150,7 +149,7 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) e
 				if v == "" {
 					continue
 				}
-				value.Val, err = strconv.Atoi(v)
+				value.Val, err = GetInt(v)
 				if err != nil {
 					return err
 				}

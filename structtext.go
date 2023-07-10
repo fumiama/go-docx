@@ -24,7 +24,6 @@ import (
 	"encoding/xml"
 	"io"
 	"reflect"
-	"strconv"
 	"strings"
 )
 
@@ -78,7 +77,7 @@ func (t *Tab) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			if attr.Value == "" {
 				continue
 			}
-			t.Position, err = strconv.Atoi(attr.Value)
+			t.Position, err = GetInt(attr.Value)
 			if err != nil {
 				return err
 			}

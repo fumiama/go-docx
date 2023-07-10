@@ -21,6 +21,8 @@
 package docx
 
 import (
+	"fmt"
+	"strconv"
 	"unsafe"
 )
 
@@ -37,4 +39,32 @@ func StringToBytes(s string) (b []byte) {
 	bh.len = sh.len
 	bh.cap = sh.len
 	return b
+}
+
+// GetInt64 from string
+func GetInt64(s string) (int64, error) {
+	v, err := strconv.ParseInt(s, 10, 64)
+	if err == nil {
+		return v, nil
+	}
+	v2, err := strconv.ParseFloat(s, 64)
+	if err == nil {
+		return int64(v2), nil
+	}
+	_, err = fmt.Sscanf(s, "%d", &v)
+	return v, err
+}
+
+// GetInt from string
+func GetInt(s string) (int, error) {
+	v, err := strconv.Atoi(s)
+	if err == nil {
+		return v, nil
+	}
+	v2, err := strconv.ParseFloat(s, 64)
+	if err == nil {
+		return int(v2), nil
+	}
+	_, err = fmt.Sscanf(s, "%d", &v)
+	return v, err
 }

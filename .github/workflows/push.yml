@@ -31,3 +31,12 @@ jobs:
         if: ${{ !github.head_ref }}
         continue-on-error: true
         uses: peter-evans/create-pull-request@v4
+
+      - name: Get dependencies
+        run: go mod tidy
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Test
+        run: go test $(go list ./...)

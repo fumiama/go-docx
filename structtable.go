@@ -23,7 +23,6 @@ package docx
 import (
 	"encoding/xml"
 	"io"
-	"strconv"
 	"strings"
 )
 
@@ -203,12 +202,12 @@ func (tp *WTablePositioningProperties) UnmarshalXML(d *xml.Decoder, start xml.St
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "leftFromText":
-			tp.LeftFromText, err = strconv.Atoi(attr.Value)
+			tp.LeftFromText, err = GetInt(attr.Value)
 			if err != nil {
 				return err
 			}
 		case "rightFromText":
-			tp.RightFromText, err = strconv.Atoi(attr.Value)
+			tp.RightFromText, err = GetInt(attr.Value)
 			if err != nil {
 				return err
 			}
@@ -221,12 +220,12 @@ func (tp *WTablePositioningProperties) UnmarshalXML(d *xml.Decoder, start xml.St
 		case "tblpYSpec":
 			tp.TblpYSpec = attr.Value
 		case "tblpX":
-			tp.TblpX, err = strconv.Atoi(attr.Value)
+			tp.TblpX, err = GetInt(attr.Value)
 			if err != nil {
 				return err
 			}
 		case "tblpY":
-			tp.TblpY, err = strconv.Atoi(attr.Value)
+			tp.TblpY, err = GetInt(attr.Value)
 			if err != nil {
 				return err
 			}
@@ -277,13 +276,9 @@ func (t *WTableWidth) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err 
 		}
 		switch attr.Name.Local {
 		case "w":
-			t.W, err = strconv.ParseInt(attr.Value, 10, 64)
+			t.W, err = GetInt64(attr.Value)
 			if err != nil {
-				w, err := strconv.ParseFloat(attr.Value, 64)
-				if err != nil {
-					return err
-				}
-				t.W = int64(w)
+				return err
 			}
 		case "type":
 			t.Type = attr.Value
@@ -390,13 +385,9 @@ func (g *WGridCol) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 		}
 		switch attr.Name.Local {
 		case "w":
-			g.W, err = strconv.ParseInt(attr.Value, 10, 64)
+			g.W, err = GetInt64(attr.Value)
 			if err != nil {
-				w, err := strconv.ParseFloat(attr.Value, 64)
-				if err != nil {
-					return err
-				}
-				g.W = int64(w)
+				return err
 			}
 		default:
 			// ignore other attributes
@@ -496,13 +487,9 @@ func (t *WTableRowProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) e
 				for _, attr := range tt.Attr {
 					switch attr.Name.Local {
 					case "val":
-						th.Val, err = strconv.ParseInt(attr.Value, 10, 64)
+						th.Val, err = GetInt64(attr.Value)
 						if err != nil {
-							w, err := strconv.ParseFloat(attr.Value, 64)
-							if err != nil {
-								return err
-							}
-							th.Val = int64(w)
+							return err
 						}
 					case "hRule":
 						th.Rule = attr.Value
@@ -623,13 +610,9 @@ func (r *WTableCellProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) 
 				if v == "" {
 					continue
 				}
-				r.TableCellWidth.W, err = strconv.ParseInt(v, 10, 64)
+				r.TableCellWidth.W, err = GetInt64(v)
 				if err != nil {
-					w, err := strconv.ParseFloat(v, 64)
-					if err != nil {
-						return err
-					}
-					r.TableCellWidth.W = int64(w)
+					return err
 				}
 				r.TableCellWidth.Type = getAtt(tt.Attr, "type")
 			case "vMerge":
@@ -640,7 +623,7 @@ func (r *WTableCellProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) 
 				if v == "" {
 					continue
 				}
-				r.GridSpan.Val, err = strconv.Atoi(v)
+				r.GridSpan.Val, err = GetInt(v)
 				if err != nil {
 					return err
 				}
@@ -805,7 +788,7 @@ func (t *WTableBorder) UnmarshalXML(d *xml.Decoder, start xml.StartElement) erro
 			if attr.Value == "" {
 				continue
 			}
-			sz, err := strconv.Atoi(attr.Value)
+			sz, err := GetInt(attr.Value)
 			if err != nil {
 				return err
 			}
@@ -814,7 +797,7 @@ func (t *WTableBorder) UnmarshalXML(d *xml.Decoder, start xml.StartElement) erro
 			if attr.Value == "" {
 				continue
 			}
-			space, err := strconv.Atoi(attr.Value)
+			space, err := GetInt(attr.Value)
 			if err != nil {
 				return err
 			}

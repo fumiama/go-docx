@@ -23,7 +23,6 @@ package docx
 import (
 	"encoding/xml"
 	"io"
-	"strconv"
 	"strings"
 )
 
@@ -148,7 +147,7 @@ func (w *WPSCNvSpPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err e
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "txBox":
-			w.TxBox, err = strconv.Atoi(attr.Value)
+			w.TxBox, err = GetInt(attr.Value)
 			if err != nil {
 				return err
 			}
@@ -197,7 +196,7 @@ func (l *ASPLocks) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "noChangeArrowheads":
-			l.NoChangeArrowheads, err = strconv.Atoi(attr.Value)
+			l.NoChangeArrowheads, err = GetInt(attr.Value)
 			if err != nil {
 				return err
 			}
@@ -226,12 +225,12 @@ func (r *ABlipFill) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err er
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "dpi":
-			r.DPI, err = strconv.Atoi(attr.Value)
+			r.DPI, err = GetInt(attr.Value)
 			if err != nil {
 				return err
 			}
 		case "rotWithShape":
-			r.RotWithShape, err = strconv.Atoi(attr.Value)
+			r.RotWithShape, err = GetInt(attr.Value)
 			if err != nil {
 				return err
 			}
@@ -300,31 +299,22 @@ func (t *ATile) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error)
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "tx":
-			t.TX, err = strconv.ParseInt(attr.Value, 10, 64)
-			if err != nil {
-				return err
-			}
+			t.TX, err = GetInt64(attr.Value)
 		case "ty":
-			t.TY, err = strconv.ParseInt(attr.Value, 10, 64)
-			if err != nil {
-				return err
-			}
+			t.TY, err = GetInt64(attr.Value)
 		case "sx":
-			t.SX, err = strconv.ParseInt(attr.Value, 10, 64)
-			if err != nil {
-				return err
-			}
+			t.SX, err = GetInt64(attr.Value)
 		case "sy":
-			t.SY, err = strconv.ParseInt(attr.Value, 10, 64)
-			if err != nil {
-				return err
-			}
+			t.SY, err = GetInt64(attr.Value)
 		case "flip":
 			t.Flip = attr.Value
 		case "algn":
 			t.Algn = attr.Value
 		default:
 			// ignore other attributes
+		}
+		if err != nil {
+			return err
 		}
 	}
 	// Consume the end element
@@ -354,10 +344,7 @@ func (l *ALine) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error)
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "w":
-			l.W, err = strconv.ParseInt(attr.Value, 10, 64)
-			if err != nil {
-				return err
-			}
+			l.W, err = GetInt64(attr.Value)
 		case "cap":
 			l.Cap = attr.Value
 		case "cmpd":
@@ -366,6 +353,9 @@ func (l *ALine) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error)
 			l.Align = attr.Value
 		default:
 			// ignore other attributes
+		}
+		if err != nil {
+			return err
 		}
 	}
 	for {
@@ -640,25 +630,25 @@ func (r *WPSBodyPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "rot":
-			r.Rot, _ = strconv.Atoi(attr.Value)
+			r.Rot, _ = GetInt(attr.Value)
 		case "vert":
 			r.Vert = attr.Value
 		case "wrap":
 			r.Wrap = attr.Value
 		case "lIns":
-			r.LIns, _ = strconv.ParseInt(attr.Value, 10, 64)
+			r.LIns, _ = GetInt64(attr.Value)
 		case "tIns":
-			r.TIns, _ = strconv.ParseInt(attr.Value, 10, 64)
+			r.TIns, _ = GetInt64(attr.Value)
 		case "rIns":
-			r.RIns, _ = strconv.ParseInt(attr.Value, 10, 64)
+			r.RIns, _ = GetInt64(attr.Value)
 		case "bIns":
-			r.BIns, _ = strconv.ParseInt(attr.Value, 10, 64)
+			r.BIns, _ = GetInt64(attr.Value)
 		case "anchor":
 			r.Anchor = attr.Value
 		case "anchorCtr":
-			r.AnchorCtr, _ = strconv.Atoi(attr.Value)
+			r.AnchorCtr, _ = GetInt(attr.Value)
 		case "upright":
-			r.Upright, _ = strconv.Atoi(attr.Value)
+			r.Upright, _ = GetInt(attr.Value)
 		default:
 			// ignore other attributes
 		}

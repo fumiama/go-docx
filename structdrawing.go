@@ -137,27 +137,18 @@ func (r *WPInline) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "distT":
-			r.DistT, err = strconv.ParseInt(attr.Value, 10, 64)
-			if err != nil {
-				return
-			}
+			r.DistT, err = GetInt64(attr.Value)
 		case "distB":
-			r.DistB, err = strconv.ParseInt(attr.Value, 10, 64)
-			if err != nil {
-				return
-			}
+			r.DistB, err = GetInt64(attr.Value)
 		case "distL":
-			r.DistL, err = strconv.ParseInt(attr.Value, 10, 64)
-			if err != nil {
-				return
-			}
+			r.DistL, err = GetInt64(attr.Value)
 		case "distR":
-			r.DistR, err = strconv.ParseInt(attr.Value, 10, 64)
-			if err != nil {
-				return
-			}
+			r.DistR, err = GetInt64(attr.Value)
 		default:
 			// ignore other attributes
+		}
+		if err != nil {
+			return err
 		}
 	}
 	for {
@@ -176,9 +167,9 @@ func (r *WPInline) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 				for _, v := range tt.Attr {
 					switch v.Name.Local {
 					case "cx":
-						r.Extent.CX, err = strconv.ParseInt(v.Value, 10, 64)
+						r.Extent.CX, err = GetInt64(v.Value)
 					case "cy":
-						r.Extent.CY, err = strconv.ParseInt(v.Value, 10, 64)
+						r.Extent.CY, err = GetInt64(v.Value)
 					}
 					if err != nil {
 						return err
@@ -189,13 +180,13 @@ func (r *WPInline) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 				for _, v := range tt.Attr {
 					switch v.Name.Local {
 					case "l":
-						r.EffectExtent.L, err = strconv.ParseInt(v.Value, 10, 64)
+						r.EffectExtent.L, err = GetInt64(v.Value)
 					case "t":
-						r.EffectExtent.T, err = strconv.ParseInt(v.Value, 10, 64)
+						r.EffectExtent.T, err = GetInt64(v.Value)
 					case "r":
-						r.EffectExtent.R, err = strconv.ParseInt(v.Value, 10, 64)
+						r.EffectExtent.R, err = GetInt64(v.Value)
 					case "b":
-						r.EffectExtent.B, err = strconv.ParseInt(v.Value, 10, 64)
+						r.EffectExtent.B, err = GetInt64(v.Value)
 					}
 					if err != nil {
 						return err
@@ -365,15 +356,12 @@ func (r *WPExtent) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "cx":
-			r.CX, err = strconv.ParseInt(attr.Value, 10, 64)
-			if err != nil {
-				return err
-			}
+			r.CX, err = GetInt64(attr.Value)
 		case "cy":
-			r.CY, err = strconv.ParseInt(attr.Value, 10, 64)
-			if err != nil {
-				return err
-			}
+			r.CY, err = GetInt64(attr.Value)
+		}
+		if err != nil {
+			return err
 		}
 	}
 	// Consume the end element
@@ -396,25 +384,16 @@ func (r *WPEffectExtent) UnmarshalXML(d *xml.Decoder, start xml.StartElement) er
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "l":
-			r.L, err = strconv.ParseInt(attr.Value, 10, 64)
-			if err != nil {
-				return err
-			}
+			r.L, err = GetInt64(attr.Value)
 		case "t":
-			r.T, err = strconv.ParseInt(attr.Value, 10, 64)
-			if err != nil {
-				return err
-			}
+			r.T, err = GetInt64(attr.Value)
 		case "r":
-			r.R, err = strconv.ParseInt(attr.Value, 10, 64)
-			if err != nil {
-				return err
-			}
+			r.R, err = GetInt64(attr.Value)
 		case "b":
-			r.B, err = strconv.ParseInt(attr.Value, 10, 64)
-			if err != nil {
-				return err
-			}
+			r.B, err = GetInt64(attr.Value)
+		}
+		if err != nil {
+			return err
 		}
 	}
 	// Consume the end element
@@ -434,7 +413,7 @@ func (r *WPDocPr) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "id":
-			id, err := strconv.Atoi(attr.Value)
+			id, err := GetInt(attr.Value)
 			if err != nil {
 				return err
 			}
@@ -475,7 +454,7 @@ func (w *WPCNvGraphicFramePr) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) e
 				if v == "" {
 					continue
 				}
-				w.Locks.NoChangeAspect, err = strconv.Atoi(v)
+				w.Locks.NoChangeAspect, err = GetInt(v)
 				if err != nil {
 					return err
 				}
@@ -706,7 +685,7 @@ func (p *PICNonVisualPicProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElem
 				if v == "" {
 					continue
 				}
-				p.NonVisualDrawingProperties.ID, err = strconv.Atoi(v)
+				p.NonVisualDrawingProperties.ID, err = GetInt(v)
 				if err != nil {
 					return err
 				}
@@ -755,7 +734,7 @@ func (p *PicCNvPicPr) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 				if v == "" {
 					continue
 				}
-				value.NoChangeAspect, err = strconv.Atoi(v)
+				value.NoChangeAspect, err = GetInt(v)
 				if err != nil {
 					return err
 				}
@@ -857,7 +836,7 @@ func (a *ABlip) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				if v == "" {
 					continue
 				}
-				value.Amount, err = strconv.Atoi(v)
+				value.Amount, err = GetInt(v)
 				if err != nil {
 					return err
 				}
@@ -990,22 +969,16 @@ func (a *AXfrm) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error)
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "rot":
-			a.Rot, err = strconv.ParseInt(attr.Value, 10, 64)
-			if err != nil {
-				return err
-			}
+			a.Rot, err = GetInt64(attr.Value)
 		case "flipH":
-			a.FlipH, err = strconv.Atoi(attr.Value)
-			if err != nil {
-				return err
-			}
+			a.FlipH, err = GetInt(attr.Value)
 		case "flipV":
-			a.FlipV, err = strconv.Atoi(attr.Value)
-			if err != nil {
-				return err
-			}
+			a.FlipV, err = GetInt(attr.Value)
 		default:
 			// ignore other attributes
+		}
+		if err != nil {
+			return err
 		}
 	}
 	for {
@@ -1023,9 +996,9 @@ func (a *AXfrm) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error)
 				for _, v := range tt.Attr {
 					switch v.Name.Local {
 					case "x":
-						a.Off.X, err = strconv.ParseInt(v.Value, 10, 64)
+						a.Off.X, err = GetInt64(v.Value)
 					case "y":
-						a.Off.Y, err = strconv.ParseInt(v.Value, 10, 64)
+						a.Off.Y, err = GetInt64(v.Value)
 					}
 					if err != nil {
 						return err
@@ -1035,9 +1008,9 @@ func (a *AXfrm) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error)
 				for _, v := range tt.Attr {
 					switch v.Name.Local {
 					case "cx":
-						a.Ext.CX, err = strconv.ParseInt(v.Value, 10, 64)
+						a.Ext.CX, err = GetInt64(v.Value)
 					case "cy":
-						a.Ext.CY, err = strconv.ParseInt(v.Value, 10, 64)
+						a.Ext.CY, err = GetInt64(v.Value)
 					}
 					if err != nil {
 						return err
@@ -1048,9 +1021,9 @@ func (a *AXfrm) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error)
 				for _, v := range tt.Attr {
 					switch v.Name.Local {
 					case "x":
-						value.X, err = strconv.ParseInt(v.Value, 10, 64)
+						value.X, err = GetInt64(v.Value)
 					case "y":
-						value.Y, err = strconv.ParseInt(v.Value, 10, 64)
+						value.Y, err = GetInt64(v.Value)
 					}
 					if err != nil {
 						return err
@@ -1062,9 +1035,9 @@ func (a *AXfrm) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error)
 				for _, v := range tt.Attr {
 					switch v.Name.Local {
 					case "cx":
-						value.CX, err = strconv.ParseInt(v.Value, 10, 64)
+						value.CX, err = GetInt64(v.Value)
 					case "cy":
-						value.CY, err = strconv.ParseInt(v.Value, 10, 64)
+						value.CY, err = GetInt64(v.Value)
 					}
 					if err != nil {
 						return err
@@ -1228,55 +1201,28 @@ func (r *WPAnchor) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 	for _, tt := range start.Attr {
 		switch tt.Name.Local {
 		case "distT":
-			r.DistT, err = strconv.ParseInt(tt.Value, 10, 64)
-			if err != nil {
-				return err
-			}
+			r.DistT, err = GetInt64(tt.Value)
 		case "distB":
-			r.DistB, err = strconv.ParseInt(tt.Value, 10, 64)
-			if err != nil {
-				return err
-			}
+			r.DistB, err = GetInt64(tt.Value)
 		case "distL":
-			r.DistL, err = strconv.ParseInt(tt.Value, 10, 64)
-			if err != nil {
-				return err
-			}
+			r.DistL, err = GetInt64(tt.Value)
 		case "distR":
-			r.DistR, err = strconv.ParseInt(tt.Value, 10, 64)
-			if err != nil {
-				return err
-			}
+			r.DistR, err = GetInt64(tt.Value)
 		case "simplePos":
-			r.SimplePos, err = strconv.Atoi(tt.Value)
-			if err != nil {
-				return err
-			}
+			r.SimplePos, err = GetInt(tt.Value)
 		case "relativeHeight":
-			r.RelativeHeight, err = strconv.Atoi(tt.Value)
-			if err != nil {
-				return err
-			}
+			r.RelativeHeight, err = GetInt(tt.Value)
 		case "behindDoc":
-			r.BehindDoc, err = strconv.Atoi(tt.Value)
-			if err != nil {
-				return err
-			}
+			r.BehindDoc, err = GetInt(tt.Value)
 		case "locked":
-			r.Locked, err = strconv.Atoi(tt.Value)
-			if err != nil {
-				return err
-			}
+			r.Locked, err = GetInt(tt.Value)
 		case "layoutInCell":
-			r.LayoutInCell, err = strconv.Atoi(tt.Value)
-			if err != nil {
-				return err
-			}
+			r.LayoutInCell, err = GetInt(tt.Value)
 		case "allowOverlap":
-			r.AllowOverlap, err = strconv.Atoi(tt.Value)
-			if err != nil {
-				return err
-			}
+			r.AllowOverlap, err = GetInt(tt.Value)
+		}
+		if err != nil {
+			return err
 		}
 	}
 	for {
@@ -1295,9 +1241,9 @@ func (r *WPAnchor) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err err
 				for _, v := range tt.Attr {
 					switch v.Name.Local {
 					case "x":
-						r.SimplePosXY.X, err = strconv.ParseInt(v.Value, 10, 64)
+						r.SimplePosXY.X, err = GetInt64(v.Value)
 					case "y":
-						r.SimplePosXY.Y, err = strconv.ParseInt(v.Value, 10, 64)
+						r.SimplePosXY.Y, err = GetInt64(v.Value)
 					}
 					if err != nil {
 						return err

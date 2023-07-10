@@ -24,7 +24,6 @@ import (
 	"encoding/xml"
 	"io"
 	"reflect"
-	"strconv"
 	"strings"
 )
 
@@ -289,7 +288,7 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 				if v == "" {
 					continue
 				}
-				value.Val, err = strconv.ParseInt(v, 10, 64)
+				value.Val, err = GetInt64(v)
 				if err != nil {
 					return err
 				}

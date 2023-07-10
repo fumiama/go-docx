@@ -23,7 +23,6 @@ package docx
 import (
 	"encoding/xml"
 	"io"
-	"strconv"
 	"strings"
 )
 
@@ -263,7 +262,7 @@ func (r *NonVisualProperties) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "id":
-			r.ID, err = strconv.Atoi(attr.Value)
+			r.ID, err = GetInt(attr.Value)
 			if err != nil {
 				return
 			}
@@ -295,22 +294,22 @@ func (s *Spacing) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err erro
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "val":
-			s.Val, err = strconv.Atoi(attr.Value)
+			s.Val, err = GetInt(attr.Value)
 			if err != nil {
 				return
 			}
 		case "beforeLines":
-			s.BeforeLines, err = strconv.Atoi(attr.Value)
+			s.BeforeLines, err = GetInt(attr.Value)
 			if err != nil {
 				return
 			}
 		case "before":
-			s.Before, err = strconv.Atoi(attr.Value)
+			s.Before, err = GetInt(attr.Value)
 			if err != nil {
 				return
 			}
 		case "line":
-			s.Line, err = strconv.Atoi(attr.Value)
+			s.Line, err = GetInt(attr.Value)
 			if err != nil {
 				return
 			}
@@ -345,7 +344,7 @@ func (i *Ind) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
 			if attr.Value == "" {
 				continue
 			}
-			i.LeftChars, err = strconv.Atoi(attr.Value)
+			i.LeftChars, err = GetInt(attr.Value)
 			if err != nil {
 				return
 			}
@@ -353,7 +352,7 @@ func (i *Ind) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
 			if attr.Value == "" {
 				continue
 			}
-			i.Left, err = strconv.Atoi(attr.Value)
+			i.Left, err = GetInt(attr.Value)
 			if err != nil {
 				return
 			}
@@ -361,7 +360,7 @@ func (i *Ind) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
 			if attr.Value == "" {
 				continue
 			}
-			i.FirstLineChars, err = strconv.Atoi(attr.Value)
+			i.FirstLineChars, err = GetInt(attr.Value)
 			if err != nil {
 				return
 			}
@@ -369,7 +368,7 @@ func (i *Ind) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
 			if attr.Value == "" {
 				continue
 			}
-			i.FirstLine, err = strconv.Atoi(attr.Value)
+			i.FirstLine, err = GetInt(attr.Value)
 			if err != nil {
 				return
 			}
@@ -377,7 +376,7 @@ func (i *Ind) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
 			if attr.Value == "" {
 				continue
 			}
-			i.HangingChars, err = strconv.Atoi(attr.Value)
+			i.HangingChars, err = GetInt(attr.Value)
 			if err != nil {
 				return
 			}
@@ -385,7 +384,7 @@ func (i *Ind) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
 			if attr.Value == "" {
 				continue
 			}
-			i.Hanging, err = strconv.Atoi(attr.Value)
+			i.Hanging, err = GetInt(attr.Value)
 			if err != nil {
 				return
 			}
