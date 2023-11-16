@@ -24,6 +24,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"regexp"
 	"strconv"
@@ -39,6 +40,7 @@ func main() {
 	unm := flag.Bool("u", false, "lease unmarshalled file")
 	splitre := flag.String("s", "", "split file into many docxs by matching regex")
 	droppp := flag.Bool("p", false, "drop all paragraph properties")
+	dupnum := flag.Uint("d", 0, "copy times of the file into dup_filename")
 	flag.Parse()
 	var w *docx.Docx
 	if !*analyzeOnly {
@@ -239,6 +241,25 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
+		}
+	}
+	if *dupnum > 1 {
+		a := strings.LastIndex(*fileLocation, "/")
+		name := "dup_" + (*fileLocation)
+		if a > 0 {
+			name = (*fileLocation)[:a+1] + "dup_" + (*fileLocation)[a:]
+		}
+		f, err := os.Create(name)
+		if err != nil {
+			panic(err)
+		}
+		newFile := docx.NewA4()
+		for i := 0; i < int(*dupnum); i++ {
+			newFile.AppendFile(doc)
+		}
+		_, err = io.Copy(f, newFile)
+		if err != nil {
+			panic(err)
 		}
 	}
 	fmt.Println("End of main")
