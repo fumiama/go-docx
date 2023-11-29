@@ -34,14 +34,15 @@ type Run struct {
 	Space   string   `xml:"xml:space,attr,omitempty"`
 	// RsidR   string   `xml:"w:rsidR,attr,omitempty"`
 	// RsidRPr string   `xml:"w:rsidRPr,attr,omitempty"`
-
-	RunProperties *RunProperties `xml:"w:rPr,omitempty"`
-
-	InstrText string `xml:"w:instrText,omitempty"`
-
-	Children []interface{}
-
-	file *Docx
+	RunProperties         *RunProperties `xml:"w:rPr,omitempty"`
+	InstrText             *InstrText     `xml:"w:instrText,omitempty"`
+	Children              []interface{}
+	Br                    *Br                    `xml:"w:br,omitempty"`
+	Text                  string                 `xml:"w:t,omitempty"`
+	Tab                   *Tab                   `xml:"w:tab,omitempty"`
+	FldChar               *FldChar               `xml:"w:fldChar,omitempty"`
+	LastRenderedPageBreak *LastRenderedPageBreak `xml:"w:lastRenderedPageBreak,omitempty"`
+	file                  *Docx
 }
 
 // UnmarshalXML ...
@@ -50,6 +51,9 @@ func (r *Run) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		switch attr.Name.Local {
 		case "space":
 			r.Space = attr.Value
+		case "t":
+			r.Text = attr.Value
+
 		/*case "rsidR":
 			r.RsidR = attr.Value
 		case "rsidRPr":
@@ -92,12 +96,12 @@ func (r *Run) parse(d *xml.Decoder, tt xml.StartElement) (child interface{}, err
 		r.RunProperties = &value
 		return nil, nil
 	case "instrText":
-		var value string
+		var value InstrText
 		err = d.DecodeElement(&value, &tt)
 		if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 			return nil, err
 		}
-		r.InstrText = value
+		r.InstrText = &value
 		return nil, nil
 	case "t":
 		var value Text
@@ -199,6 +203,9 @@ type RunProperties struct {
 	Fonts     *RunFonts
 	Bold      *Bold
 	ICs       *struct{} `xml:"w:iCs,omitempty"`
+	BCs       *struct{} `xml:"w:bCs,omitempty"`
+	NoProof   *struct{} `xml:"w:noProof,omitempty"`
+	WebHidden *struct{} `xml:"w:webHidden,omitempty"`
 	Italic    *Italic
 	Highlight *Highlight
 	Color     *Color
@@ -212,6 +219,10 @@ type RunProperties struct {
 	Underline *Underline
 	VertAlign *VertAlign
 	Strike    *Strike
+	Text      *Text
+	Lang      *Lang
+	FldChar   *FldChar
+	InstrText *InstrText
 }
 
 // UnmarshalXML ...
@@ -238,6 +249,12 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 				r.Bold = &Bold{}
 			case "iCs":
 				r.ICs = &struct{}{}
+			case "bCs":
+				r.BCs = &struct{}{}
+			case "noProof":
+				r.NoProof = &struct{}{}
+			case "webHidden":
+				r.WebHidden = &struct{}{}
 			case "i":
 				r.Italic = &Italic{}
 			case "u":
@@ -301,6 +318,27 @@ func (r *RunProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 				var value Strike
 				value.Val = getAtt(tt.Attr, "val")
 				r.Strike = &value
+			case "lang":
+				var value Lang
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				r.Lang = &value
+			case "fldChar":
+				var value FldChar
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				r.FldChar = &value
+			case "instrText":
+				var value InstrText
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				r.InstrText = &value
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {
@@ -340,4 +378,13 @@ func (f *RunFonts) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	// Consume the end element
 	_, err := d.Token()
 	return err
+}
+
+type Br struct {
+	XMLName xml.Name `xml:"w:br,omitempty"`
+	Val     string   `xml:"w:type,attr"`
+}
+
+type LastRenderedPageBreak struct {
+	XMLName xml.Name `xml:"w:lastRenderedPageBreak,omitempty"`
 }

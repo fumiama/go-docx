@@ -129,6 +129,84 @@ func (r *Text) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	return nil
 }
 
+type Lang struct {
+	Val      string   `xml:"w:val,attr,omitempty"`
+	XMLName  xml.Name `xml:"w:lang,omitempty"`
+	EastAsia string   `xml:"w:eastAsia,attr,omitempty"`
+}
+
+// UnmarshalXML ...
+func (r *Lang) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "val":
+			r.Val = attr.Value
+		case "eastAsia":
+			r.EastAsia = attr.Value
+		default:
+			// ignore other attributes
+		}
+	}
+	// Consume the end element
+	_, err := d.Token()
+	return err
+
+}
+
+type FldChar struct {
+	XMLName xml.Name `xml:"w:fldChar,omitempty"`
+	Type    string   `xml:"w:fldCharType,attr,omitempty"`
+}
+
+// UnmarshalXML ...
+func (r *FldChar) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "fldCharType":
+			r.Type = attr.Value
+		default:
+			// ignore other attributes
+		}
+	}
+	// Consume the end element
+	_, err := d.Token()
+	return err
+
+}
+
+type InstrText struct {
+	XMLName xml.Name `xml:"w:instrText,omitempty"`
+	Space   string   `xml:"xml:space,attr,omitempty"`
+	Text    string   `xml:",chardata"`
+}
+
+// UnmarshalXML ...
+func (r *InstrText) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "space":
+			r.Space = attr.Value
+		default:
+			// ignore other attributes
+		}
+	}
+	for {
+		t, err := d.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		if tt, ok := t.(xml.CharData); ok {
+			r.Text = string(tt) // implicitly copy
+		}
+	}
+
+	return nil
+}
+
 // RunMergeRule compares two runs and decides whether they can be merged
 type RunMergeRule func(r1, r2 *Run) bool
 
