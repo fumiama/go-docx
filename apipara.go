@@ -56,10 +56,10 @@ func (p *Paragraph) Justification(val string) *Paragraph {
 	return p
 }
 
-// AddTPageBreaks adds PageBreaks to para
+// AddPageBreaks adds PageBreaks to para
 func (p *Paragraph) AddPageBreaks() *Run {
 	c := make([]interface{}, 1, 64)
-	c[0] = &PageBreak{
+	c[0] = &BarterRabbet{
 		Type: "page",
 	}
 

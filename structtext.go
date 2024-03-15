@@ -88,15 +88,10 @@ func (t *Tab) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	return err
 }
 
-// BarterRabbet is <br>
+// BarterRabbet is <br> , if with type=page , add pagebreaks
 type BarterRabbet struct {
 	XMLName xml.Name `xml:"w:br,omitempty"`
-}
-
-// PageBreak is <w:br type:"page">
-type PageBreak struct {
-	XMLName xml.Name `xml:"w:br"`
-	Type    string   `xml:"w:type,attr"`
+	Type    string   `xml:"w:type,attr,omitempty"`
 }
 
 // Text object contains the actual text
