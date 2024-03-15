@@ -24,7 +24,7 @@ import (
 	"encoding/xml"
 )
 
-func newEmptyA4File() *Docx {
+func newEmptyFile() *Docx {
 	docx := &Docx{
 		Document: Document{
 			XMLName: xml.Name{
@@ -68,8 +68,6 @@ func newEmptyA4File() *Docx {
 		mediaNameIdx: make(map[string]int, 64),
 		rID:          3,
 		slowIDs:      make(map[string]uintptr, 64),
-		template:     "a4",
-		tmpfslst:     A4TemplateFilesList,
 	}
 	docx.Document.Body.file = docx
 	return docx

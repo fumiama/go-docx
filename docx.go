@@ -55,10 +55,10 @@ type Docx struct {
 	io.WriterTo
 }
 
-// NewA4 generates a new empty A4 docx file that we can manipulate and
+// New generates a new empty docx file that we can manipulate and
 // later on, save
-func NewA4() *Docx {
-	return newEmptyA4File()
+func New() *Docx {
+	return newEmptyFile()
 }
 
 // Parse generates a new docx file in memory from a reader
@@ -159,11 +159,4 @@ func (f *Docx) WriteTo(writer io.Writer) (_ int64, err error) {
 // Read is a fake function and cannot be used
 func (f *Docx) Read(_ []byte) (int, error) {
 	return 0, os.ErrInvalid
-}
-
-// UseTemplate will replace template files
-func (f *Docx) UseTemplate(template string, tmpfslst []string, tmplfs fs.FS) {
-	f.template = template
-	f.tmplfs = tmplfs
-	f.tmpfslst = tmpfslst
 }

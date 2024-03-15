@@ -2,7 +2,7 @@
    Copyright (c) 2020 gingfrederik
    Copyright (c) 2021 Gonzalo Fernandez-Victorio
    Copyright (c) 2021 Basement Crowd Ltd (https://www.basementcrowd.com)
-   Copyright (c) 2023 Fumiama Minamoto (源文雨)
+   Copyright (c) 2024 Fumiama Minamoto (源文雨)
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU Affero General Public License as published
@@ -20,22 +20,17 @@
 
 package docx
 
-import "embed"
+import "io/fs"
 
-var (
-	// TemplateXMLFS stores template docx files
-	//go:embed xml
-	//go:embed xml/default/_rels/*
-	TemplateXMLFS embed.FS
+// UseTemplate will replace template files
+func (f *Docx) UseTemplate(template string, tmpfslst []string, tmplfs fs.FS) *Docx {
+	f.template = template
+	f.tmplfs = tmplfs
+	f.tmpfslst = tmpfslst
+	return f
+}
 
-	// DefaultTemplateFilesList is the files list under TemplateXMLFS/xml/default
-	DefaultTemplateFilesList = []string{
-		"_rels/.rels",
-		"docProps/app.xml",
-		"docProps/core.xml",
-		"word/theme/theme1.xml",
-		"word/fontTable.xml",
-		"word/styles.xml",
-		"[Content_Types].xml",
-	}
-)
+// WithDefaultTheme use default theme embeded
+func (f *Docx) WithDefaultTheme() *Docx {
+	return f.UseTemplate("default", DefaultTemplateFilesList, TemplateXMLFS)
+}
