@@ -187,7 +187,7 @@ func (p *Paragraph) String() string {
 		switch o := c.(type) {
 		case *Hyperlink:
 			id := o.ID
-			text := o.Run.InstrText
+			text := o.Run.InstrText.Text
 			link, err := p.file.ReferTarget(id)
 			sb.WriteString("[")
 			sb.WriteString(text)

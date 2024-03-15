@@ -36,7 +36,9 @@ func (p *Paragraph) AddLink(text string, link string) *Hyperlink {
 					Val: HYPERLINK_STYLE,
 				},
 			},
-			InstrText: text,
+			InstrText: &InstrText{
+				Text: text,
+			},
 		},
 	}
 
