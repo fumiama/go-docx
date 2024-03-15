@@ -67,7 +67,7 @@ import (
 )
 
 func main() {
-	w := docx.NewA4()
+	w := docx.New().WithDefaultTheme()
 	// add new paragraph
 	para1 := w.AddParagraph()
 	// add text

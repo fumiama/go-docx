@@ -29,7 +29,7 @@ import (
 )
 
 func TestTableStructure(t *testing.T) {
-	w := NewA4()
+	w := New().WithDefaultTheme()
 	// add new paragraph
 	para1 := w.AddParagraph()
 	// add text
@@ -63,7 +63,7 @@ func TestTableStructure(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	w = NewA4()
+	w = New().WithDefaultTheme()
 	err = xml.NewDecoder(f).Decode(&w.Document)
 	if err != nil {
 		t.Fatal(err)
