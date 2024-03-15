@@ -45,7 +45,7 @@ func main() {
 	var w *docx.Docx
 	if !*analyzeOnly {
 		fmt.Printf("Preparing new document to write at %s\n", *fileLocation)
-
+		//w = docx.New().WithA3Theme() can make A3 Theme
 		w = docx.New().WithDefaultTheme()
 		// add new paragraph
 		para1 := w.AddParagraph().Justification("distribute")
@@ -254,7 +254,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		newFile := docx.New().WithDefaultTheme()
+		newFile := docx.New().WithA3Theme()
 		for i := 0; i < int(*dupnum); i++ {
 			newFile.AppendFile(doc)
 		}
