@@ -93,6 +93,12 @@ type BarterRabbet struct {
 	XMLName xml.Name `xml:"w:br,omitempty"`
 }
 
+// PageBreak is <w:br type:"page">
+type PageBreak struct {
+	XMLName xml.Name `xml:"w:br"`
+	Type    string   `xml:"w:type,attr"`
+}
+
 // Text object contains the actual text
 type Text struct {
 	XMLName xml.Name `xml:"w:t,omitempty"`

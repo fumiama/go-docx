@@ -99,6 +99,7 @@ func main() {
 		// add text
 		para5.AddText("一行1个 横向 inline").Size("44")
 
+		w.AddParagraph().AddPageBreaks()
 		para6 := w.AddParagraph()
 		_, err = para6.AddInlineDrawingFrom("testdata/fumiamayoko.png")
 		if err != nil {

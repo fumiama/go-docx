@@ -55,3 +55,20 @@ func (p *Paragraph) Justification(val string) *Paragraph {
 	p.Properties.Justification = &Justification{Val: val}
 	return p
 }
+
+// AddTPageBreaks adds PageBreaks to para
+func (p *Paragraph) AddPageBreaks() *Run {
+	c := make([]interface{}, 1, 64)
+	c[0] = &PageBreak{
+		Type: "page",
+	}
+
+	run := &Run{
+		RunProperties: &RunProperties{},
+		Children:      c,
+	}
+
+	p.Children = append(p.Children, run)
+
+	return run
+}
