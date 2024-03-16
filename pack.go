@@ -36,7 +36,7 @@ func (f *Docx) pack(zipWriter *zip.Writer) (err error) {
 
 	if f.template != "" {
 		for _, name := range f.tmpfslst {
-			files[name], err = TemplateXMLFS.Open("xml/" + f.template + "/" + name)
+			files[name], err = f.tmplfs.Open("xml/" + f.template + "/" + name)
 			if err != nil {
 				return
 			}

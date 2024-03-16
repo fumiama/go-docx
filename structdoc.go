@@ -56,9 +56,20 @@ func getAtt(atts []xml.Attr, name string) string {
 
 // Body <w:body>
 type Body struct {
-	Items []interface{}
+	Items  []interface{}
+	SectPr SectPr `xml:"w:sectPr,omitempty"` // properties of the document, including paper size
+	file   *Docx
+}
 
-	file *Docx
+// SectPr show the properties of the document, like paper size
+type SectPr struct {
+	PgSz PgSz `xml:"w:pgSz"` // paper size
+}
+
+// PgSz show the paper size
+type PgSz struct {
+	W xml.Attr `xml:"w:w,attr"` // width of paper
+	H xml.Attr `xml:"w:h,attr"` // high of paper
 }
 
 // UnmarshalXML ...

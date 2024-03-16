@@ -46,7 +46,7 @@ func main() {
 	if !*analyzeOnly {
 		fmt.Printf("Preparing new document to write at %s\n", *fileLocation)
 
-		w = docx.New().WithDefaultTheme()
+		w = docx.New().WithDefaultTheme().WithA4Page()
 		// add new paragraph
 		para1 := w.AddParagraph().Justification("distribute")
 		r, err := para1.AddAnchorDrawingFrom("testdata/fumiama.JPG")
@@ -95,6 +95,7 @@ func main() {
 		}
 		r.Children[0].(*docx.Drawing).Inline.Size(r.Children[0].(*docx.Drawing).Inline.Extent.CX*4/5, r.Children[0].(*docx.Drawing).Inline.Extent.CY*4/5)
 
+		w.AddParagraph().AddPageBreaks()
 		para5 := w.AddParagraph().Justification("center")
 		// add text
 		para5.AddText("一行1个 横向 inline").Size("44")
@@ -253,7 +254,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		newFile := docx.New().WithDefaultTheme()
+		newFile := docx.New().WithDefaultTheme().WithA4Page()
 		for i := 0; i < int(*dupnum); i++ {
 			newFile.AppendFile(doc)
 		}
