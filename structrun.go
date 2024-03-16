@@ -122,11 +122,7 @@ func (r *Run) parse(d *xml.Decoder, tt xml.StartElement) (child interface{}, err
 		if err != nil {
 			return nil, err
 		}
-		if brvalue.Type == "page" {
-			child = &BarterRabbet{Type: "page"}
-		} else {
-			child = &BarterRabbet{}
-		}
+		child = &brvalue
 	case "AlternateContent":
 		/*var value AlternateContent
 		value.file = r.file
