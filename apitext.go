@@ -53,7 +53,7 @@ func (p *Paragraph) AddText(text string) *Run {
 			if tabIndex > 0 {
 				c = append(c, &Tab{})
 			}
-			if s != "" {
+			if k != "" {
 				c = append(c, &Text{
 					Text: k,
 				})

@@ -21,7 +21,6 @@
 package docx
 
 import (
-	"encoding/xml"
 	"io/fs"
 )
 
@@ -40,14 +39,24 @@ func (f *Docx) WithDefaultTheme() *Docx {
 
 // WithA3Page use A3 PageSize
 func (f *Docx) WithA3Page() *Docx {
-	f.Document.Body.SectPr.PgSz.W = xml.Attr{Name: xml.Name{Local: "w:w"}, Value: "16838"}
-	f.Document.Body.SectPr.PgSz.H = xml.Attr{Name: xml.Name{Local: "w:h"}, Value: "23811"}
+	sectpr := &SectPr{
+		PgSz: &PgSz{
+			W: 16838,
+			H: 23811,
+		},
+	}
+	f.Document.Body.Items = append(f.Document.Body.Items, sectpr)
 	return f
 }
 
 // WithA4Page use A4 PageSize
 func (f *Docx) WithA4Page() *Docx {
-	f.Document.Body.SectPr.PgSz.W = xml.Attr{Name: xml.Name{Local: "w:w"}, Value: "11906"}
-	f.Document.Body.SectPr.PgSz.H = xml.Attr{Name: xml.Name{Local: "w:h"}, Value: "16838"}
+	sectpr := &SectPr{
+		PgSz: &PgSz{
+			W: 11906,
+			H: 16838,
+		},
+	}
+	f.Document.Body.Items = append(f.Document.Body.Items, sectpr)
 	return f
 }

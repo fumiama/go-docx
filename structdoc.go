@@ -56,20 +56,21 @@ func getAtt(atts []xml.Attr, name string) string {
 
 // Body <w:body>
 type Body struct {
-	Items  []interface{}
-	SectPr SectPr `xml:"w:sectPr,omitempty"` // properties of the document, including paper size
-	file   *Docx
+	Items []interface{}
+	file  *Docx
 }
 
 // SectPr show the properties of the document, like paper size
 type SectPr struct {
-	PgSz PgSz `xml:"w:pgSz"` // paper size
+	XMLName xml.Name `xml:"w:sectPr,omitempty"` // properties of the document, including paper size
+	PgSz    *PgSz
 }
 
 // PgSz show the paper size
 type PgSz struct {
-	W xml.Attr `xml:"w:w,attr"` // width of paper
-	H xml.Attr `xml:"w:h,attr"` // high of paper
+	XMLName xml.Name `xml:"w:pgSz,omitempty"`
+	W       int64    `xml:"w:w,attr,omitempty"` // width of paper
+	H       int64    `xml:"w:h,attr,omitempty"` // high of paper
 }
 
 // UnmarshalXML ...
@@ -96,6 +97,13 @@ func (b *Body) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 			case "tbl":
 				var value Table
 				value.file = b.file
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				b.Items = append(b.Items, &value)
+			case "sectPr":
+				var value SectPr
 				err = d.DecodeElement(&value, &tt)
 				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
 					return err
