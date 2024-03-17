@@ -95,6 +95,7 @@ func main() {
 		}
 		r.Children[0].(*docx.Drawing).Inline.Size(r.Children[0].(*docx.Drawing).Inline.Extent.CX*4/5, r.Children[0].(*docx.Drawing).Inline.Extent.CY*4/5)
 
+		w.AddParagraph().AddPageBreaks()
 		para5 := w.AddParagraph().Justification("center")
 		// add text
 		para5.AddText("一行1个 横向 inline").Size("44")
