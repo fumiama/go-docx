@@ -90,6 +90,13 @@ func (b *Body) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 					return err
 				}
 				b.Items = append(b.Items, &value)
+			case "sectPr":
+				var value SectPr
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				b.Items = append(b.Items, &value)
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {
