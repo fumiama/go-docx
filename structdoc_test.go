@@ -46,20 +46,26 @@ func TestUnmarshalPlainStructure(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if len(doc.Body.Items) != tc.numParagraphs {
+		if len(doc.Body.Items) != tc.numParagraphs+1 { // the 1 is the sectPr
 			t.Fatalf("We expected %d paragraphs, we got %d", tc.numParagraphs, len(doc.Body.Items))
 		}
 		for i, it := range doc.Body.Items {
-			p := it.(*Paragraph)
-			if len(p.Children) == 0 {
-				t.Fatalf("We were not able to parse paragraph %d", i)
-			}
-			for _, child := range p.Children {
-				if child == nil {
-					t.Fatalf("There are Paragraph children with all fields nil")
+			switch v := it.(type) {
+			case *Paragraph:
+				if len(v.Children) == 0 {
+					t.Fatalf("We were not able to parse paragraph %d", i)
 				}
-				if o, ok := child.(*Hyperlink); ok && o.ID == "" {
-					t.Fatalf("We have a link without ID")
+				for _, child := range v.Children {
+					if child == nil {
+						t.Fatalf("There are Paragraph children with all fields nil")
+					}
+					if o, ok := child.(*Hyperlink); ok && o.ID == "" {
+						t.Fatalf("We have a link without ID")
+					}
+				}
+			case *SectPr:
+				if v.PgSz.W.Value != "11906" || v.PgSz.H.Value != "16838" {
+					t.Fatalf("We were not able to parse sectPr")
 				}
 			}
 		}
