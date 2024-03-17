@@ -37,31 +37,31 @@ func (p *Paragraph) AddTab() *Run {
 	return run
 }
 
-// AddText adds text to paragraph
+// AddText adds text to paragraph with \n
 func (p *Paragraph) AddText(text string) *Run {
 	if text == "\t" {
 		return p.AddTab()
 	}
-
 	c := make([]interface{}, 0, 64)
-
-	for i, s := range strings.Split(text, "\t") {
+	for i, s := range strings.Split(text, "\n") {
 		if i > 0 {
-			c = append(c, &Tab{})
+			c = append(c, &BarterRabbet{})
 		}
-		if s != "" {
-			c = append(c, &Text{
-				Text: s,
-			})
+		for tabIndex, k := range strings.Split(s, "\t") {
+			if tabIndex > 0 {
+				c = append(c, &Tab{})
+			}
+			if k != "" {
+				c = append(c, &Text{
+					Text: k,
+				})
+			}
 		}
 	}
-
 	run := &Run{
 		RunProperties: &RunProperties{},
 		Children:      c,
 	}
-
 	p.Children = append(p.Children, run)
-
 	return run
 }
