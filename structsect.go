@@ -69,7 +69,8 @@ func (sect *SectPr) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 }
 
 // UnmarshalXML ...
-func (pgsz *PgSz) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
+func (pgsz *PgSz) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var err error
 	for _, attr := range start.Attr {
 		if attr.Name.Local == "w" {
 			pgsz.W = xml.Attr{Name: xml.Name{Local: "w:w"}, Value: attr.Value}
@@ -80,5 +81,5 @@ func (pgsz *PgSz) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err erro
 	}
 	// Consume the end element
 	_, err = d.Token()
-	return nil
+	return err
 }
