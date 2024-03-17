@@ -94,6 +94,19 @@ type BarterRabbet struct {
 	Type    string   `xml:"w:type,attr,omitempty"`
 }
 
+// UnmarshalXML ...
+func (f *BarterRabbet) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "type":
+			f.Type = attr.Value
+		}
+	}
+	// Consume the end element
+	_, err := d.Token()
+	return err
+}
+
 // Text object contains the actual text
 type Text struct {
 	XMLName xml.Name `xml:"w:t,omitempty"`
