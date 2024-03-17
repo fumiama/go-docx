@@ -97,9 +97,9 @@ type BarterRabbet struct {
 // UnmarshalXML ...
 func (f *BarterRabbet) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for _, attr := range start.Attr {
-		switch attr.Name.Local {
-		case "type":
+		if attr.Name.Local == "type" {
 			f.Type = attr.Value
+			break
 		}
 	}
 	// Consume the end element
