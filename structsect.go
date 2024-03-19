@@ -1,8 +1,5 @@
 /*
-   Copyright (c) 2020 gingfrederik
-   Copyright (c) 2021 Gonzalo Fernandez-Victorio
-   Copyright (c) 2021 Basement Crowd Ltd (https://www.basementcrowd.com)
-   Copyright (c) 2023 mabiao0525 (马飚)
+   Copyright (c) 2024 mabiao0525 (马飚)
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU Affero General Public License as published
