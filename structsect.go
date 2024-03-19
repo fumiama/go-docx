@@ -76,7 +76,7 @@ func (pgsz *PgSz) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		case "h":
 			pgsz.H = xml.Attr{Name: xml.Name{Local: "w:w"}, Value: attr.Value}
 		default:
-			//ignore other attributes now
+			// ignore other attributes now
 		}
 	}
 	// Consume the end element
