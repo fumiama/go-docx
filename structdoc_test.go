@@ -33,8 +33,8 @@ func TestUnmarshalPlainStructure(t *testing.T) {
 		content       string
 		numParagraphs int
 	}{
-		{decoded_doc_1, 5},
-		{decoded_doc_2, 14},
+		{decoded_doc_1, 6},
+		{decoded_doc_2, 15},
 	}
 	for _, tc := range testCases {
 		doc := Document{
@@ -46,7 +46,7 @@ func TestUnmarshalPlainStructure(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if len(doc.Body.Items) != tc.numParagraphs+1 { // the 1 is the sectPr
+		if len(doc.Body.Items) != tc.numParagraphs {
 			t.Fatalf("We expected %d paragraphs, we got %d", tc.numParagraphs, len(doc.Body.Items))
 		}
 		for i, it := range doc.Body.Items {

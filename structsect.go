@@ -2,7 +2,7 @@
    Copyright (c) 2020 gingfrederik
    Copyright (c) 2021 Gonzalo Fernandez-Victorio
    Copyright (c) 2021 Basement Crowd Ltd (https://www.basementcrowd.com)
-   Copyright (c) 2023 Fumiama Minamoto (源文雨)
+   Copyright (c) 2023 mabiao0525 (马飚)
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU Affero General Public License as published
@@ -71,12 +71,15 @@ func (sect *SectPr) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 // UnmarshalXML ...
 func (pgsz *PgSz) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	var err error
+
 	for _, attr := range start.Attr {
-		if attr.Name.Local == "w" {
+		switch attr.Name.Local {
+		case "w":
 			pgsz.W = xml.Attr{Name: xml.Name{Local: "w:w"}, Value: attr.Value}
-		}
-		if attr.Name.Local == "h" {
+		case "h":
 			pgsz.H = xml.Attr{Name: xml.Name{Local: "w:w"}, Value: attr.Value}
+		default:
+			//ignore other attributes now
 		}
 	}
 	// Consume the end element
