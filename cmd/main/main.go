@@ -46,7 +46,7 @@ func main() {
 	if !*analyzeOnly {
 		fmt.Printf("Preparing new document to write at %s\n", *fileLocation)
 
-		w = docx.New().WithDefaultTheme()
+		w = docx.New().WithDefaultTheme().WithA4Page()
 		// add new paragraph
 		para1 := w.AddParagraph().Justification("distribute")
 		r, err := para1.AddAnchorDrawingFrom("testdata/fumiama.JPG")
@@ -254,7 +254,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		newFile := docx.New().WithDefaultTheme()
+		newFile := docx.New().WithDefaultTheme().WithA4Page()
 		for i := 0; i < int(*dupnum); i++ {
 			newFile.AppendFile(doc)
 		}

@@ -20,7 +20,10 @@
 
 package docx
 
-import "io/fs"
+import (
+	"encoding/xml"
+	"io/fs"
+)
 
 // UseTemplate will replace template files
 func (f *Docx) UseTemplate(template string, tmpfslst []string, tmplfs fs.FS) *Docx {
@@ -33,4 +36,28 @@ func (f *Docx) UseTemplate(template string, tmpfslst []string, tmplfs fs.FS) *Do
 // WithDefaultTheme use default theme embeded
 func (f *Docx) WithDefaultTheme() *Docx {
 	return f.UseTemplate("default", DefaultTemplateFilesList, TemplateXMLFS)
+}
+
+// WithA3Page use A3 PageSize
+func (f *Docx) WithA3Page() *Docx {
+	sectpr := &SectPr{
+		PgSz: &PgSz{
+			W: xml.Attr{Name: xml.Name{Local: "w:w"}, Value: "16838"},
+			H: xml.Attr{Name: xml.Name{Local: "w:h"}, Value: "23811"},
+		},
+	}
+	f.Document.Body.Items = append(f.Document.Body.Items, sectpr)
+	return f
+}
+
+// WithA4Page use A4 PageSize
+func (f *Docx) WithA4Page() *Docx {
+	sectpr := &SectPr{
+		PgSz: &PgSz{
+			W: xml.Attr{Name: xml.Name{Local: "w:w"}, Value: "11906"},
+			H: xml.Attr{Name: xml.Name{Local: "w:h"}, Value: "16838"},
+		},
+	}
+	f.Document.Body.Items = append(f.Document.Body.Items, sectpr)
+	return f
 }
