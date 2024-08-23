@@ -64,7 +64,7 @@ func TestUnmarshalPlainStructure(t *testing.T) {
 					}
 				}
 			case *SectPr:
-				if v.PgSz.W.Value != "11906" || v.PgSz.H.Value != "16838" {
+				if v.PgSz.W != 11906 || v.PgSz.H != 16838 {
 					t.Fatalf("We were not able to parse sectPr")
 				}
 			}
