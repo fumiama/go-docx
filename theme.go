@@ -21,7 +21,6 @@
 package docx
 
 import (
-	"encoding/xml"
 	"io/fs"
 )
 
@@ -42,8 +41,8 @@ func (f *Docx) WithDefaultTheme() *Docx {
 func (f *Docx) WithA3Page() *Docx {
 	sectpr := &SectPr{
 		PgSz: &PgSz{
-			W: xml.Attr{Name: xml.Name{Local: "w:w"}, Value: "16838"},
-			H: xml.Attr{Name: xml.Name{Local: "w:h"}, Value: "23811"},
+			W: 16838,
+			H: 23811,
 		},
 	}
 	f.Document.Body.Items = append(f.Document.Body.Items, sectpr)
@@ -54,8 +53,8 @@ func (f *Docx) WithA3Page() *Docx {
 func (f *Docx) WithA4Page() *Docx {
 	sectpr := &SectPr{
 		PgSz: &PgSz{
-			W: xml.Attr{Name: xml.Name{Local: "w:w"}, Value: "11906"},
-			H: xml.Attr{Name: xml.Name{Local: "w:h"}, Value: "16838"},
+			W: 11906,
+			H: 16838,
 		},
 	}
 	f.Document.Body.Items = append(f.Document.Body.Items, sectpr)

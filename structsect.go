@@ -20,6 +20,7 @@ package docx
 import (
 	"encoding/xml"
 	"io"
+	"strconv"
 	"strings"
 )
 
@@ -31,8 +32,8 @@ type SectPr struct {
 
 // PgSz show the paper size
 type PgSz struct {
-	W xml.Attr `xml:"w:w,attr"` // width of paper
-	H xml.Attr `xml:"w:h,attr"` // high of paper
+	W int `xml:"w:w,attr"` // width of paper
+	H int `xml:"w:h,attr"` // high of paper
 }
 
 // UnmarshalXML ...
@@ -72,9 +73,15 @@ func (pgsz *PgSz) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "w":
-			pgsz.W = xml.Attr{Name: xml.Name{Local: "w:w"}, Value: attr.Value}
+			pgsz.W, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return err
+			}
 		case "h":
-			pgsz.H = xml.Attr{Name: xml.Name{Local: "w:h"}, Value: attr.Value}
+			pgsz.H, err = strconv.Atoi(attr.Value)
+			if err != nil {
+				return err
+			}
 		default:
 			// ignore other attributes now
 		}
