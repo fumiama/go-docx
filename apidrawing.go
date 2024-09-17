@@ -63,6 +63,7 @@ func (p *Paragraph) AddInlineDrawing(pic []byte) (*Run, error) {
 			},
 			CNvGraphicFramePr: &WPCNvGraphicFramePr{
 				Locks: AGraphicFrameLocks{
+					XMLA:           XMLNS_DRAWINGML_MAIN,
 					NoChangeAspect: 1,
 				},
 			},
@@ -174,6 +175,7 @@ func (p *Paragraph) AddAnchorDrawing(pic []byte) (*Run, error) {
 			},
 			CNvGraphicFramePr: &WPCNvGraphicFramePr{
 				Locks: AGraphicFrameLocks{
+					XMLA:           XMLNS_DRAWINGML_MAIN,
 					NoChangeAspect: 1,
 				},
 			},

@@ -450,6 +450,7 @@ func (w *WPCNvGraphicFramePr) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) e
 		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "graphicFrameLocks":
+				w.Locks.XMLA = getAtt(tt.Attr, "a")
 				v := getAtt(tt.Attr, "noChangeAspect")
 				if v == "" {
 					continue
@@ -472,7 +473,8 @@ func (w *WPCNvGraphicFramePr) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) e
 
 // AGraphicFrameLocks represents the locks applied to a graphic frame.
 type AGraphicFrameLocks struct {
-	XMLName        xml.Name `xml:"http://schemas.openxmlformats.org/drawingml/2006/main graphicFrameLocks,omitempty"`
+	XMLName        xml.Name `xml:"a:graphicFrameLocks,omitempty"`
+	XMLA           string   `xml:"xmlns:a,attr,omitempty"`
 	NoChangeAspect int      `xml:"noChangeAspect,attr,omitempty"`
 }
 

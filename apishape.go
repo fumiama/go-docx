@@ -40,7 +40,9 @@ func (p *Paragraph) AddInlineShape(w, h int64, name, bwMode, prst string, ln *AL
 				ID:   idn,
 				Name: name + " " + id,
 			},
-			CNvGraphicFramePr: &WPCNvGraphicFramePr{},
+			CNvGraphicFramePr: &WPCNvGraphicFramePr{
+				Locks: AGraphicFrameLocks{XMLA: XMLNS_DRAWINGML_MAIN},
+			},
 			Graphic: &AGraphic{
 				XMLA: XMLNS_DRAWINGML_MAIN,
 				GraphicData: &AGraphicData{
@@ -107,7 +109,9 @@ func (p *Paragraph) AddAnchorShape(w, h int64, name, bwMode, prst string, ln *AL
 				ID:   idn,
 				Name: name + " " + id,
 			},
-			CNvGraphicFramePr: &WPCNvGraphicFramePr{},
+			CNvGraphicFramePr: &WPCNvGraphicFramePr{
+				Locks: AGraphicFrameLocks{XMLA: XMLNS_DRAWINGML_MAIN},
+			},
 			Graphic: &AGraphic{
 				XMLA: XMLNS_DRAWINGML_MAIN,
 				GraphicData: &AGraphicData{
