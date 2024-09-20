@@ -83,6 +83,20 @@ func (r *Run) Highlight(val string) *Run {
 	return r
 }
 
+func (r *Run) Strike(val bool) *Run {
+	trueFalseStr := "false"
+	if val {
+		trueFalseStr = "true"
+	}
+	r.RunProperties.Strike = &Strike{Val: trueFalseStr}
+	return r
+}
+
+func (r *Run) Style(val string) *Run {
+	r.RunProperties.Style = &Style{Val: val}
+	return r
+}
+
 // AddTab add a tab in front of the run
 func (r *Run) AddTab() *Run {
 	r.Children = append(r.Children, &Tab{})

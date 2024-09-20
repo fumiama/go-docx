@@ -69,3 +69,19 @@ func (p *Paragraph) AddPageBreaks() *Run {
 	p.Children = append(p.Children, run)
 	return run
 }
+
+func (p *Paragraph) AddStyle(val string) *Paragraph {
+	if p.Properties == nil {
+		p.Properties = &ParagraphProperties{}
+	}
+	p.Properties.Style = &Style{Val: val}
+	return p
+}
+
+func (p *Paragraph) AddShade(val string) *Paragraph {
+	if p.Properties == nil {
+		p.Properties = &ParagraphProperties{}
+	}
+	p.Properties.Shade = &Shade{Val: val}
+	return p
+}
