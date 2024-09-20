@@ -23,7 +23,12 @@ package docx
 // AddTable add a new table to body by col*row
 //
 // unit: twips (1/20 point)
-func (f *Docx) AddTable(row int, col int, borderColor string, tableWidth int64, bgColor string) *Table {
+func (f *Docx) AddTable(
+	row int, 
+	col int, 
+	tableWidth int64, 
+	borderColors [6]string, 
+) *Table {
 	trs := make([]*WTableRow, row)
 	for i := 0; i < row; i++ {
 		cells := make([]*WTableCell, col)
@@ -40,16 +45,25 @@ func (f *Docx) AddTable(row int, col int, borderColor string, tableWidth int64, 
 			TableCells:         cells,
 		}
 	}
+		
+	wTableWidth := &WTableWidth{Type: "auto"}
+
+	if tableWidth > 0 {
+		wTableWidth = &WTableWidth{W: tableWidth}
+	}
+	
+	borderColors = CheckBorderColors(borderColors)
+
 	tbl := &Table{
 		TableProperties: &WTableProperties{
-			Width: &WTableWidth{W: tableWidth},
+			Width: wTableWidth,
 			TableBorders: &WTableBorders{
-				Top:     &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColor},
-				Left:    &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColor},
-				Bottom:  &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColor},
-				Right:   &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColor},
-				InsideH: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: bgColor},
-				InsideV: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: bgColor},
+				Top:     &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[0]},
+				Left:    &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[1]},
+				Bottom:  &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[2]},
+				Right:   &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[3]},
+				InsideH: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[4]},
+				InsideV: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[5]},
 			},
 			Look: &WTableLook{
 				Val: "0000",
@@ -65,7 +79,12 @@ func (f *Docx) AddTable(row int, col int, borderColor string, tableWidth int64, 
 // AddTableTwips add a new table to body by height and width
 //
 // unit: twips (1/20 point)
-func (f *Docx) AddTableTwips(rowHeights []int64, colWidths []int64, borderColor string, bgColor string) *Table {
+func (f *Docx) AddTableTwips(
+	rowHeights []int64, 
+	colWidths []int64, 
+	tableWidth int64, 
+	borderColors [6]string, 
+) *Table {
 	grids := make([]*WGridCol, len(colWidths))
 	trs := make([]*WTableRow, len(rowHeights))
 	for i, w := range colWidths {
@@ -95,16 +114,25 @@ func (f *Docx) AddTableTwips(rowHeights []int64, colWidths []int64, borderColor 
 			}
 		}
 	}
+	
+	wTableWidth := &WTableWidth{Type: "auto"}
+
+	if tableWidth > 0 {
+		wTableWidth = &WTableWidth{W: tableWidth}
+	}
+
+	borderColors = CheckBorderColors(borderColors)
+
 	tbl := &Table{
 		TableProperties: &WTableProperties{
-			Width: &WTableWidth{Type: "auto"},
+			Width: wTableWidth,
 			TableBorders: &WTableBorders{
-				Top:     &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColor},
-				Left:    &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColor},
-				Bottom:  &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColor},
-				Right:   &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColor},
-				InsideH: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: bgColor},
-				InsideV: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: bgColor},
+				Top:     &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[0]},
+				Left:    &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[1]},
+				Bottom:  &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[2]},
+				Right:   &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[3]},
+				InsideH: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[4]},
+				InsideV: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[5]},
 			},
 			Look: &WTableLook{
 				Val: "0000",
@@ -161,4 +189,15 @@ func (c *WTableCell) Shade(val, color, fill string) *WTableCell {
 		Fill:  fill,
 	}
 	return c
+}
+
+//Replaces any index that is blank with "#000000"
+func CheckBorderColors (borderColors [6]string) [6]string {
+	for i, _ := range borderColors{
+		if borderColors[i] == "" {
+			borderColors[i] = "#000000"
+		}
+	}
+	
+	return borderColors
 }
