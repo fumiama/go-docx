@@ -27,7 +27,7 @@ func (f *Docx) AddTable(
 	row int, 
 	col int, 
 	tableWidth int64, 
-	borderColors [6]string, 
+	borderColors TableBorderColors,
 ) *Table {
 	trs := make([]*WTableRow, row)
 	for i := 0; i < row; i++ {
@@ -52,18 +52,16 @@ func (f *Docx) AddTable(
 		wTableWidth = &WTableWidth{W: tableWidth}
 	}
 	
-	borderColors = CheckBorderColors(borderColors)
-
 	tbl := &Table{
 		TableProperties: &WTableProperties{
 			Width: wTableWidth,
 			TableBorders: &WTableBorders{
-				Top:     &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[0]},
-				Left:    &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[1]},
-				Bottom:  &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[2]},
-				Right:   &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[3]},
-				InsideH: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[4]},
-				InsideV: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[5]},
+				Top:     &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.Top},
+				Left:    &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.Left},
+				Bottom:  &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.Bottom},
+				Right:   &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.Right},
+				InsideH: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.InsideH},
+				InsideV: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.InsideV},
 			},
 			Look: &WTableLook{
 				Val: "0000",
@@ -83,7 +81,7 @@ func (f *Docx) AddTableTwips(
 	rowHeights []int64, 
 	colWidths []int64, 
 	tableWidth int64, 
-	borderColors [6]string, 
+	borderColors TableBorderColors, 
 ) *Table {
 	grids := make([]*WGridCol, len(colWidths))
 	trs := make([]*WTableRow, len(rowHeights))
@@ -121,18 +119,16 @@ func (f *Docx) AddTableTwips(
 		wTableWidth = &WTableWidth{W: tableWidth}
 	}
 
-	borderColors = CheckBorderColors(borderColors)
-
 	tbl := &Table{
 		TableProperties: &WTableProperties{
 			Width: wTableWidth,
 			TableBorders: &WTableBorders{
-				Top:     &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[0]},
-				Left:    &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[1]},
-				Bottom:  &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[2]},
-				Right:   &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[3]},
-				InsideH: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[4]},
-				InsideV: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors[5]},
+				Top:     &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.Top},
+				Left:    &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.Left},
+				Bottom:  &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.Bottom},
+				Right:   &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.Right},
+				InsideH: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.InsideH},
+				InsideV: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.InsideV},
 			},
 			Look: &WTableLook{
 				Val: "0000",

@@ -115,6 +115,14 @@ type WTableProperties struct {
 	Look          *WTableLook
 }
 
+type TableBorderColors struct {
+  Top string
+  Left string
+  Bottom string
+  Right string
+  InsideH string
+  InsideV string
+}
 // UnmarshalXML implements the xml.Unmarshaler interface.
 func (t *WTableProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 	for {
