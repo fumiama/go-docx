@@ -20,6 +20,10 @@
 
 package docx
 
+import (
+	"reflect"
+)
+
 // AddTable add a new table to body by col*row
 //
 // unit: twips (1/20 point)
@@ -27,7 +31,7 @@ func (f *Docx) AddTable(
 	row int, 
 	col int, 
 	tableWidth int64, 
-	borderColors TableBorderColors,
+	borderColors *APITableBorderColors,
 ) *Table {
 	trs := make([]*WTableRow, row)
 	for i := 0; i < row; i++ {
@@ -45,7 +49,9 @@ func (f *Docx) AddTable(
 			TableCells:         cells,
 		}
 	}
-		
+
+	borderColors.applyDefault()
+
 	wTableWidth := &WTableWidth{Type: "auto"}
 
 	if tableWidth > 0 {
@@ -81,7 +87,7 @@ func (f *Docx) AddTableTwips(
 	rowHeights []int64, 
 	colWidths []int64, 
 	tableWidth int64, 
-	borderColors TableBorderColors, 
+	borderColors *APITableBorderColors, 
 ) *Table {
 	grids := make([]*WGridCol, len(colWidths))
 	trs := make([]*WTableRow, len(rowHeights))
@@ -113,6 +119,8 @@ func (f *Docx) AddTableTwips(
 		}
 	}
 	
+	borderColors.applyDefault()
+
 	wTableWidth := &WTableWidth{Type: "auto"}
 
 	if tableWidth > 0 {
@@ -196,4 +204,29 @@ func CheckBorderColors (borderColors [6]string) [6]string {
 	}
 	
 	return borderColors
+}
+
+type APITableBorderColors struct {
+  Top string
+  Left string
+  Bottom string
+  Right string
+  InsideH string
+  InsideV string
+}
+
+func (tbc *APITableBorderColors) applyDefault() {
+
+	tbcR := reflect.ValueOf(tbc).Elem()
+
+	for i := 0; i < tbcR.NumField(); i++ {
+
+		if tbcR.Field(i).Interface() == "" {
+
+			tbcR.Field(i).SetString("#000000")
+
+		}
+
+	}
+
 }
