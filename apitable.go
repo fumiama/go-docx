@@ -212,17 +212,11 @@ type APITableBorderColors struct {
 }
 
 func (tbc *APITableBorderColors) applyDefault() {
-
 	tbcR := reflect.ValueOf(tbc).Elem()
 
 	for i := 0; i < tbcR.NumField(); i++ {
-
 		if tbcR.Field(i).IsZero() {
-
 			tbcR.Field(i).SetString("#000000")
-
 		}
-
 	}
-
 }
