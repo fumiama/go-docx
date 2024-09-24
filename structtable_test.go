@@ -29,12 +29,22 @@ import (
 )
 
 func TestTableStructure(t *testing.T) {
+
+  borderColors := &APITableBorderColors{
+		"#ff0000",
+		"#ff0000",
+		"#ff0000",
+		"#ff0000",
+		"#ff0000",
+		"",
+	}
+
 	w := New().WithDefaultTheme()
 	// add new paragraph
 	para1 := w.AddParagraph()
 	// add text
 	para1.AddText("table")
-	tab1 := w.AddTable(4, 3).Justification("center")
+	tab1 := w.AddTable(4, 3, 1000, borderColors).Justification("center")
 	tab1.TableProperties.Position = &WTablePositioningProperties{LeftFromText: 2333}
 	para2 := tab1.TableRows[3].Justification("center").TableCells[2].Shade("clear", "auto", "E7E6E6").AddParagraph()
 	r, err := para2.AddAnchorDrawingFrom("testdata/fumiama.JPG")

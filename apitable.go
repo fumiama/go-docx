@@ -20,10 +20,19 @@
 
 package docx
 
+import (
+	"reflect"
+)
+
 // AddTable add a new table to body by col*row
 //
 // unit: twips (1/20 point)
-func (f *Docx) AddTable(row int, col int) *Table {
+func (f *Docx) AddTable(
+	row int, 
+	col int, 
+	tableWidth int64, 
+	borderColors *APITableBorderColors,
+) *Table {
 	trs := make([]*WTableRow, row)
 	for i := 0; i < row; i++ {
 		cells := make([]*WTableCell, col)
@@ -40,16 +49,25 @@ func (f *Docx) AddTable(row int, col int) *Table {
 			TableCells:         cells,
 		}
 	}
+
+	borderColors.applyDefault()
+
+	wTableWidth := &WTableWidth{Type: "auto"}
+
+	if tableWidth > 0 {
+		wTableWidth = &WTableWidth{W: tableWidth}
+	}
+	
 	tbl := &Table{
 		TableProperties: &WTableProperties{
-			Width: &WTableWidth{Type: "auto"},
+			Width: wTableWidth,
 			TableBorders: &WTableBorders{
-				Top:     &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
-				Left:    &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
-				Bottom:  &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
-				Right:   &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
-				InsideH: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
-				InsideV: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
+				Top:     &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.Top},
+				Left:    &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.Left},
+				Bottom:  &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.Bottom},
+				Right:   &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.Right},
+				InsideH: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.InsideH},
+				InsideV: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.InsideV},
 			},
 			Look: &WTableLook{
 				Val: "0000",
@@ -65,7 +83,12 @@ func (f *Docx) AddTable(row int, col int) *Table {
 // AddTableTwips add a new table to body by height and width
 //
 // unit: twips (1/20 point)
-func (f *Docx) AddTableTwips(rowHeights []int64, colWidths []int64) *Table {
+func (f *Docx) AddTableTwips(
+	rowHeights []int64, 
+	colWidths []int64, 
+	tableWidth int64, 
+	borderColors *APITableBorderColors, 
+) *Table {
 	grids := make([]*WGridCol, len(colWidths))
 	trs := make([]*WTableRow, len(rowHeights))
 	for i, w := range colWidths {
@@ -95,16 +118,25 @@ func (f *Docx) AddTableTwips(rowHeights []int64, colWidths []int64) *Table {
 			}
 		}
 	}
+	
+	borderColors.applyDefault()
+
+	wTableWidth := &WTableWidth{Type: "auto"}
+
+	if tableWidth > 0 {
+		wTableWidth = &WTableWidth{W: tableWidth}
+	}
+
 	tbl := &Table{
 		TableProperties: &WTableProperties{
-			Width: &WTableWidth{Type: "auto"},
+			Width: wTableWidth,
 			TableBorders: &WTableBorders{
-				Top:     &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
-				Left:    &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
-				Bottom:  &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
-				Right:   &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
-				InsideH: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
-				InsideV: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: "000000"},
+				Top:     &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.Top},
+				Left:    &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.Left},
+				Bottom:  &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.Bottom},
+				Right:   &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.Right},
+				InsideH: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.InsideH},
+				InsideV: &WTableBorder{Val: "single", Size: 4, Space: 0, Color: borderColors.InsideV},
 			},
 			Look: &WTableLook{
 				Val: "0000",
@@ -161,4 +193,40 @@ func (c *WTableCell) Shade(val, color, fill string) *WTableCell {
 		Fill:  fill,
 	}
 	return c
+}
+
+//Replaces any index that is blank with "#000000"
+func CheckBorderColors (borderColors [6]string) [6]string {
+	for i, _ := range borderColors{
+		if borderColors[i] == "" {
+			borderColors[i] = "#000000"
+		}
+	}
+	
+	return borderColors
+}
+
+type APITableBorderColors struct {
+  Top string
+  Left string
+  Bottom string
+  Right string
+  InsideH string
+  InsideV string
+}
+
+func (tbc *APITableBorderColors) applyDefault() {
+
+	tbcR := reflect.ValueOf(tbc).Elem()
+
+	for i := 0; i < tbcR.NumField(); i++ {
+
+		if tbcR.Field(i).IsZero() {
+
+			tbcR.Field(i).SetString("#000000")
+
+		}
+
+	}
+
 }
