@@ -108,7 +108,7 @@ func main() {
 
 		w.AddParagraph()
 
-		tbl1 := w.AddTable(9, 9)
+		tbl1 := w.AddTable(9, 9, 0, nil)
 		for x, r := range tbl1.TableRows {
 			red := (x + 1) * 28
 			for y, c := range r.TableCells {
@@ -121,7 +121,7 @@ func main() {
 
 		w.AddParagraph()
 
-		tbl2 := w.AddTableTwips([]int64{2333, 2333, 2333}, []int64{2333, 2333}).Justification("center")
+		tbl2 := w.AddTableTwips([]int64{2333, 2333, 2333}, []int64{2333, 2333}, 0, nil).Justification("center")
 		for x, r := range tbl2.TableRows {
 			r.Justification("center")
 			for y, c := range r.TableCells {

@@ -30,7 +30,7 @@ import (
 
 func TestTableStructure(t *testing.T) {
 
-  borderColors := &APITableBorderColors{
+	borderColors := &APITableBorderColors{
 		"#ff0000",
 		"#ff0000",
 		"#ff0000",

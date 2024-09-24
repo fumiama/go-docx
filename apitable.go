@@ -28,9 +28,9 @@ import (
 //
 // unit: twips (1/20 point)
 func (f *Docx) AddTable(
-	row int, 
-	col int, 
-	tableWidth int64, 
+	row int,
+	col int,
+	tableWidth int64,
 	borderColors *APITableBorderColors,
 ) *Table {
 	trs := make([]*WTableRow, row)
@@ -50,6 +50,9 @@ func (f *Docx) AddTable(
 		}
 	}
 
+	if borderColors == nil {
+		borderColors = new(APITableBorderColors)
+	}
 	borderColors.applyDefault()
 
 	wTableWidth := &WTableWidth{Type: "auto"}
@@ -57,7 +60,7 @@ func (f *Docx) AddTable(
 	if tableWidth > 0 {
 		wTableWidth = &WTableWidth{W: tableWidth}
 	}
-	
+
 	tbl := &Table{
 		TableProperties: &WTableProperties{
 			Width: wTableWidth,
@@ -84,10 +87,10 @@ func (f *Docx) AddTable(
 //
 // unit: twips (1/20 point)
 func (f *Docx) AddTableTwips(
-	rowHeights []int64, 
-	colWidths []int64, 
-	tableWidth int64, 
-	borderColors *APITableBorderColors, 
+	rowHeights []int64,
+	colWidths []int64,
+	tableWidth int64,
+	borderColors *APITableBorderColors,
 ) *Table {
 	grids := make([]*WGridCol, len(colWidths))
 	trs := make([]*WTableRow, len(rowHeights))
@@ -118,7 +121,10 @@ func (f *Docx) AddTableTwips(
 			}
 		}
 	}
-	
+
+	if borderColors == nil {
+		borderColors = new(APITableBorderColors)
+	}
 	borderColors.applyDefault()
 
 	wTableWidth := &WTableWidth{Type: "auto"}
@@ -195,24 +201,13 @@ func (c *WTableCell) Shade(val, color, fill string) *WTableCell {
 	return c
 }
 
-//Replaces any index that is blank with "#000000"
-func CheckBorderColors (borderColors [6]string) [6]string {
-	for i, _ := range borderColors{
-		if borderColors[i] == "" {
-			borderColors[i] = "#000000"
-		}
-	}
-	
-	return borderColors
-}
-
 type APITableBorderColors struct {
-  Top string
-  Left string
-  Bottom string
-  Right string
-  InsideH string
-  InsideV string
+	Top     string
+	Left    string
+	Bottom  string
+	Right   string
+	InsideH string
+	InsideV string
 }
 
 func (tbc *APITableBorderColors) applyDefault() {
