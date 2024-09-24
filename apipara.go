@@ -70,7 +70,8 @@ func (p *Paragraph) AddPageBreaks() *Run {
 	return run
 }
 
-func (p *Paragraph) AddStyle(val string) *Paragraph {
+// Style name
+func (p *Paragraph) Style(val string) *Paragraph {
 	if p.Properties == nil {
 		p.Properties = &ParagraphProperties{}
 	}

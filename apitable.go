@@ -201,6 +201,7 @@ func (c *WTableCell) Shade(val, color, fill string) *WTableCell {
 	return c
 }
 
+// APITableBorderColors customizable param
 type APITableBorderColors struct {
 	Top     string
 	Left    string

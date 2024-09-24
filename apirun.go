@@ -83,6 +83,7 @@ func (r *Run) Highlight(val string) *Run {
 	return r
 }
 
+// Strike ...
 func (r *Run) Strike(val bool) *Run {
 	trueFalseStr := "false"
 	if val {
