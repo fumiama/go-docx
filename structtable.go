@@ -585,6 +585,7 @@ type WTableCellProperties struct {
 	XMLName        xml.Name `xml:"w:tcPr,omitempty"`
 	TableCellWidth *WTableCellWidth
 	VMerge         *WvMerge
+	HMerge         *WhMerge
 	GridSpan       *WGridSpan
 	TableBorders   *WTableBorders `xml:"w:tcBorders"`
 	Shade          *Shade
@@ -617,6 +618,8 @@ func (r *WTableCellProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) 
 				r.TableCellWidth.Type = getAtt(tt.Attr, "type")
 			case "vMerge":
 				r.VMerge = &WvMerge{Val: getAtt(tt.Attr, "val")}
+			case "hMerge":
+				r.HMerge = &WhMerge{Val: getAtt(tt.Attr, "val")}
 			case "gridSpan":
 				r.GridSpan = new(WGridSpan)
 				v := getAtt(tt.Attr, "val")
@@ -690,6 +693,11 @@ type WTableCellWidth struct {
 // this element should be omitted.
 type WvMerge struct {
 	XMLName xml.Name `xml:"w:vMerge,omitempty"`
+	Val     string   `xml:"w:val,attr,omitempty"`
+}
+
+type WhMerge struct {
+	XMLName xml.Name `xml:"w:hMerge,omitempty"`
 	Val     string   `xml:"w:val,attr,omitempty"`
 }
 
