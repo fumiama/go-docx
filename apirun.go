@@ -36,6 +36,14 @@ func (r *Run) Size(size string) *Run {
 	return r
 }
 
+// SizeCs allows to set run size
+func (r *Run) SizeCs(size string) *Run {
+	r.RunProperties.SizeCs = &SizeCs{
+		Val: size,
+	}
+	return r
+}
+
 // Shade allows to set run shade
 func (r *Run) Shade(val, color, fill string) *Run {
 	r.RunProperties.Shade = &Shade{
