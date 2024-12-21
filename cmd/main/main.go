@@ -30,7 +30,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/l0g1n/go-docx"
+	"github.com/fumiama/go-docx"
 )
 
 func main() {
