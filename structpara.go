@@ -33,6 +33,7 @@ type ParagraphProperties struct {
 	XMLName        xml.Name `xml:"w:pPr,omitempty"`
 	Tabs           *Tabs
 	Spacing        *Spacing
+	NumProperties  *NumProperties
 	Ind            *Ind
 	Justification  *Justification
 	Shade          *Shade
@@ -110,6 +111,13 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) e
 				p.RunProperties = &value
 			case "pStyle":
 				p.Style = &Style{Val: getAtt(tt.Attr, "val")}
+			case "numPr":
+				var value NumProperties
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				p.NumProperties = &value
 			case "textAlignment":
 				p.TextAlignment = &TextAlignment{Val: getAtt(tt.Attr, "val")}
 			case "adjustRightInd":
