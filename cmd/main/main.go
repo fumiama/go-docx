@@ -34,6 +34,56 @@ import (
 )
 
 func main() {
+	readFile, err := os.Open("/Users/gq/GolandProjects/docx-genert/data/template.docx")
+	if err != nil {
+		panic(err)
+	}
+	fileinfo, err := readFile.Stat()
+	if err != nil {
+		panic(err)
+	}
+	size := fileinfo.Size()
+	doc, err := docx.Parse(readFile, size)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Plain text:")
+	for _, it := range doc.Document.Body.Items {
+		switch it.(type) {
+		case *docx.Paragraph: // printable
+			pit := it.(*docx.Paragraph)
+			fmt.Printf("Paragraph: %v\n", it)
+			fmt.Printf("Paragraph pit: %v\n", pit.Style("size"))
+		case *docx.Table:
+			fmt.Printf("table: %v\n", it)
+		}
+	}
+
+	//w := docx.New().WithDefaultTheme()
+	//// add new paragraph
+	//para1 := w.AddParagraph().Justification("center")
+	//// add text
+	//para1.AddText("中投证券股民个人信息泄露事件").Font("SimHei", "SimHei", "SimHei", "").Size("40").SizeCs("44")
+	//w.AddParagraph().Justification("center").AddText("").Font("SimHei", "SimHei", "SimHei", "").Size("40").SizeCs("44")
+	//
+	//w.AddParagraph().Style("ListParagraph").AddText("事件描述").Font("SimHei", "SimHei", "SimHei", "").Size("32").SizeCs("36")
+
+	f, err := os.Create("bak.docx")
+	// save to file
+	if err != nil {
+		panic(err)
+	}
+	_, err = doc.WriteTo(f)
+	if err != nil {
+		panic(err)
+	}
+	err = f.Close()
+	if err != nil {
+		panic(err)
+	}
+}
+
+func main2() {
 	fileLocation := flag.String("f", "new-file.docx", "file location")
 	analyzeOnly := flag.Bool("a", false, "analyze file only")
 	clean := flag.Bool("c", false, "clean mode (keep text and picture only)")

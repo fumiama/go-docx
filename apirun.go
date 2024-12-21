@@ -44,6 +44,14 @@ func (r *Run) SizeCs(size string) *Run {
 	return r
 }
 
+// Spacing allows to set run spacing
+func (r *Run) Spacing(line int) *Run {
+	r.RunProperties.Spacing = &Spacing{
+		Line: line,
+	}
+	return r
+}
+
 // Shade allows to set run shade
 func (r *Run) Shade(val, color, fill string) *Run {
 	r.RunProperties.Shade = &Shade{

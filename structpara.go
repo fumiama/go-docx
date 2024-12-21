@@ -22,6 +22,7 @@ package docx
 
 import (
 	"encoding/xml"
+	"fmt"
 	"io"
 	"reflect"
 	"strings"
@@ -57,6 +58,7 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) e
 			return err
 		}
 		if tt, ok := t.(xml.StartElement); ok {
+			fmt.Printf("tt.Name.Local: %s\n", tt.Name.Local)
 			switch tt.Name.Local {
 			case "tabs":
 				var value Tabs
