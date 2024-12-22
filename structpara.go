@@ -22,7 +22,6 @@ package docx
 
 import (
 	"encoding/xml"
-	"fmt"
 	"io"
 	"reflect"
 	"strings"
