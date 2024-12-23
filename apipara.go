@@ -78,3 +78,16 @@ func (p *Paragraph) Style(val string) *Paragraph {
 	p.Properties.Style = &Style{Val: val}
 	return p
 }
+
+// NumPr number properties
+func (p *Paragraph) NumPr(val string) *Paragraph {
+	if p.Properties == nil {
+		p.Properties = &ParagraphProperties{}
+	}
+	p.Properties.NumProperties = &NumProperties{
+		NumId: &NumId{
+			Val: val,
+		},
+	}
+	return p
+}
