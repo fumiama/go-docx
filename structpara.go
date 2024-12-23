@@ -32,6 +32,7 @@ type ParagraphProperties struct {
 	XMLName        xml.Name `xml:"w:pPr,omitempty"`
 	Tabs           *Tabs
 	Spacing        *Spacing
+	NumProperties  *NumProperties
 	Ind            *Ind
 	Justification  *Justification
 	Shade          *Shade
