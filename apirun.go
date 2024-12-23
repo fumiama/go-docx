@@ -46,6 +46,14 @@ func (r *Run) Shade(val, color, fill string) *Run {
 	return r
 }
 
+// Spacing allows to set run spacing
+func (r *Run) Spacing(line int) *Run {
+	r.RunProperties.Spacing = &Spacing{
+		Line: line,
+	}
+	return r
+}
+
 // Bold ...
 func (r *Run) Bold() *Run {
 	r.RunProperties.Bold = &Bold{}
