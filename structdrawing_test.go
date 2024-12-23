@@ -37,7 +37,7 @@ func TestDrawingStructure(t *testing.T) {
 		Shade("clear", "auto", "E7E6E6").
 		AddTab().Bold().Underline("single").
 		Highlight("yellow").Italic().
-		Font("宋体", "宋体", "eastAsia")
+		Font("宋体", "宋体", "宋体", "eastAsia")
 	r, err := para1.AddAnchorDrawingFrom("testdata/fumiama.JPG")
 	if err != nil {
 		t.Fatal(err)
