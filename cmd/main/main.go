@@ -70,7 +70,8 @@ func main() {
 
 		para2 := w.AddParagraph().Justification("end")
 		para2.AddText("test all font attrs").
-			Size("44").Color("ff0000").Font("Consolas", "", "", "cs").
+			Size("44").Color("ff0000").
+			Font("Consolas", "", "", "cs").
 			Shade("clear", "auto", "E7E6E6").
 			Bold().Italic().Underline("wave").
 			Highlight("yellow")
