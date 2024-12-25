@@ -80,7 +80,7 @@ func (p *Paragraph) Style(val string) *Paragraph {
 }
 
 // NumPr number properties
-func (p *Paragraph) NumPr(numId, ilvl string) *Paragraph {
+func (p *Paragraph) NumPr(numID, ilvl string) *Paragraph {
 	if p.Properties == nil {
 		p.Properties = &ParagraphProperties{}
 	}
@@ -89,8 +89,8 @@ func (p *Paragraph) NumPr(numId, ilvl string) *Paragraph {
 		p.Properties.RunProperties = &RunProperties{}
 	}
 	p.Properties.NumProperties = &NumProperties{
-		NumId: &NumId{
-			Val: numId,
+		NumID: &NumID{
+			Val: numID,
 		},
 		Ilvl: &Ilevel{
 			Val: ilvl,

@@ -8,12 +8,12 @@ import (
 // NumProperties show the number properties
 type NumProperties struct {
 	XMLName xml.Name `xml:"w:numPr,omitempty"`
-	NumId   *NumId
+	NumID   *NumID
 	Ilvl    *Ilevel
 }
 
-// NumId show the number id
-type NumId struct {
+// NumID show the number id
+type NumID struct {
 	XMLName xml.Name `xml:"w:numId,omitempty"`
 	Val     string   `xml:"w:val,attr"`
 }
@@ -38,9 +38,9 @@ func (n *NumProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 		if tt, ok := t.(xml.StartElement); ok {
 			switch tt.Name.Local {
 			case "numId":
-				var value NumId
+				var value NumID
 				value.Val = getAtt(tt.Attr, "val")
-				n.NumId = &value
+				n.NumID = &value
 			case "ilvl":
 				var value Ilevel
 				value.Val = getAtt(tt.Attr, "val")
