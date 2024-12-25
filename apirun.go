@@ -108,11 +108,12 @@ func (r *Run) AddTab() *Run {
 }
 
 // Font sets the font of the run
-func (r *Run) Font(ascii, hansi, hint string) *Run {
+func (r *Run) Font(ascii, eastAsia, hansi, hint string) *Run {
 	r.RunProperties.Fonts = &RunFonts{
-		ASCII: ascii,
-		HAnsi: hansi,
-		Hint:  hint,
+		ASCII:    ascii,
+		EastAsia: eastAsia,
+		HAnsi:    hansi,
+		Hint:     hint,
 	}
 	return r
 }
