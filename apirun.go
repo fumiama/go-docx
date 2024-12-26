@@ -36,12 +36,28 @@ func (r *Run) Size(size string) *Run {
 	return r
 }
 
+// SizeCs allows to set run sizecs
+func (r *Run) SizeCs(size string) *Run {
+	r.RunProperties.SizeCs = &SizeCs{
+		Val: size,
+	}
+	return r
+}
+
 // Shade allows to set run shade
 func (r *Run) Shade(val, color, fill string) *Run {
 	r.RunProperties.Shade = &Shade{
 		Val:   val,
 		Color: color,
 		Fill:  fill,
+	}
+	return r
+}
+
+// Spacing allows to set run spacing
+func (r *Run) Spacing(line int) *Run {
+	r.RunProperties.Spacing = &Spacing{
+		Line: line,
 	}
 	return r
 }
@@ -100,11 +116,12 @@ func (r *Run) AddTab() *Run {
 }
 
 // Font sets the font of the run
-func (r *Run) Font(ascii, hansi, hint string) *Run {
+func (r *Run) Font(ascii, eastAsia, hansi, hint string) *Run {
 	r.RunProperties.Fonts = &RunFonts{
-		ASCII: ascii,
-		HAnsi: hansi,
-		Hint:  hint,
+		ASCII:    ascii,
+		EastAsia: eastAsia,
+		HAnsi:    hansi,
+		Hint:     hint,
 	}
 	return r
 }
