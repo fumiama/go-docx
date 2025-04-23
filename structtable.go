@@ -536,6 +536,7 @@ type WTableCell struct {
 	XMLName             xml.Name `xml:"w:tc,omitempty"`
 	TableCellProperties *WTableCellProperties
 	Paragraphs          []*Paragraph `xml:"w:p,omitempty"`
+	Tables              []*Table     `xml:"w:tbl,omitempty"`
 
 	file *Docx
 }
@@ -568,6 +569,13 @@ func (c *WTableCell) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error {
 					return err
 				}
 				c.TableCellProperties = &value
+			case "tbl":
+				var table Table
+				table.file = c.file
+				if err = d.DecodeElement(&table, &tt); err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				c.Tables = append(c.Tables, &table)
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {
