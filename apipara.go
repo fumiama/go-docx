@@ -78,3 +78,52 @@ func (p *Paragraph) Style(val string) *Paragraph {
 	p.Properties.Style = &Style{Val: val}
 	return p
 }
+
+// NumPr number properties
+func (p *Paragraph) NumPr(numID, ilvl string) *Paragraph {
+	if p.Properties == nil {
+		p.Properties = &ParagraphProperties{}
+	}
+	// Initialize run properties if not exist
+	if p.Properties.RunProperties == nil {
+		p.Properties.RunProperties = &RunProperties{}
+	}
+	p.Properties.NumProperties = &NumProperties{
+		NumID: &NumID{
+			Val: numID,
+		},
+		Ilvl: &Ilevel{
+			Val: ilvl,
+		},
+	}
+	return p
+}
+
+// NumFont sets the font for numbering
+func (p *Paragraph) NumFont(ascii, eastAsia, hansi, hint string) *Paragraph {
+	if p.Properties == nil {
+		p.Properties = &ParagraphProperties{}
+	}
+	if p.Properties.RunProperties == nil {
+		p.Properties.RunProperties = &RunProperties{}
+	}
+	p.Properties.RunProperties.Fonts = &RunFonts{
+		ASCII:    ascii,
+		EastAsia: eastAsia,
+		HAnsi:    hansi,
+		Hint:     hint,
+	}
+	return p
+}
+
+// NumSize sets the size for numbering
+func (p *Paragraph) NumSize(size string) *Paragraph {
+	if p.Properties == nil {
+		p.Properties = &ParagraphProperties{}
+	}
+	if p.Properties.RunProperties == nil {
+		p.Properties.RunProperties = &RunProperties{}
+	}
+	p.Properties.RunProperties.Size = &Size{Val: size}
+	return p
+}

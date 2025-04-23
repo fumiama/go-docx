@@ -18,10 +18,11 @@ linters:
   fast: false
   enable:
     - bodyclose
+    - copyloopvar
     #- depguard
     - dogsled
     - errcheck
-    - exportloopref
+    #- exportloopref
     - exhaustive
     #- funlen
     #- goconst
