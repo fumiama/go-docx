@@ -24,6 +24,7 @@ import (
 	"encoding/xml"
 	"io"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
@@ -109,6 +110,13 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) e
 				p.RunProperties = &value
 			case "pStyle":
 				p.Style = &Style{Val: getAtt(tt.Attr, "val")}
+			case "numPr":
+				var value NumProperties
+				err = d.DecodeElement(&value, &tt)
+				if err != nil && !strings.HasPrefix(err.Error(), "expected") {
+					return err
+				}
+				p.NumProperties = &value
 			case "textAlignment":
 				p.TextAlignment = &TextAlignment{Val: getAtt(tt.Attr, "val")}
 			case "adjustRightInd":
@@ -155,6 +163,7 @@ func (p *ParagraphProperties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) e
 					return err
 				}
 				p.OverflowPunct = &value
+
 			default:
 				err = d.Skip() // skip unsupported tags
 				if err != nil {
@@ -184,6 +193,12 @@ type Paragraph struct {
 
 func (p *Paragraph) String() string {
 	sb := strings.Builder{}
+	if p.Properties != nil && p.Properties.NumProperties != nil && p.Properties.NumProperties.Ilvl != nil {
+		indent, err := strconv.Atoi(p.Properties.NumProperties.Ilvl.Val)
+		if err == nil {
+			sb.WriteString(strings.Repeat(" ", indent*2))
+		}
+	}
 	for _, c := range p.Children {
 		switch o := c.(type) {
 		case *Hyperlink:
