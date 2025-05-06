@@ -192,6 +192,12 @@ type Paragraph struct {
 
 func (p *Paragraph) String() string {
 	sb := strings.Builder{}
+	if p.Properties != nil && p.Properties.NumProperties != nil {
+		indent, err := strconv.Atoi(o.Properties.NumProperties.Ilvl.Val)
+		if err == nil {
+			sb.WriteString(strings.Repeat(" ", indent*2))
+		}
+	}
 	for _, c := range p.Children {
 		switch o := c.(type) {
 		case *Hyperlink:
