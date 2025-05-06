@@ -18,24 +18,24 @@ linters:
   fast: false
   enable:
     - bodyclose
-    - copyloopvar
     #- depguard
     - dogsled
+    - dupl
     - errcheck
-    #- exportloopref
+    - copyloopvar
     - exhaustive
     #- funlen
-    #- goconst
+    - goconst
     - gocritic
-    #- gocyclo
-    - gofmt
-    - goimports
+    - gocyclo
+    #- gofumpt
+    #- goimports
     - goprintffuncname
     #- gosec
     - gosimple
     - govet
     - ineffassign
-    #- misspell
+    - misspell
     - nolintlint
     - rowserrcheck
     - staticcheck
@@ -49,7 +49,6 @@ linters:
     - predeclared
     - asciicheck
     - revive
-    - forbidigo
     - makezero
 
 run:
@@ -58,20 +57,18 @@ run:
   deadline: 5m
   issues-exit-code: 1
   tests: false
-  skip-dirs:
-    - order
-  go: '1.20'
 
 # output configuration options
 output:
-  format: "colored-line-number"
+  formats:
+    - format: "colored-line-number"
   print-issued-lines: true
   print-linter-name: true
   uniq-by-line: true
 
 issues:
   # Fix found issues (if it's supported by the linter)
-  fix: true
+  fix: false
   exclude-use-default: false
   exclude:
     - "Error return value of .((os.)?std(out|err)..*|.*Close|.*Seek|.*Flush|os.Remove(All)?|.*print(f|ln)?|os.(Un)?Setenv). is not check"
