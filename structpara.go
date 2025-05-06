@@ -24,6 +24,7 @@ import (
 	"encoding/xml"
 	"io"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
