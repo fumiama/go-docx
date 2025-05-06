@@ -32,7 +32,7 @@ func (f *Docx) UseTemplate(template string, tmpfslst []string, tmplfs fs.FS) *Do
 	return f
 }
 
-// WithDefaultTheme use default theme embeded
+// WithDefaultTheme use default theme embedded
 func (f *Docx) WithDefaultTheme() *Docx {
 	return f.UseTemplate("default", DefaultTemplateFilesList, TemplateXMLFS)
 }

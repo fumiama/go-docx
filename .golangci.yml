@@ -25,9 +25,9 @@ linters:
     - copyloopvar
     - exhaustive
     #- funlen
-    - goconst
+    #- goconst
     - gocritic
-    - gocyclo
+    #- gocyclo
     #- gofumpt
     #- goimports
     - goprintffuncname

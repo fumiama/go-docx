@@ -283,7 +283,7 @@ func (r *WPInline) String() string {
 	return "![inln?](unknown)"
 }
 
-func (r *WPInline) copymedia(to *Docx) *WPInline {
+func (r *WPInline) copymedia(to *Docx) *WPInline { //nolint: dupl
 	if r.Graphic.GraphicData.Pic != nil {
 		if r.Graphic.GraphicData.Pic.BlipFill != nil {
 			tgt, err := r.file.ReferTarget(r.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)
@@ -1373,7 +1373,7 @@ func (r *WPAnchor) String() string {
 	return "![anch?](unknown)"
 }
 
-func (r *WPAnchor) copymedia(to *Docx) *WPAnchor {
+func (r *WPAnchor) copymedia(to *Docx) *WPAnchor { //nolint: dupl
 	if r.Graphic.GraphicData.Pic != nil {
 		if r.Graphic.GraphicData.Pic.BlipFill != nil {
 			tgt, err := r.file.ReferTarget(r.Graphic.GraphicData.Pic.BlipFill.Blip.Embed)

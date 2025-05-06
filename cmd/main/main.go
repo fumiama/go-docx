@@ -165,7 +165,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("Document writen. \nNow trying to read it")
+		fmt.Println("Document written. \nNow trying to read it")
 	}
 
 	// Now let's try to read the file
