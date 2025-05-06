@@ -221,17 +221,7 @@ func main() {
 	for _, it := range doc.Document.Body.Items {
 		switch o := it.(type) {
 		case *docx.Paragraph: // printable
-			if o.Properties != nil && o.Properties.NumProperties != nil {
-				indent := 0
-				indent, err = strconv.Atoi(o.Properties.NumProperties.Ilvl.Val)
-				if err != nil {
-					fmt.Println(err)
-				}
-				indent *= 2
-				fmt.Println(strings.Repeat(" ", indent) + o.String())
-			} else {
-				fmt.Println(o.String())
-			}
+			fmt.Println(o.String())
 		case *docx.Table: // printable
 			fmt.Println(o.String())
 		}
